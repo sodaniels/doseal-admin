@@ -90,14 +90,11 @@ app.use((req, res, next) => {
 app.use("/auth/", authApiRoutes);
 app.use("/api/v1/", callbackRoutes);
 
-
 app.use(
 	"/api/v1/",
 	passportJwt.authenticate("jwt", { session: false }),
 	apiRoutes
 );
-
-
 
 app.use(csrfProtection);
 
@@ -140,13 +137,34 @@ app.use("/", vendorRoutes);
 // error handling middleware
 app.use(errorHandler);
 
+// mongoose
+// 	.connect(
+// 		`mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@${process.env.DB_CLUSTER}.mongodb.net/${process.env.DB_NAME}?retryWrites=true&w=majority`
+// 	)
+// 	.then((result) => {
+// 		app.listen(process.env.APP_PORT, () => {
+// 			console.log(`Server running on port ${process.env.APP_PORT}`);
+// 		});
+// 	})
+// 	.catch((err) => {
+// 		console.log(err);
+// 	});
+
 mongoose
 	.connect(
 		`mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@${process.env.DB_CLUSTER}.mongodb.net/${process.env.DB_NAME}?retryWrites=true&w=majority`
 	)
 	.then((result) => {
-		app.listen(process.env.APP_PORT, () => {
+		const server = app.listen(process.env.APP_PORT);
+		if (server) {
+			console.log("Connected to MongoDB");
 			console.log(`Server running on port ${process.env.APP_PORT}`);
+		}
+
+		const io = require("../socket").init(server);
+
+		io.on("connection", (socket) => {
+			console.log("Socket io client connected");
 		});
 	})
 	.catch((err) => {

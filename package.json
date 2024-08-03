@@ -40,6 +40,7 @@
     "qrcode-reader": "^1.0.4",
     "redis": "^4.6.13",
     "session": "^0.1.0",
+    "socket.io": "^4.7.5",
     "uuid": "^9.0.0",
     "winston": "^3.9.0"
   },
