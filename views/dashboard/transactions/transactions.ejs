@@ -1,0 +1,160 @@
+<link rel="stylesheet" type="text/css" href="/assets/dashboard/css/page-users.min.css">
+<link rel="stylesheet" type="text/css" href="/assets/dashboard/css/datatables.min.css">
+<link rel="stylesheet" type="text/css" href="https://demos.pixinvent.com/modern-html-admin-template/app-assets/css/pages/single-page.min.css">
+<%- include('../../includes/top-with-style.ejs') %>
+  <!-- END: Theme CSS-->
+
+  </head>
+  <!-- END: Head-->
+
+  <!-- BEGIN: Body-->
+
+  <body class="horizontal-layout horizontal-menu horizontal-menu-padding 2-columns  " data-open="click"
+    data-menu="horizontal-menu" data-col="2-columns">
+
+    <!-- BEGIN: top nav-->
+    <%- include('../../includes/top-nav.ejs') %>
+      <!-- END: top nav-->
+
+
+      <!-- BEGIN: Main Menu-->
+      <%- include('../../includes/main-menu.ejs') %>
+
+        <!-- END: Main Menu-->
+        <!-- BEGIN: Content-->
+		<div class="app-content content">
+			<div class="content-overlay"></div>
+			<div class="content-wrapper">
+				<div class="content-header row">
+					<div class="content-header-left col-md-6 col-12 mb-2">
+						<h3 class="content-header-title">Transactions</h3>
+						<div class="row breadcrumbs-top">
+							<div class="breadcrumb-wrapper col-12">
+								<ol class="breadcrumb">
+									<li class="breadcrumb-item"><a href="/dashboard">Dashboard</a>
+									</li>
+									<li class="breadcrumb-item active">Transactions
+									</li>
+								</ol>
+							</div>
+						</div>
+					</div>
+					
+				</div>
+				<div class="content-body"><!-- Base style table -->
+					<section id="base-style">
+						<div class="row">
+							<div class="col-12">
+								<div class="card">
+									<div class="card-header">
+										<h4 class="card-title float-left">All Transactions</h4>
+
+										<span class="dropdown float-right">
+											<button type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true" class="btn btn-dark dropdown-toggle dropdown-menu-right"><i class="fa fa-gear"></i></button>
+											<span aria-labelledby="btnSearchDrop2" class="dropdown-menu mt-1 dropdown-menu-right">
+												<a href="#" class="dropdown-item"><i class="la la-check-square-o"></i> Successful </a>
+												<a href="#" class="dropdown-item"><i class=""></i> Pending</a>
+												<a href="#" class="dropdown-item"><i class=""></i> Failed</a>
+											</span>
+										</span>
+									</div>
+									<div class="card-body mt-1">
+										<div class="table-responsive">
+											<table id="active-accounts" class="table alt-pagination card-wrapper">
+												<thead>
+													<tr>
+														<th class="border-top-0">RefID.</th>
+														<th class="border-top-0">Sertice Type</th>
+														<th class="border-top-0">Status</th>
+														<th class="border-top-0">Sent Amount</th>
+														<th class="border-top-0">Payout Amount</th>
+														<th class="border-top-0">Sender</th>
+														<th class="border-top-0">Beneficiary</th>
+														<th class="border-top-0">Date
+
+															
+														</th>
+													</tr>
+												</thead>
+												<tbody>
+													<tr>
+														<td class="align-middle">
+															<div class="card-no">9000232365</div>
+														</td>
+														<td class="align-middle">
+															<div class="holder-name">Card</div>
+														</td>
+														<td class="align-middle">
+															<div class="status badge badge-success badge-pill badge-sm">
+																Success</div>
+														</td>
+														<td class="align-middle limit">2,000</td>
+														<td class="align-middle limit">2,020</td>
+														<td class="align-middle">
+															<div class="holder-name">Mary Otundugua</div>
+														</td>
+														<td class="align-middle">
+															<div class="holder-name">Mavis Osei</div>
+														</td>
+														<td class="align-middle">
+															<div class="card-no">24th July, 2023 </div>
+														</td>
+													</tr>
+														<td class="align-middle">
+															<div class="card-no">890923378</div>
+														</td>
+														<td class="align-middle">
+															<div class="holder-name">Wallet</div>
+														</td>
+														<td class="align-middle">
+															<div class="status badge badge-danger badge-pill badge-sm">
+																Failed</div>
+														</td>
+														<td class="align-middle limit">1,000</td>
+														
+														<td class="align-middle limit">1,010</td>
+														<td class="align-middle">
+															<div class="holder-name">James Quarnoo</div>
+														</td>
+														<td class="align-middle">
+															<div class="holder-name">Oppong Wiah</div>
+														</td>
+														<td class="align-middle">
+															<div class="card-no">26th July, 2023 </div>
+
+															
+														</td>
+													</tr>
+													
+													
+												
+												</tbody>
+											</table>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</section>
+				</div>
+			</div>
+		</div>
+        <br /><br /><br />
+        <!-- END: Content-->
+
+
+        <div class="sidenav-overlay"></div>
+        <div class="drag-target"></div>
+
+        <!-- BEGIN: Footer-->
+        <%- include('../../includes/footer.ejs') %>
+          <!-- END: Footer-->
+
+          <!--template script starts-->
+          <script src="/assets/dashboard/js/datatables.min.js"></script>
+          <script src="/assets/dashboard/js/page-users.min.js"></script>
+
+
+          <!--template script end-->
+
+          <%- include('../../includes/down-with-script.ejs') %>

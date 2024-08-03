@@ -1,0 +1,396 @@
+<%- include('../../includes/admin/top-with-style.ejs') %>
+    </head>
+
+    <body id="theme-default" class="full_block">
+
+
+        <div id="left_bar">
+            <%- include('../../includes/admin/side-menu.ejs') %>
+        </div>
+
+        <div id="container">
+            <%- include('../../includes/admin/header-banner.ejs') %>
+                <div class="page_title">
+                    <span class="title_icon"><span class="users"></span></span>
+                    <h3>New Team</h3>
+
+
+                </div>
+
+
+                <div id="content">
+                    <div class="grid_container">
+                        <%if (errors.length> 0) { %> <% errors.forEach(error=> { %>
+                                <blockquote class="quote_orange">
+                                    <p>
+                                        <%- error.msg %>
+                                    </p>
+                                </blockquote>
+                                <% }) %>
+                                    <% } %>
+
+
+                                        <%if (errorMessage) { %>
+                                            <blockquote class="quote_orange">
+                                                <p>
+                                                    <%- errorMessage %>
+                                                </p>
+                                            </blockquote>
+                                            <% } %>
+
+
+                                                <%if (successMessage) { %>
+                                                    <blockquote class="quote_green">
+                                                        <p>
+                                                            <%- successMessage %>
+                                                        </p>
+                                                    </blockquote>
+                                                    <% } %>
+
+                                                        <div class="grid_12 full_block">
+                                                            <form
+                                                                action="<% if (schedule) { %>/team/edit/<%= schedule._id %><% } else { %>/team/add<% } %>"
+                                                                method="POST" class="form_container left_label">
+
+                                                                <input type="hidden" name="_csrf"
+                                                                    value="<%= csrfToken %>">
+
+                                                                <div class="widget_wrap">
+                                                                    <div class="widget_top">
+                                                                        <span class="h_icon list_image"></span>
+                                                                        <h6>Team</h6>
+                                                                    </div>
+                                                                    <div class="widget_content">
+                                                                        <form action="#" method="post"
+                                                                            class="form_container left_label">
+                                                                            <ul>
+                                                                                <li>
+                                                                                    <div class="form_grid_12">
+                                                                                        <label class="field_title">
+                                                                                            Name</label>
+                                                                                        <div class="form_input">
+                                                                                            <input name="name"
+                                                                                                value="<%= userInput.name ? userInput.name : (schedule ? schedule.name : '') %>"
+                                                                                                type="text"
+                                                                                                class="form-control"
+                                                                                                required>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </li>
+
+                                                                                <li>
+                                                                                    <div class="form_grid_12">
+                                                                                        <label class="field_title">Start
+                                                                                            Date/Time</label>
+                                                                                        <div class="form_grid_12">
+                                                                                            <div class="form_input">
+                                                                                                <div
+                                                                                                    class=" form_grid_9 alpha">
+                                                                                                    <input
+                                                                                                        name="startDate"
+                                                                                                        value="<%= userInput.startDate ? userInput.startDate : (schedule ? schedule.startDate : '') %>"
+                                                                                                        type="date"
+                                                                                                        class="form-control"
+                                                                                                        pattern="(0[1-9]|1[0-2])/(0[1-9]|[12][0-9]|3[01])/\d{4}"
+                                                                                                        title="Please enter a date in the format MM/DD/YYYY"
+                                                                                                        required />
+                                                                                                    <span
+                                                                                                        class=" label_intro">Date</span>
+                                                                                                </div>
+                                                                                                <div class=" form_grid_3"
+                                                                                                    style="margin-top: 0.1em;">
+                                                                                                    <input
+                                                                                                        name="startTime"
+                                                                                                        value="<%= userInput.startTime ? userInput.startTime : (schedule ? schedule.startTime : '') %>"
+                                                                                                        type="time"
+                                                                                                        class="form-control"
+                                                                                                        required />
+                                                                                                    <span
+                                                                                                        class=" label_intro">Time</span>
+                                                                                                </div>
+                                                                                                <span
+                                                                                                    class="clear"></span>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </li>
+
+                                                                                <li>
+                                                                                    <div class="form_grid_12">
+                                                                                        <label class="field_title">End
+                                                                                            Date/Time</label>
+                                                                                        <div class="form_grid_12">
+                                                                                            <div class="form_input">
+                                                                                                <div
+                                                                                                    class=" form_grid_9 alpha">
+                                                                                                    <input
+                                                                                                        name="endDate"
+                                                                                                        value="<%= userInput.endDate ? userInput.endDate : (schedule ? schedule.endDate : '') %>"
+                                                                                                        type="date"
+                                                                                                        class="form-control"
+                                                                                                        pattern="(0[1-9]|1[0-2])/(0[1-9]|[12][0-9]|3[01])/\d{4}"
+                                                                                                        title="Please enter a date in the format MM/DD/YYYY"
+                                                                                                        required />
+                                                                                                    <span
+                                                                                                        class=" label_intro">Date</span>
+                                                                                                </div>
+                                                                                                <div class=" form_grid_3"
+                                                                                                    style="margin-top: 0.1em;">
+                                                                                                    <input
+                                                                                                        name="endTime"
+                                                                                                        value="<%= userInput.endTime ? userInput.endTime : (schedule ? schedule.endTime : '') %>"
+                                                                                                        type="time"
+                                                                                                        class="form-control"
+                                                                                                        required />
+                                                                                                    <span
+                                                                                                        class=" label_intro">Time</span>
+                                                                                                </div>
+                                                                                                <span
+                                                                                                    class="clear"></span>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </li>
+
+                                                                                <li>
+                                                                                    <div class="form_grid_12">
+                                                                                        <label
+                                                                                            class="field_title">Supervisor</label>
+                                                                                        <div class="form_input">
+                                                                                            <select class="form-control"
+                                                                                                name="supervisor"
+                                                                                                required>
+                                                                                                <option value="">Please
+                                                                                                    Select</option>
+                                                                                                <%
+                                                                                                    supervisors.forEach(item=>
+                                                                                                    {
+                                                                                                    %>
+                                                                                                    <option
+                                                                                                        value="<%= item._id %>"
+                                                                                                        <%=supervisor.toString() ===item._id.toString()
+                                                                                                            ? 'selected'
+                                                                                                            : '' %>>
+                                                                                                        <%= item.firstName
+                                                                                                            + ' '
+                                                                                                            +item.middleName
+                                                                                                            + ' '
+                                                                                                            +item.lastName
+                                                                                                            %>
+                                                                                                    </option>
+                                                                                                    <% }); %>
+                                                                                            </select>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </li>
+                                                                                <li>
+                                                                                    <div class="form_grid_12">
+                                                                                        <label
+                                                                                            class="field_title">Driver</label>
+                                                                                        <div class="form_input">
+                                                                                            <select class="form-control"
+                                                                                                name="driver"
+                                                                                                value="<%= userInput.driver ? userInput.driver: '' %>"
+                                                                                                required>
+                                                                                                <option value="">Please
+                                                                                                    Select</option>
+                                                                                                <%
+                                                                                                    drivers.forEach(item=>
+                                                                                                    {
+                                                                                                    %>
+                                                                                                    <option
+                                                                                                        value="<%= item._id %>"
+                                                                                                        <%=driver.toString()===item._id.toString()
+                                                                                                        ? 'selected'
+                                                                                                        : '' %>>
+                                                                                                        <%= item.firstName
+                                                                                                            + ' '
+                                                                                                            +item.middleName
+                                                                                                            + ' '
+                                                                                                            +item.lastName
+                                                                                                            %>
+                                                                                                    </option>
+                                                                                                    <% }); %>
+                                                                                            </select>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </li>
+
+
+                                                                                <li>
+                                                                                    <div class="form_grid_12">
+                                                                                        <label
+                                                                                            class="field_title">Collectors</label>
+                                                                                        <div class="form_input">
+                                                                                            <p
+                                                                                                style="text-align: center;">
+                                                                                                <strong>NB</strong>:
+                                                                                                Move
+                                                                                                from
+                                                                                                users left to right to
+                                                                                                select
+                                                                                            </p>
+                                                                                            <div class="list_left">
+                                                                                                <div
+                                                                                                    class="list_filter">
+                                                                                                    <label>Filter:
+                                                                                                    </label>
+                                                                                                    <input type="text"
+                                                                                                        id="box1Filter">
+                                                                                                    <span id="box1Clear"
+                                                                                                        class="list_refresh"><span
+                                                                                                            class="filter_btn refresh_3">&nbsp;</span></span>
+                                                                                                </div>
+                                                                                                <select id="box1View"
+                                                                                                    multiple="multiple"
+                                                                                                    class="multiple_list">
+                                                                                                    <%
+                                                                                                        collectors.forEach(item=>
+                                                                                                        {
+                                                                                                        %>
+                                                                                                        <option
+                                                                                                            value="<%= item._id %>"
+                                                                                                            <%=collector===item._id
+                                                                                                            ? 'selected'
+                                                                                                            : '' %>
+                                                                                                            >
+                                                                                                            <%= item.firstName
+                                                                                                                + ' '
+                                                                                                                +item.middleName
+                                                                                                                + ' '
+                                                                                                                +item.lastName
+                                                                                                                %>
+                                                                                                        </option>
+                                                                                                        <% }); %>
+
+                                                                                                </select>
+                                                                                                <div
+                                                                                                    class="list_itemcount">
+                                                                                                    <span
+                                                                                                        id="box1Counter"
+                                                                                                        class="countLabel">Showing
+                                                                                                        14
+                                                                                                        of
+                                                                                                        14</span>
+                                                                                                    <select
+                                                                                                        id="box1Storage"
+                                                                                                        style="display: none;">
+                                                                                                    </select>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                            <div class="list_switch">
+                                                                                                <span id="to2"
+                                                                                                    class="swap_btn"><span
+                                                                                                        class="filter_btn p_next">&nbsp;</span></span><span
+                                                                                                    id="to1"
+                                                                                                    class="swap_btn"><span
+                                                                                                        class="filter_btn p_prev">&nbsp;</span></span><span
+                                                                                                    id="allTo2"
+                                                                                                    class="swap_btn"><span
+                                                                                                        class="filter_btn p_last">&nbsp;</span></span><span
+                                                                                                    id="allTo1"
+                                                                                                    class="swap_btn"><span
+                                                                                                        class="filter_btn p_first">&nbsp;</span></span>
+                                                                                            </div>
+                                                                                            <div class="list_right">
+                                                                                                <div
+                                                                                                    class="list_filter">
+                                                                                                    <label>Filter:
+                                                                                                    </label>
+                                                                                                    <input type="text"
+                                                                                                        id="box2Filter">
+                                                                                                    <span
+                                                                                                        class="list_refresh"
+                                                                                                        id="box2Clear"><span
+                                                                                                            class="filter_btn refresh_3">&nbsp;</span></span>
+                                                                                                </div>
+                                                                                                <select id="box2View"
+                                                                                                    multiple="multiple"
+                                                                                                    class="multiple_list"
+                                                                                                    name="collectors[]">
+
+                                                                                                    <% if(schedule) { %>
+                                                                                                        <% schedule.collectors.forEach((collector,
+                                                                                                            index)=> {
+                                                                                                            %>
+                                                                                                            <option
+                                                                                                                value="<%= collector._id %>">
+                                                                                                                <%= collector.firstName
+                                                                                                                    + ' '
+                                                                                                                    +
+                                                                                                                    (collector.middleName
+                                                                                                                    ?
+                                                                                                                    collector.middleName
+                                                                                                                    + ' '
+                                                                                                                    : ''
+                                                                                                                    ) +
+                                                                                                                    collector.lastName
+                                                                                                                    %>
+                                                                                                            </option>
+                                                                                                            <% }); %>
+                                                                                                                <%}%>
+
+
+                                                                                                </select>
+                                                                                                <div
+                                                                                                    class="list_itemcount">
+                                                                                                    <span
+                                                                                                        id="box2Counter"
+                                                                                                        class="countLabel">Showing
+                                                                                                        2
+                                                                                                        of
+                                                                                                        2</span>
+                                                                                                    <select
+                                                                                                        id="box2Storage"
+                                                                                                        style="display: none;">
+                                                                                                    </select>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                            <span class="clear"></span>
+                                                                                        </div>
+
+                                                                                    </div>
+                                                                                </li>
+
+
+                                                                            </ul>
+                                                                            <ul>
+                                                                                <li>
+                                                                                    <div class="form_grid_12">
+                                                                                        <div class="form_input">
+                                                                                            <button type="submit"
+                                                                                                class="btn_small btn_blue">
+                                                                                                <% if (schedule) { %>
+                                                                                                    <span>
+                                                                                                        Edit
+                                                                                                    </span>
+                                                                                                    <%} else { %>
+                                                                                                        <span>
+                                                                                                            Submit
+                                                                                                        </span>
+                                                                                                        <%} %>
+
+                                                                                            </button>
+                                                                                            <button type="reset"
+                                                                                                class="btn_small btn_orange"><span>Reset</span></button>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </li>
+                                                                            </ul>
+                                                                        </form>
+                                                                    </div>
+                                                                </div>
+                                                            </form>
+                                                        </div>
+
+                    </div>
+                    <span class="clear"></span>
+                </div>
+
+        </div>
+    </body>
+
+
+
+
+    </html>

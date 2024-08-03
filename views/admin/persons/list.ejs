@@ -1,0 +1,235 @@
+<%- include('../../includes/admin/top-with-style.ejs') %>
+    </head>
+
+    <body id="theme-default" class="full_block">
+
+
+        <div id="left_bar">
+            <%- include('../../includes/admin/side-menu.ejs') %>
+        </div>
+
+        <div id="container">
+            <%- include('../../includes/admin/header-banner.ejs') %>
+                <div class="page_title">
+                    <span class="title_icon"><span class="users"></span></span>
+                    <h3>Persons</h3>
+                    <div class="top_search">
+                        <form action="#" method="post">
+                            <ul id="search_box">
+                                <div class="btn_30_dark">
+                                    <a href="../../../person/add"><span class="icon add_co"></span><span
+                                            class="btn_link">Add
+                                            Person</span></a>
+                                </div>
+                            </ul>
+                        </form>
+                    </div>
+                </div>
+
+                <div id="content">
+                    <div class="grid_container">
+
+                        <div class="grid_12">
+                            <div class="widget_wrap">
+                                <div class="widget_top">
+                                    <span class="h_icon blocks_images"></span>
+                                    <h6>Persons</h6>
+                                </div>
+                                <div class="widget_content">
+                                    <%if (errors.length> 0) { %> <% errors.forEach(error=> { %>
+                                            <blockquote class="quote_orange">
+                                                <p>
+                                                    <%- error.msg %>
+                                                </p>
+                                            </blockquote>
+                                            <% }) %>
+                                                <% } %>
+
+                                                    <%if (errorMessage) { %>
+                                                        <blockquote class="quote_orange">
+                                                            <p>
+                                                                <%- errorMessage %>
+                                                            </p>
+                                                        </blockquote>
+                                                        <% } %>
+
+
+                                                            <%if (successMessage) { %>
+                                                                <blockquote class="quote_green">
+                                                                    <p>
+                                                                        <%- successMessage %>
+                                                                    </p>
+                                                                </blockquote>
+                                                                <% } %>
+
+                                                                    <table class="display data_tbl">
+                                                                        <thead>
+                                                                            <tr>
+                                                                                <th></th>
+                                                                                <th>
+                                                                                    Category
+                                                                                </th>
+                                                                                <th>
+                                                                                    First Name
+                                                                                </th>
+                                                                                <th>
+                                                                                    Middle Name
+                                                                                </th>
+                                                                                <th>
+                                                                                    Last Name
+                                                                                </th>
+                                                                                <th>
+                                                                                    Email
+                                                                                </th>
+                                                                                <th>
+                                                                                    Phone Number
+                                                                                </th>
+                                                                                <th>
+                                                                                    Region
+                                                                                </th>
+                                                                                <th>
+                                                                                    Route Assigned
+                                                                                </th>
+                                                                                <th>
+                                                                                    Assigned Status
+                                                                                </th>
+                                                                                <th>
+                                                                                    Status
+                                                                                </th>
+                                                                                <th>
+                                                                                    Date
+                                                                                </th>
+                                                                                <th>
+                                                                                    Action
+                                                                                </th>
+                                                                            </tr>
+                                                                        </thead>
+                                                                        <tbody>
+                                                                            <% users.forEach((item, index)=> { %>
+                                                                                <tr>
+                                                                                    <td>
+                                                                                        <p>
+                                                                                            <%= index + 1 %>
+                                                                                        </p>
+                                                                                    </td>
+                                                                                    <td>
+                                                                                        <%= item.category %>
+                                                                                    </td>
+                                                                                    <td>
+                                                                                        <%= item.firstName %>
+                                                                                    </td>
+                                                                                    <td>
+                                                                                        <%= item.middleName %>
+                                                                                    </td>
+                                                                                    <td>
+                                                                                        <%= item.lastName %>
+                                                                                    </td>
+                                                                                    <td class="center">
+                                                                                        <%= item.email %>
+                                                                                    </td>
+                                                                                    <td class="center">
+                                                                                        <%= item.phoneNumber %>
+                                                                                    </td>
+                                                                                    <td class="center">
+                                                                                        <%= item.region %>
+                                                                                    </td>
+                                                                                    <td class="center">
+                                                                                        <span
+                                                                                            class="badge_style <%= item.isRouteAssigned ? 'b_done' : 'b_suspend' %>"
+                                                                                            style="padding-bottom: 1em;">
+                                                                                            <a href="#"
+                                                                                                style="color: white;"
+                                                                                                onclick="">
+                                                                                                <%= item.isRouteAssigned
+                                                                                                    ? 'Assigned'
+                                                                                                    : 'Unassigned' %>
+                                                                                            </a>
+                                                                                        </span>
+                                                                                    </td>
+                                                                                    <td class="center">
+                                                                                        <%= item.assignedStatus %>
+                                                                                    </td>
+                                                                                    <td class="center">
+                                                                                        <span
+                                                                                        class="badge_style <%= item.status=='Active' ? 'b_done' : 'b_danger' %>"
+                                                                                        style="padding-bottom: 1em;">
+                                                                                        <a href="#"
+                                                                                            style="color: white;"
+                                                                                            onclick="">
+                                                                                            <%= item.status%>
+                                                                                        </a>
+                                                                                    </span>
+                                                                                    </td>
+                                                                                    <td class="center">
+                                                                                        <%= shortData(item.createdAt) %>
+                                                                                    </td>
+                                                                                    <td class="center">
+                                                                                        <span>
+                                                                                            <a href="../../../person/edit/<%= item.userId %>"
+                                                                                                class="action-icons c-edit"
+                                                                                                href="#"
+                                                                                                title="Edit">Edit</a></span><span>
+                                                                                            <a href="../../../person/delete/<%= item.userId %>"
+                                                                                                class="action-icons c-delete"
+                                                                                                href="#" title="Delete"
+                                                                                                onclick="return confirmDeletion(this)">Delete</a></span><span>
+                                                                                            <a class="action-icons c-suspend"  href="#" title="Suspend">Suspend</a>
+                                                                                        </span>
+                                                                                    </td>
+                                                                                </tr>
+                                                                                <% }) %>
+                                                                        </tbody>
+                                                                        <tfoot>
+                                                                            <tr>
+                                                                                <th></th>
+                                                                                <th>
+                                                                                    Category
+                                                                                </th>
+                                                                                <th>
+                                                                                    First Name
+                                                                                </th>
+                                                                                <th>
+                                                                                    Middle Name
+                                                                                </th>
+                                                                                <th>
+                                                                                    Last Name
+                                                                                </th>
+                                                                                <th>
+                                                                                    Email
+                                                                                </th>
+                                                                                <th>
+                                                                                    Phone Number
+                                                                                </th>
+                                                                                <th>
+                                                                                    Region
+                                                                                </th>
+                                                                                <th>
+                                                                                    Route Assigned
+                                                                                </th>
+                                                                                <th>
+                                                                                    Assigned Status
+                                                                                </th>
+                                                                                <th>
+                                                                                    Status
+                                                                                </th>
+                                                                                <th>
+                                                                                    Date
+                                                                                </th>
+                                                                                <th>
+                                                                                    Action
+                                                                                </th>
+                                                                            </tr>
+                                                                        </tfoot>
+                                                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                    <span class="clear"></span>
+                </div>
+        </div>
+    </body>
+
+
+    </html>

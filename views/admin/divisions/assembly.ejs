@@ -1,0 +1,197 @@
+<%- include('../../includes/admin/top-with-style.ejs') %>
+    </head>
+
+    <body id="theme-default" class="full_block">
+
+
+        <div id="left_bar">
+            <%- include('../../includes/admin/side-menu.ejs') %>
+        </div>
+
+        <div id="container">
+            <%- include('../../includes/admin/header-banner.ejs') %>
+                <div class="page_title">
+                    <span class="title_icon"><span class="application_icons_co"></span></span>
+                    <h3>Assemblies</h3>
+                    <div class="top_search">
+                        <form action="#" method="post">
+                            <ul id="search_box">
+                                <div class="btn_30_dark">
+                                    <a href="../../../add-assembly"><span class="icon add_co"></span><span
+                                            class="btn_link">Add Assembly</span></a>
+                                </div>
+                            </ul>
+                        </form>
+                    </div>
+                </div>
+
+                <div id="content">
+                    <div class="grid_container">
+
+                        <% if (messages.success) { %>
+                            <blockquote class="quote_green">
+                                <%= messages.success %>
+                            </blockquote>
+                            <% } %>
+
+                                <% if (messages.error) { %>
+                                    <blockquote class="quote_red">
+                                        <%= messages.error %>
+                                    </blockquote>
+                                    <% } %>
+
+                                        <div class="grid_12">
+                                            <div class="widget_wrap">
+                                                <div class="widget_top">
+                                                    <span class="h_icon blocks_images"></span>
+                                                    <h6>Assemblies</h6>
+                                                </div>
+                                                <div class="widget_content">
+
+                                                    <%if (errors.length> 0) { %> <% errors.forEach(error=> { %>
+                                                            <blockquote class="quote_orange">
+                                                                <p>
+                                                                    <%- error.msg %>
+                                                                </p>
+                                                            </blockquote>
+                                                            <% }) %>
+                                                                <% } %>
+
+                                                                    <%if (errorMessage) { %>
+                                                                        <blockquote class="quote_orange">
+                                                                            <p>
+                                                                                <%- errorMessage %>
+                                                                            </p>
+                                                                        </blockquote>
+                                                                        <% } %>
+
+
+                                                                            <%if (successMessage) { %>
+                                                                                <blockquote class="quote_green">
+                                                                                    <p>
+                                                                                        <%- successMessage %>
+                                                                                    </p>
+                                                                                </blockquote>
+                                                                                <% } %>
+
+                                                                                    <table class="display data_tbl">
+                                                                                        <thead>
+                                                                                            <tr>
+                                                                                                <th>
+
+                                                                                                </th>
+                                                                                                <th>
+                                                                                                    Code
+                                                                                                </th>
+                                                                                                <th>
+                                                                                                    District
+                                                                                                </th>
+                                                                                                <th>
+                                                                                                    Assembly Name
+                                                                                                </th>
+                                                                                                <th>
+                                                                                                    Created By
+                                                                                                </th>
+
+                                                                                                <th>
+                                                                                                    Date
+                                                                                                </th>
+                                                                                                <th>
+                                                                                                    Action
+                                                                                                </th>
+                                                                                            </tr>
+                                                                                        </thead>
+                                                                                        <tbody>
+                                                                                            <% assemblies.forEach((item,
+                                                                                                index)=>
+                                                                                                { %>
+                                                                                                <tr>
+                                                                                                    <td>
+                                                                                                        <p>
+                                                                                                            <%= index +
+                                                                                                                1 %>
+                                                                                                        </p>
+                                                                                                    </td>
+
+                                                                                                    <td>
+                                                                                                        <%= item.code %>
+                                                                                                    </td>
+
+                                                                                                    <td>
+                                                                                                        <%= item.district
+                                                                                                            %>
+                                                                                                    </td>
+
+                                                                                                    <td>
+                                                                                                        <%= item.name %>
+                                                                                                    </td>
+                                                                                                    <td>
+                                                                                                        <%= item.createdBy.firstName
+                                                                                                            + ' '
+                                                                                                            +item.createdBy.middleName
+                                                                                                            + ' '
+                                                                                                            +item.createdBy.lastName
+                                                                                                            %>
+                                                                                                    </td>
+
+                                                                                                    <td class="center">
+                                                                                                        <%= shortData(item.createdAt)
+                                                                                                            %>
+                                                                                                    </td>
+                                                                                                    <td class="center">
+
+                                                                                                        <span>
+
+                                                                                                            <a href="../../../assembly/edit/<%= item.id %>"
+                                                                                                                class="action-icons c-edit"
+                                                                                                                href="#"
+                                                                                                                title="Edit">Edit</a></span><span>
+                                                                                                            <a href="../../../assembly/delete/<%= item.id %>"
+                                                                                                                class="action-icons c-delete"
+                                                                                                                href="#"
+                                                                                                                title="Delete"
+                                                                                                                onclick="return confirmDeletion(this)">Delete</a>
+                                                                                                        </span>
+                                                                                                    </td>
+                                                                                                </tr>
+                                                                                                <% }) %>
+                                                                                        </tbody>
+                                                                                        <tfoot>
+                                                                                            <tr>
+                                                                                                <th>
+
+                                                                                                </th>
+                                                                                                <th>
+                                                                                                    Code
+                                                                                                </th>
+                                                                                                <th>
+                                                                                                    District
+                                                                                                </th>
+                                                                                                <th>
+                                                                                                    Assembly Name
+                                                                                                </th>
+                                                                                                <th>
+                                                                                                    Created By
+                                                                                                </th>
+
+                                                                                                <th>
+                                                                                                    Date
+                                                                                                </th>
+                                                                                                <th>
+                                                                                                    Action
+                                                                                                </th>
+                                                                                            </tr>
+                                                                                        </tfoot>
+                                                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                    </div>
+                    <span class="clear"></span>
+                </div>
+        </div>
+    </body>
+
+
+    </html>

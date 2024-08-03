@@ -1,0 +1,333 @@
+<%- include('../../includes/admin/top-with-style.ejs') %>
+    </head>
+
+    <body id="theme-default" class="full_block">
+
+
+        <div id="left_bar">
+            <%- include('../../includes/admin/side-menu.ejs') %>
+        </div>
+
+        <div id="container">
+            <%- include('../../includes/admin/header-banner.ejs') %>
+                <div class="page_title">
+                    <span class="title_icon"><span class="users"></span></span>
+                    <h3>Onboarded User</h3>
+                    <div class="top_search">
+                        <form action="#" method="post">
+                            <ul id="search_box">
+                                <li>
+                                    <div class="btn_30_dark">
+                                        <a href="../../../user/dustbin/add/<%= user.userId %>"><span
+                                                class="action-icons c-add"></span><span class="btn_link">Add
+                                                Dustbin</span></a>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="btn_30_dark">
+                                        <a href="../../onboarding/user/edit/<%= user.userId %>"><span
+                                                class="action-icons c-edit"></span><span class="btn_link">Edit
+                                                User</span></a>
+                                    </div>
+                                </li>
+                            </ul>
+                        </form>
+                    </div>
+                </div>
+
+                <div id="content">
+                    <div class="grid_container">
+
+                        <div class="grid_12">
+                            <div class="widget_wrap">
+                                <div class="widget_content">
+                                    <form id="signupform" autocomplete="off" method="get" action="#"
+                                        class="form_container left_label" novalidate="novalidate">
+                                        <ul>
+                                            <li>
+                                                <div class="form_grid_12">
+                                                    <label class="field_title" id="lfirstname" for="firstname">
+                                                        <strong>First Name: </strong>
+                                                    </label>
+                                                    <div class="form_input">
+                                                        <input type="text" value="<%= user.firstName %>" disabled
+                                                            class="large">
+                                                    </div>
+                                                </div>
+                                            </li>
+                                            <% if (user.middleName) { %>
+                                                <li>
+                                                    <div class="form_grid_12">
+                                                        <label class="field_title" id="llastname" for="lastname">Middle
+                                                            Name</label>
+                                                        <div class="form_input">
+                                                            <input type="text" value="<%= user.middleName %>" disabled
+                                                                class="large">
+                                                        </div>
+                                                    </div>
+                                                </li>
+                                                <% } %>
+
+                                                    <li>
+                                                        <div class="form_grid_12">
+                                                            <label class="field_title" id="lusername"
+                                                                for="username">Last Name</label>
+                                                            <div class="form_input">
+                                                                <input type="text" value="<%= user.lastName %>" disabled
+                                                                    class="large">
+                                                            </div>
+                                                        </div>
+                                                    </li>
+                                                    <li>
+                                                        <div class="form_grid_12">
+                                                            <label class="field_title" id="lpassword"
+                                                                for="password">Phone Number</label>
+                                                            <div class="form_input">
+                                                                <input type="text" value="<%= user.phoneNumber %>"
+                                                                    disabled class="large">
+                                                            </div>
+                                                        </div>
+                                                    </li>
+                                                    <li>
+                                                        <div class="form_grid_12">
+                                                            <label class="field_title" id="lpassword_confirm"
+                                                                for="password_confirm">Email</label>
+                                                            <div class="form_input">
+                                                                <input type="text" value="<%= user.email %>" disabled
+                                                                    class="large">
+                                                            </div>
+                                                        </div>
+                                                    </li>
+                                                    <li>
+                                                        <div class="form_grid_12">
+                                                            <label class="field_title" id="lpassword_confirm"
+                                                                for="password_confirm">Role</label>
+                                                            <div class="form_input">
+                                                                <input type="text" value="<%= user.role %>" disabled
+                                                                    class="large">
+                                                            </div>
+                                                        </div>
+                                                    </li>
+                                                    <li>
+                                                        <div class="form_grid_12">
+                                                            <label class="field_title" id="lpassword_confirm"
+                                                                for="password_confirm">Status</label>
+                                                            <div class="form_input">
+                                                                <input type="text" value="<%= user.status %>" disabled
+                                                                    class="large">
+                                                            </div>
+                                                        </div>
+                                                    </li>
+                                                    <% if (user.idType) { %>
+                                                        <li>
+                                                            <div class="form_grid_12">
+                                                                <label class="field_title" id="lpassword_confirm"
+                                                                    for="password_confirm">Id Type</label>
+                                                                <div class="form_input">
+                                                                    <input type="text" value="<%= user.idType %>"
+                                                                        disabled class="large">
+                                                                </div>
+                                                            </div>
+                                                        </li>
+                                                        <% } %>
+                                                            <% if (user.idNumber) { %>
+                                                                <li>
+                                                                    <div class="form_grid_12">
+                                                                        <label class="field_title"
+                                                                            id="lpassword_confirm"
+                                                                            for="password_confirm">Id Number</label>
+                                                                        <div class="form_input">
+                                                                            <input type="text"
+                                                                                value="<%= user.idNumber %>" disabled
+                                                                                class="large">
+                                                                        </div>
+                                                                    </div>
+                                                                </li>
+                                                                <% } %>
+                                                                    <% if (user.idExpiryDate) { %>
+                                                                        <li>
+                                                                            <div class="form_grid_12">
+                                                                                <label class="field_title"
+                                                                                    id="lpassword_confirm"
+                                                                                    for="password_confirm">Id Expiration
+                                                                                    Date</label>
+                                                                                <div class="form_input">
+                                                                                    <input type="text"
+                                                                                        value="<%= user.idExpiryDate %>"
+                                                                                        disabled class="large">
+                                                                                </div>
+                                                                            </div>
+                                                                        </li>
+                                                                        <% } %>
+                                                                            <li>
+                                                                                <div class="form_grid_12">
+                                                                                    <label class="field_title"
+                                                                                        id="lpassword_confirm"
+                                                                                        for="password_confirm">Created
+                                                                                        Date</label>
+                                                                                    <div class="form_input">
+                                                                                        <input type="text"
+                                                                                            value="<%= longDate(user.createdAt) %>"
+                                                                                            disabled class="large">
+                                                                                    </div>
+                                                                                </div>
+                                                                            </li>
+                                        </ul>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <span class="clear"></span>
+                </div>
+
+                <div id="content">
+                    <div class="grid_container">
+
+                        <div class="grid_12">
+                            <div class="widget_wrap">
+                                <div class="widget_top">
+                                    <span class="h_icon blocks_images"></span>
+                                    <h6>Dustbins</h6>
+                                </div>
+                                <div class="widget_content">
+
+                                    <table class="display data_tbl">
+                                        <thead>
+                                            <tr>
+                                                <th>
+
+                                                </th>
+                                                <th>
+                                                   Barcode
+                                                </th>
+                                                <th>
+                                                   Region
+                                                </th>
+                                                <th>
+                                                   City
+                                                </th>
+                                                <th>
+                                                    Landmark
+                                                </th>
+                                                <th>
+                                                    Location
+                                                 </th>
+                                                <th>
+                                                    City
+                                                </th>
+                                                <th>
+                                                    Region
+                                                </th>
+                                                <th>
+                                                    Status
+                                                </th>
+                                                <th>
+                                                    Date
+                                                </th>
+                                                <th>
+                                                    Action
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <% dustbins.forEach((item, index)=> { %>
+                                                <tr>
+                                                    <td>
+                                                        <p>
+                                                            <%= index + 1 %>
+                                                        </p>
+                                                    </td>
+                                                    <td>
+                                                        <img style="height: 60px;" src="../../../qrcodes/<%= item.barcode +'.png' %>">
+                                                    </td>
+                                                    <td>
+                                                        <%= item.region %>
+                                                    </td>
+                                                    <td>
+                                                        <%= item.city %>
+                                                    </td>
+                                                    <td class="center">
+                                                        <%= item.landmark %>
+                                                    </td>
+                                                    <td class="center">
+                                                        <%= item.location.address %>
+                                                    </td>
+                                                   
+                                                    <td class="center">
+                                                        <%= item.status %>
+                                                    </td>
+                                                    <td class="center">
+                                                        <%= item.region %>
+                                                    </td>
+                                                    <td class="center">
+                                                        <span
+                                                            class="badge_style <%= item.status === 'INITIAL' ? 'b_suspend' : 'b_done' %>"
+                                                            style="padding-bottom: 1em;">
+                                                            <%= item.status==='INITIAL' ? 'INITIAL' : 'ACTIVE' %>
+                                                           
+                                                        </span>
+                                                    </td>
+                                                    <td class="center">
+                                                        <%= shortData(item.createdAt) %>
+                                                    </td>
+                                                    <td class="center">
+
+                                                        <span>
+                                                           
+                                                            <a href="../../../user/dustbin/edit/<%= item.id %>"
+                                                                class="action-icons c-edit" href="#"
+                                                                title="Edit">Edit</a></span><span>
+                                                            <a href="" class="action-icons c-delete" href="#"
+                                                                title="Delete"
+                                                                onclick="confirmDeletion(this)">Delete</a>
+                                                        </span>
+                                                    </td>
+                                                </tr>
+                                                <% }) %>
+                                        </tbody>
+                                        <tfoot>
+                                            <tr>
+                                                <th>
+
+                                                </th>
+                                                <th>
+                                                    Barcode
+                                                </th>
+                                                 <th>
+                                                    Region
+                                                 </th>
+                                                 <th>
+                                                    City
+                                                 </th>
+                                                <th>
+                                                    Landmark
+                                                </th>
+                                                <th>
+                                                   Location
+                                                </th>
+                                               
+                                                <th>
+                                                    Status
+                                                </th>
+                                                <th>
+                                                    Date
+                                                </th>
+                                                <th>
+                                                    Action
+                                                </th>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                    <span class="clear"></span>
+                </div>
+        </div>
+    </body>
+
+
+    </html>

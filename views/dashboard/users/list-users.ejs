@@ -1,0 +1,138 @@
+<link rel="stylesheet" type="text/css" href="/assets/dashboard/css/page-users.min.css">
+<link rel="stylesheet" type="text/css" href="/assets/dashboard/css/datatables.min.css">
+<%- include('../../includes/top-with-style.ejs') %>
+  <!-- END: Theme CSS-->
+
+  </head>
+  <!-- END: Head-->
+
+  <!-- BEGIN: Body-->
+
+  <body class="horizontal-layout horizontal-menu horizontal-menu-padding 2-columns  " data-open="click"
+    data-menu="horizontal-menu" data-col="2-columns">
+
+    <!-- BEGIN: top nav-->
+    <%- include('../../includes/top-nav.ejs') %>
+      <!-- END: top nav-->
+
+
+      <!-- BEGIN: Main Menu-->
+      <%- include('../../includes/main-menu.ejs') %>
+
+        <!-- END: Main Menu-->
+        <!-- BEGIN: Content-->
+        <div class="app-content content">
+          <div class="content-overlay"></div>
+          <div class="content-wrapper">
+            <div class="content-header row">
+              <div class="content-header-left col-md-6 col-12 mb-2">
+                <h3 class="content-header-title">Users</h3>
+                <div class="row breadcrumbs-top">
+                  <div class="breadcrumb-wrapper col-12">
+                    <ol class="breadcrumb">
+                      <li class="breadcrumb-item"><a href="/dashboard">Dashboard</a>
+                      </li>
+                      <li class="breadcrumb-item active">Users
+                      </li>
+                    </ol>
+                  </div>
+                </div>
+              </div>
+              
+            </div>
+            <div class="content-body"><!-- Base style table -->
+              <section id="base-style">
+                <div class="row">
+                  <div class="col-12">
+                    <div class="card">
+                      <div class="card-header">
+                        <h4 class="card-title float-left"> User List</h4>
+                        
+                      </div>
+                      <div class="card-body mt-1">
+                        <%if (errorMessage) { %>
+                          <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <%- errorMessage %>
+                          </div>
+                        <% } %>
+                        <%if (successMessage) { %>
+                          <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            <%- successMessage %>
+                          </div>
+                        <% } %>
+                        <div class="table-responsive">
+                          <table id="active-accounts" class="table alt-pagination card-wrapper">
+                            <thead>
+                              <tr>
+                                <th class="border-top-0">First Name</th>
+                                <th class="border-top-0">Middle Name</th>
+                                <th class="border-top-0">Last Name</th>
+                                <th class="border-top-0">Email</th>
+                                <th class="border-top-0">Phone Number</th>
+                                <th class="border-top-0">Status</th>
+                                <th class="border-top-0">Date</th>
+                                <th class="border-top-0">Action</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <% users.forEach(item=> { %>
+                              <tr>
+                                <td class="align-middle">
+                                  <div class="holder-name">  <%= item.firstName %></div>
+                                </td>
+                                <td class="align-middle">
+                                  <div class="holder-name"> <%= item.middleName %></div>
+                                </td>
+                                <td class="align-middle">
+                                  <div class="holder-name"> <%= item.lastName %></div>
+                                </td>
+                                <td class="align-middle">
+                                  <div class="holder-name">   <%= item.email %></div>
+                                </td>
+                                <td class="align-middle">
+                                  <div class="holder-name"> <%= item.phoneNumber %></div>
+                                </td>
+                                <td class="align-middle">
+                                    <span class="status badge badge-pill badge-sm <%= item.status === 'Active' ? 'badge-success' : 'badge-danger' %>">
+                                      <%= item.status === 'Active' ? 'Active' : 'Inactive' %>
+                                    </span>
+                                </td>
+
+                                <td class="align-middle limit"><%= shortData(item.createdAt) %></td>
+                                <td width="120">
+                                  <a href="user/edit/<%= item.userId %>"><i class="fa fa-pencil"></i></a>
+                                   <a style="margin-left: 2em;" href="#" onclick="confirmDeletion(this)"  data-route=""><i class="fa fa-trash"></i></a>
+                                 
+                                </td>
+                            
+                                <% }) %>
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </section>
+            </div>
+          </div>
+        </div>
+        <br /><br /><br />
+        <!-- END: Content-->
+
+
+        <div class="sidenav-overlay"></div>
+        <div class="drag-target"></div>
+
+        <!-- BEGIN: Footer-->
+        <%- include('../../includes/footer.ejs') %>
+          <!-- END: Footer-->
+
+          <!--template script starts-->
+          <script src="/assets/dashboard/js/datatables.min.js"></script>
+          <script src="/assets/dashboard/js/page-users.min.js"></script>
+
+
+          <!--template script end-->
+
+          <%- include('../../includes/down-with-script.ejs') %>

@@ -1,0 +1,334 @@
+<%- include('../../includes/admin/top-with-style.ejs') %>
+    <script async defer
+        src="https://maps.googleapis.com/maps/api/js?key=<%= API_KEY %>&libraries=places&callback=initMap"></script>
+
+
+    </head>
+
+    <body id="theme-default" class="full_block">
+
+
+        <div id="left_bar">
+            <%- include('../../includes/admin/side-menu.ejs') %>
+        </div>
+
+        <div id="container">
+            <%- include('../../includes/admin/header-banner.ejs') %>
+                <div class="page_title">
+                    <span class="title_icon"><span class="users"></span></span>
+                    <h3>New Job</h3>
+
+
+                </div>
+
+
+                <div id="content">
+                    <div class="grid_container">
+                        <%if (errors.length> 0) { %> <% errors.forEach(error=> { %>
+                                <blockquote class="quote_orange">
+                                    <p>
+                                        <%- error.msg %>
+                                    </p>
+                                </blockquote>
+                                <% }) %>
+                                    <% } %>
+
+
+                                        <%if (errorMessage) { %>
+                                            <blockquote class="quote_orange">
+                                                <p>
+                                                    <%- errorMessage %>
+                                                </p>
+                                            </blockquote>
+                                            <% } %>
+
+
+                                                <%if (successMessage) { %>
+                                                    <blockquote class="quote_green">
+                                                        <p>
+                                                            <%- successMessage %>
+                                                        </p>
+                                                    </blockquote>
+                                                    <% } %>
+
+                                                        <div class="grid_12 full_block">
+                                                            <form
+                                                                action="<% if (schedule) { %>/schedule/edit/<%= schedule._id %><% } else { %>/schedule/add<% } %>"
+                                                                method="POST" class="form_container left_label">
+
+                                                                <input type="hidden" name="_csrf"
+                                                                    value="<%= csrfToken %>">
+
+                                                                <div class="widget_wrap">
+                                                                    <div class="widget_top">
+                                                                        <span class="h_icon list_image"></span>
+                                                                        <h6>Add a job</h6>
+                                                                    </div>
+                                                                    <div class="widget_content">
+                                                                        <form action="#" method="post"
+                                                                            class="form_container left_label">
+                                                                            <ul>
+                                                                                <li>
+                                                                                    <div class="form_grid_12">
+                                                                                        <label class="field_title">
+                                                                                            Title</label>
+                                                                                        <div class="form_input">
+                                                                                            <input name="title"
+                                                                                                value="<%= userInput.title ? userInput.title : (schedule ? schedule.title : '') %>"
+                                                                                                type="text"
+                                                                                                class="form-control"
+                                                                                                required>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </li>
+
+                                                                                <li>
+                                                                                    <div class="form_grid_12">
+                                                                                        <label class="field_title">Start
+                                                                                            Date</label>
+                                                                                        <div class="form_grid_12">
+                                                                                            <div class="form_input">
+                                                                                                <div
+                                                                                                    class=" form_grid_12 alpha">
+                                                                                                    <input
+                                                                                                        name="startDate"
+                                                                                                        value="<%= userInput.startDate ? userInput.startDate : (schedule ? schedule.startDate : '') %>"
+                                                                                                        type="date"
+                                                                                                        class="form-control"
+                                                                                                        pattern="(0[1-9]|1[0-2])/(0[1-9]|[12][0-9]|3[01])/\d{4}"
+                                                                                                        title="Please enter a date in the format MM/DD/YYYY"
+                                                                                                        required />
+                                                                                                    <span
+                                                                                                        class=" label_intro">Date</span>
+                                                                                                </div>
+                                                                                                <span
+                                                                                                    class="clear"></span>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </li>
+                                                                                <li>
+                                                                                    <div class="form_grid_12">
+                                                                                        <label
+                                                                                            class="field_title">Frequency</label>
+                                                                                        <div class="form_input">
+                                                                                            <select class="form-control"
+                                                                                                name="frequency"
+                                                                                                required>
+                                                                                                <option value="">Please
+                                                                                                    Select</option>
+                                                                                                <%
+                                                                                                    frequencies.forEach(item=>
+                                                                                                    {
+                                                                                                    %>
+                                                                                                    <option
+                                                                                                        value="<%= item %>"
+                                                                                                        <%=frequency.toString()===item.toString()
+                                                                                                        ? 'selected'
+                                                                                                        : '' %>>
+                                                                                                        <%= item %>
+                                                                                                    </option>
+                                                                                                    <% }); %>
+                                                                                            </select>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </li>
+
+
+                                                                                <li>
+                                                                                    <div class="form_grid_12">
+                                                                                        <label
+                                                                                            class="field_title">Team</label>
+                                                                                        <div class="form_input">
+                                                                                            <select class="form-control"
+                                                                                                name="team" required>
+                                                                                                <option value="">Please
+                                                                                                    Select</option>
+                                                                                                <% teams.forEach(item=>
+                                                                                                    {
+                                                                                                    %>
+                                                                                                    <option
+                                                                                                        value="<%= item._id %>"
+                                                                                                        <%=team.toString()===item._id.toString()
+                                                                                                        ? 'selected'
+                                                                                                        : '' %>>
+                                                                                                        <%= item.name %>
+                                                                                                    </option>
+                                                                                                    <% }); %>
+                                                                                            </select>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </li>
+
+                                                                                <li>
+                                                                                    <div class="form_grid_12">
+                                                                                        <label class="field_title">
+                                                                                            Description</label>
+                                                                                        <div class="form_input">
+                                                                                            <textarea name="description"
+                                                                                                rows="10"
+                                                                                                value="<%= userInput.description ? userInput.description : (schedule ? schedule.description : '') %>"
+                                                                                                type="text"
+                                                                                                class="form-control"
+                                                                                                required></textarea>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </li>
+
+                                                                                <li>
+                                                                                    <div class="form_grid_12">
+                                                                                        <label
+                                                                                            class="field_title">Location(s)</label>
+                                                                                        <div id="dynamicFormContainer">
+                                                                                            <div class="form_grid_12">
+                                                                                                <div class="form_input">
+                                                                                                    <div
+                                                                                                        class="form_grid_10 alpha">
+                                                                                                        <input
+                                                                                                            id="places-search"
+                                                                                                            type="text"
+                                                                                                            class="form-control"
+                                                                                                            placeholder="Search for a location">
+                                                                                                        <input
+                                                                                                            type="hidden"
+                                                                                                            name="hiddenLocation[]"
+                                                                                                            class="hiddenLocation">
+                                                                                                        <span
+                                                                                                            class="label_intro">Location</span>
+                                                                                                    </div>
+                                                                                                    <div class="form_grid_2"
+                                                                                                        style="margin-top: 0.1em;">
+                                                                                                        <div class="btn_30_dark"
+                                                                                                            id="addFormButton"
+                                                                                                            style="margin-top: -0.1em !important; cursor: pointer;">
+                                                                                                            <span
+                                                                                                                class="icon add_co"></span>
+                                                                                                        </div>
+
+                                                                                                    </div>
+                                                                                                    <span
+                                                                                                        class="clear"></span>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </li>
+
+
+
+                                                                            </ul>
+                                                                            <ul>
+                                                                                <li>
+                                                                                    <div class="form_grid_12">
+                                                                                        <div class="form_input">
+                                                                                            <button type="submit"
+                                                                                                class="btn_small btn_blue">
+                                                                                                <% if (schedule) { %>
+                                                                                                    <span>
+                                                                                                        Edit
+                                                                                                    </span>
+                                                                                                    <%} else { %>
+                                                                                                        <span>
+                                                                                                            Submit
+                                                                                                        </span>
+                                                                                                        <%} %>
+
+                                                                                            </button>
+                                                                                            <button type="reset"
+                                                                                                class="btn_small btn_orange"><span>Reset</span></button>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </li>
+                                                                            </ul>
+                                                                        </form>
+                                                                    </div>
+                                                                </div>
+                                                            </form>
+                                                        </div>
+
+
+                    </div>
+                    <span class="clear"></span>
+                    <div style="height: 200px;"></div>
+                </div>
+
+        </div>
+
+    </body>
+
+
+    <script>
+        function initMap() {
+            // Function to initialize autocomplete for a given input element
+            function initAutocomplete(input) {
+                var autocomplete = new google.maps.places.Autocomplete(input);
+
+                autocomplete.addListener('place_changed', function () {
+                    var place = autocomplete.getPlace();
+                    if (!place.geometry) {
+                        console.log("Place not found!");
+                        return;
+                    }
+
+                    var location = place.geometry.location;
+                    var lat = location.lat();
+                    var lng = location.lng();
+                    var address = place.name + ', ' + place.formatted_address;
+
+                    const latLngAddress = {
+                        lat: lat,
+                        lng: lng,
+                        address: address
+                    };
+
+                    // Update hidden location input value
+                    input.nextElementSibling.value = JSON.stringify(latLngAddress);
+
+                    console.log("Selected Location: " + lat + ", " + lng);
+                    console.log("Address: " + JSON.stringify(address));
+                });
+            }
+
+            // Initialize autocomplete for the initial input field
+            initAutocomplete(document.getElementById('places-search'));
+
+            // Add event listener to the "Add" button
+            document.getElementById("addFormButton").addEventListener("click", function () {
+                addForm();
+            });
+
+            function addForm() {
+                var container = document.getElementById("dynamicFormContainer");
+                var newForm = document.createElement("div");
+                newForm.classList.add("form_grid_12");
+
+                newForm.innerHTML = `
+                    <div class="form_input">
+                        <div class="form_grid_10 alpha">
+                            <input type="text" class="form-control" placeholder="Search for a location">
+                            <input type="hidden" name="hiddenLocation[]" class="hiddenLocation">
+                            <span class="label_intro">Location</span>
+                        </div>
+                        <div class="form_grid_2" style="margin-top: 0.1em;">
+                            <div class="btn_30_dark" onclick="removeForm(this)" style="margin-top: -0.1em !important; cursor: pointer;"><span class="icon cancel_co"></span></div>
+                        </div>
+                        <span class="clear"></span>
+                    </div>
+                `;
+                container.appendChild(newForm);
+
+                // Initialize autocomplete for the newly added input field
+                var newInput = newForm.querySelector('input[type="text"]');
+                initAutocomplete(newInput);
+            }
+
+            function removeForm(button) {
+                var formToRemove = button.closest(".form_grid_12");
+                formToRemove.remove();
+            }
+        }
+    </script>
+
+    </body>
+
+    </html>

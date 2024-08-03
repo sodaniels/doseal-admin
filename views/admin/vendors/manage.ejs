@@ -1,0 +1,297 @@
+<%- include('../../includes/admin/top-with-style.ejs') %>
+    </head>
+
+    <body id="theme-default" class="full_block">
+
+
+        <div id="left_bar">
+            <%- include('../../includes/admin/side-menu.ejs') %>
+        </div>
+
+        <div id="container">
+            <%- include('../../includes/admin/header-banner.ejs') %>
+                <div class="page_title">
+                    <span class="title_icon"><span class="users"></span></span>
+                    <h3>Vendors</h3>
+                    <div class="top_search">
+
+                        <ul id="search_box">
+                            <div class="btn_30_dark">
+                                <a href="#" data-toggle="modal" data-target="#addAssignmentModal"><span
+                                        class="icon add_co"></span><span class="btn_link">Add
+                                        Vendor</span></a>
+                            </div>
+                        </ul>
+                    </div>
+                </div>
+
+                <div id="content">
+                    <div class="grid_container">
+
+                        <div class="grid_12">
+                            <div class="widget_wrap">
+                                <div class="widget_content">
+                                    <%if (errors.length> 0) { %> <% errors.forEach(error=> { %>
+                                            <blockquote class="quote_orange">
+                                                <p>
+                                                    <%= error.msg %>
+                                                </p>
+                                            </blockquote>
+                                            <% }) %>
+                                                <% } %>
+                                                    <%if (errors.length> 0) { %> <% errors.forEach(error=> { %>
+                                                            <blockquote class="quote_orange">
+                                                                <p>
+                                                                    <%- error.msg %>
+                                                                </p>
+                                                            </blockquote>
+                                                            <% }) %>
+                                                                <% } %>
+
+                                                                    <%if (errorMessage) { %>
+                                                                        <blockquote class="quote_orange">
+                                                                            <p>
+                                                                                <%- errorMessage %>
+                                                                            </p>
+                                                                        </blockquote>
+                                                                        <% } %>
+
+
+                                                                            <%if (successMessage) { %>
+                                                                                <blockquote class="quote_green">
+                                                                                    <p>
+                                                                                        <%- successMessage %>
+                                                                                    </p>
+                                                                                </blockquote>
+                                                                                <% } %>
+
+                                                                                    <table class="display data_tbl">
+                                                                                        <thead>
+                                                                                            <tr>
+                                                                                                <th></th>
+                                                                                                <th>
+                                                                                                    Name
+                                                                                                </th>
+                                                                                                <th>
+                                                                                                    Phone Number
+                                                                                                </th>
+                                                                                                <th>
+                                                                                                    Email
+                                                                                                </th>
+                                                                                                <th>
+                                                                                                    Service Type
+                                                                                                </th>
+
+                                                                                                <th>
+                                                                                                    Address
+                                                                                                </th>
+                                                                                                <th>
+                                                                                                    Note
+                                                                                                </th>
+                                                                                                <th>
+                                                                                                    Action
+                                                                                                </th>
+                                                                                            </tr>
+                                                                                        </thead>
+                                                                                        <tbody>
+                                                                                            <% vendors.forEach((item,
+                                                                                                index)=> { %>
+                                                                                                <tr>
+                                                                                                    <td>
+                                                                                                        <%= index + 1 %>
+
+                                                                                                    </td>
+                                                                                                    <td>
+                                                                                                        <%= item.name
+                                                                                                            %>
+                                                                                                    </td>
+                                                                                                    <td>
+                                                                                                        <%= item.phoneNumber
+                                                                                                            %>
+                                                                                                    </td>
+                                                                                                    <td>
+                                                                                                        <%= item.email
+                                                                                                            %>
+                                                                                                    </td>
+                                                                                                    <td>
+                                                                                                        <%= item.service
+                                                                                                            %>
+                                                                                                    </td>
+                                                                                                    <td>
+                                                                                                        <%= item.address
+                                                                                                            %>
+                                                                                                    </td>
+                                                                                                    <td>
+                                                                                                        <%= item.note %>
+                                                                                                    </td>
+                                                                                                    <td>
+
+                                                                                                        <%= shortData(item.createdAt)
+                                                                                                            %>
+
+                                                                                                    </td>
+                                                                                                    <td class="center">
+                                                                                                        <span>
+                                                                                                            <a href="/vendor/edit/<%= item._id %>"
+                                                                                                                class="action-icons c-edit"
+                                                                                                                href="#"
+                                                                                                                title="Edit">Edit</a></span><span>
+                                                                                                            <a href="/vendor/delete/<%= item._id %>"
+                                                                                                                class="action-icons c-delete"
+                                                                                                                title="Delete"
+                                                                                                                onclick="return confirmDeletion(this)">Delete</a>
+                                                                                                        </span>
+                                                                                                        </span>
+                                                                                                    </td>
+                                                                                                </tr>
+                                                                                                <% }) %>
+                                                                                        </tbody>
+                                                                                        <tfoot>
+                                                                                            <tr>
+                                                                                                <th></th>
+                                                                                                <th>
+                                                                                                    Name
+                                                                                                </th>
+                                                                                                <th>
+                                                                                                    Phone Number
+                                                                                                </th>
+                                                                                                <th>
+                                                                                                    Email
+                                                                                                </th>
+                                                                                                <th>
+                                                                                                    Service Type
+                                                                                                </th>
+
+                                                                                                <th>
+                                                                                                    Address
+                                                                                                </th>
+                                                                                                <th>
+                                                                                                    Note
+                                                                                                </th>
+                                                                                                <th>
+                                                                                                    Action
+                                                                                                </th>
+                                                                                            </tr>
+                                                                                        </tfoot>
+                                                                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                    <span class="clear"></span>
+                </div>
+
+
+        </div>
+    </body>
+
+    <div class="modal fade" id="addAssignmentModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <form action="<% if (vendor) { %>/vendor/edit/<%= vendor._id %><% } else { %>/vendor/add<% } %>"
+                method="POST" class="form_container left_label">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2 class="modal-title" id="exampleModalLabel">Add Vendor</h2>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <ul>
+                            <li>
+                                <div class="form_grid_12">
+                                    <label class="field_title">Vendor Name<span style="color: red">*</span></label>
+                                    <div class="form_input">
+                                        <div class="form-group">
+                                            <input name="name"
+                                                value="<%= userInput.name ? userInput.name : (vendor ? vendor.name : '') %>"
+                                                type="text" class="form-control" title="Please enter vendor name"
+                                                required />
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="form_grid_12">
+                                    <label class="field_title">Vendor's Contact<span style="color: red">*</span></label>
+                                    <div class="form_input">
+                                        <div class="form-group">
+                                            <input name="phoneNumber"
+                                                value="<%= userInput.phoneNumber ? userInput.phoneNumber : (vendor ? vendor.phoneNumber : '') %>"
+                                                type="tel" class="form-control"
+                                                title="Please enter vendor's contact number" required />
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="form_grid_12">
+                                    <label class="field_title">Vendor's Email<span style="color: red">*</span></label>
+                                    <div class="form_input">
+                                        <div class="form-group">
+                                            <input name="email"
+                                                value="<%= userInput.email ? userInput.email : (vendor ? vendor.email : '') %>"
+                                                type="email" class="form-control"
+                                                title="Please enter vendor's email address" required />
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+
+                            <li>
+                                <div class="form_grid_12">
+                                    <label class="field_title">Service<span style="color: red">*</span></label>
+                                    <div class="form_input">
+                                        <div class="form-group">
+                                            <input name="service"
+                                                value="<%= userInput.service ? userInput.service : (vendor ? vendor.service : '') %>"
+                                                type="text" class="form-control"
+                                                title="Please the service rendered by the vendor" required />
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="form_grid_12">
+                                    <label class="field_title">Vendor address<span style="color: red">*</span></label>
+                                    <div class="form_input">
+                                        <div class="form-group">
+                                            <textarea name="address"
+                                                value="<%= userInput.address ? userInput.address : (vendor ? vendor.address : '') %>"
+                                                class="input_grow" cols="62" rows="6" tabindex="5"
+                                                style="width: auto; height: auto; overflow: hidden;" required></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+
+                            <li>
+                                <div class="form_grid_12">
+                                    <label class="field_title">Note</label>
+                                    <div class="form_input">
+                                        <textarea name="note"
+                                            value="<%= userInput.note ? userInput.note : (vendor ? vendor.note : '') %>"
+                                            class="input_grow" cols="62" rows="6" tabindex="5"
+                                            style="width: auto; height: auto; overflow: hidden;"></textarea>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-light" data-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Save Vendor</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+    </html>

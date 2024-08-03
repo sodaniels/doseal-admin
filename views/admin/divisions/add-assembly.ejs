@@ -1,0 +1,233 @@
+<%- include('../../includes/admin/top-with-style.ejs') %>
+    </head>
+
+    <body id="theme-default" class="full_block">
+
+
+        <div id="left_bar">
+            <%- include('../../includes/admin/side-menu.ejs') %>
+        </div>
+
+        <div id="container">
+            <%- include('../../includes/admin/header-banner.ejs') %>
+                <div class="page_title">
+                    <span class="title_icon"><span class="application_icons_co"></span></span>
+                    <h3>Assemblies</h3>
+
+                </div>
+
+                <div id="content">
+                    <div class="grid_container">
+                        <% if (messages.success) { %>
+                            <blockquote class="quote_green">
+                                <%= messages.success %>
+                            </blockquote>
+                            <% } %>
+
+                                <% if (messages.error) { %>
+                                    <blockquote class="quote_red">
+                                        <%= messages.error %>
+                                    </blockquote>
+                                    <% } %>
+
+
+                                        <form class="form" style="width: 80%;"
+                                            action="<% if (assembly) { %>/assembly/edit/<%= assembly.id %><% } else { %>/assembly/add<% } %>"
+                                            method="POST">
+                                            <div class="modal-content_">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="exampleModalLabel">
+                                                        <%= assembly ? 'Edit' : 'Add' %>
+                                                            Assembly
+                                                    </h5>
+
+                                                    <%if (errors.length> 0) { %> <% errors.forEach(error=> { %>
+                                                            <blockquote class="quote_orange">
+                                                                <p>
+                                                                    <%- error.msg %>
+                                                                </p>
+                                                            </blockquote>
+                                                            <% }) %>
+                                                                <% } %>
+
+                                                                    <%if (errorMessage) { %>
+                                                                        <blockquote class="quote_orange">
+                                                                            <p>
+                                                                                <%- errorMessage %>
+                                                                            </p>
+                                                                        </blockquote>
+                                                                        <% } %>
+
+
+                                                                            <%if (successMessage) { %>
+                                                                                <blockquote class="quote_green">
+                                                                                    <p>
+                                                                                        <%- successMessage %>
+                                                                                    </p>
+                                                                                </blockquote>
+                                                                                <% } %>
+
+                                                </div>
+
+                                                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+
+                                                <% if (assembly){ %>
+                                                    <div class="row">
+                                                        <div class="col-md-10">
+                                                            <div class="row" id="newRow">
+                                                                <div class="form-body">
+
+                                                                    <div class="col-md-12" style="margin-top: 2em;">
+                                                                        <div class="form-group">
+                                                                            <label for="userinput1">District
+                                                                                Name</label>
+                                                                            <select name="district" class="form-control"
+                                                                                style="height: 29px;" required>
+                                                                                <option value="">
+                                                                                    Select
+                                                                                    District
+                                                                                </option>
+                                                                                <% districts.forEach(dist=>
+                                                                                    {
+                                                                                    %>
+                                                                                    <option value="<%= dist.name %>"
+                                                                                        <%=assembly.district===dist.name
+                                                                                        ? 'selected' : '' %>>
+                                                                                        <%= dist.name %>
+                                                                                    </option>
+                                                                                    <% }); %>
+
+                                                                            </select>
+                                                                        </div>
+                                                                    </div>
+
+                                                                    <div class="col-md-12">
+                                                                        <div class="form-group">
+                                                                            <label for="userinput1">Assembly
+                                                                                Name</label>
+                                                                            <br />
+                                                                            <input type="text" required
+                                                                                class="form-control border-primary"
+                                                                                placeholder="Name" name="name"
+                                                                                value="<%= assembly ? assembly.name : '' %>">
+                                                                        </div>
+                                                                    </div>
+
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-2">
+                                                            <div class="btn_30_dark" style="margin-top: 5em;"
+                                                                id="add_A_NewRow">
+                                                                <a href="javascript::void(0)"><span
+                                                                        class="icon add_co"></span></a>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <% } else { %>
+                                                        <div class="row">
+                                                            <div class="col-md-10">
+                                                                <div class="row" id="newRow">
+                                                                    <div class="form-body">
+
+                                                                        <div class="col-md-12" style="margin-top: 2em;">
+                                                                            <div class="form-group">
+                                                                                <label for="userinput1">District
+                                                                                    Name</label>
+                                                                                <select name="district[]" id="region"
+                                                                                    class="form-control"
+                                                                                    style="height: 29px;" required>
+                                                                                    <option value="">
+                                                                                        Select
+                                                                                        District
+                                                                                    </option>
+                                                                                    <% districts.forEach(dist=>
+                                                                                        {
+                                                                                        %>
+                                                                                        <option value="<%= dist.name %>"
+                                                                                            <%=assembly===dist.name
+                                                                                            ? 'selected' : '' %>>
+                                                                                            <%= dist.name %>
+                                                                                        </option>
+                                                                                        <% }); %>
+
+                                                                                </select>
+                                                                            </div>
+                                                                        </div>
+
+                                                                        <div class="col-md-12">
+                                                                            <div class="form-group">
+                                                                                <label for="userinput1">Assembly
+                                                                                    Name</label>
+                                                                                <br />
+                                                                                <input type="text" required
+                                                                                    class="form-control border-primary"
+                                                                                    placeholder="Name" name="name[]">
+                                                                            </div>
+                                                                        </div>
+
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-2">
+                                                                <div class="btn_30_dark" style="margin-top: 5em;"
+                                                                    id="add_A_NewRow">
+                                                                    <a href="javascript::void(0)"><span
+                                                                            class="icon add_co"></span></a>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <% } %>
+
+
+                                                            <div class="modal-footer">
+                                                                <button type="button"
+                                                                    onclick="window.location.href = '../../../assemblies'; "
+                                                                    class="btn btn-secondary">Back</button>
+                                                                <button type="submit" class="btn btn-primary">
+                                                                    <%= assembly ? 'Edit' : 'Add' %>
+                                                                </button>
+                                                            </div>
+                                            </div>
+                                        </form>
+
+                    </div>
+                    <span class="clear"></span>
+                </div>
+        </div>
+    </body>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            document.getElementById("add_A_NewRow").addEventListener("click", function () {
+                // Clone the existing row
+                var newRow = document.getElementById("newRow").cloneNode(true);
+
+                // Update IDs and any other necessary attributes to avoid duplication
+                newRow.id = "newRow_" + Math.floor(Math.random() * 1000); // Generate a unique ID
+
+                // Clear input values in the new row if needed
+                var inputs = newRow.querySelectorAll("input[type=text]");
+                inputs.forEach(function (input) {
+                    input.value = "";
+                });
+
+                // Add a remove button to the new row
+                var removeButton = document.createElement("button");
+                removeButton.textContent = "Remove";
+                removeButton.type = "button";
+                removeButton.classList.add("btn", "btn-danger");
+                removeButton.style.marginLeft = "1.2em"; // Add margin-left
+                removeButton.addEventListener("click", function () {
+                    newRow.remove(); // Remove the new row when remove button is clicked
+                });
+                newRow.appendChild(removeButton);
+
+                // Append the cloned row inside the col-md-10 div
+                document.querySelector('.col-md-10').appendChild(newRow);
+            });
+        });
+    </script>
+
+
+
+    </html>

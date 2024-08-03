@@ -1,0 +1,91 @@
+<%- include('../../includes/admin/top-with-style.ejs') %>
+    <script async defer
+        src="https://maps.googleapis.com/maps/api/js?key=<%= API_KEY %>&libraries=places&callback=initMap"></script>
+
+    <style>
+        #map {
+            height: 800px;
+            width: 100%;
+        }
+    </style>
+    </head>
+
+    <body id="theme-default" class="full_block">
+
+
+
+        <div id="left_bar">
+            <%- include('../../includes/admin/side-menu.ejs') %>
+        </div>
+
+        <div id="container">
+            <%- include('../../includes/admin/header-banner.ejs') %>
+                <div class="page_title">
+                    <span class="title_icon"><span class="users"></span></span>
+                    <h3>Location picker</h3>
+
+                </div>
+
+                <div class="content">
+                    <input id="places-search" type="text" class="form-control" placeholder="Search for a place">
+                    <div id="map"></div>
+                </div>
+
+
+        </div>
+    </body>
+
+    <script>
+        function initMap() {
+            // var map = new google.maps.Map(document.getElementById('map'), {
+            //     center: { lat: 5.6844172, lng: -0.2537157 },
+            //     zoom: 16
+            // });
+
+            var input = document.getElementById('places-search');
+            var autocomplete = new google.maps.places.Autocomplete(input);
+
+            autocomplete.addListener('place_changed', function () {
+                var place = autocomplete.getPlace();
+                if (!place.geometry) {
+                    console.log("Place not found!");
+                    return;
+                }
+
+                var location = place.geometry.location;
+                var lat = location.lat();
+                var lng = location.lng();
+                var address = place.name + ', ' + place.formatted_address;
+
+                console.log("Selected Location: " + lat + ", " + lng);
+                console.log("Address: " + JSON.stringify(address));
+
+                fetch('/store-location', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        lat: lat,
+                        lng: lng,
+                        address: address,
+                    })
+                }).then(response => {
+                    if (response.ok) {
+                        console.log('Location stored successfully');
+                        window.history.back();
+                    } else {
+                        console.error('Failed to store location');
+                        window.history.back();
+                    }
+                }).catch(error => {
+                    console.error('Error storing location:', error);
+                    window.history.back();
+                });
+
+
+            });
+        }
+    </script>
+
+    </html>

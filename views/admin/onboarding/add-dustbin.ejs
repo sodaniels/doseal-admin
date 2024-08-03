@@ -1,0 +1,286 @@
+<%- include('../../includes/admin/top-with-style.ejs') %>
+    <script async defer
+        src="https://maps.googleapis.com/maps/api/js?key=<%= API_KEY %>&libraries=places&callback=initMap"></script>
+
+
+    </head>
+
+    <body id="theme-default" class="full_block">
+
+
+        <div id="left_bar">
+            <%- include('../../includes/admin/side-menu.ejs') %>
+        </div>
+
+        <div id="container">
+            <%- include('../../includes/admin/header-banner.ejs') %>
+                <div class="page_title">
+                    <span class="title_icon"><span class="users"></span></span>
+                    <h3>Add Dustbin</h3>
+
+
+                </div>
+
+                <div id="content">
+                    <div class="grid_container">
+
+                        <div class="grid_12 full_block">
+                            <div class="widget_wrap">
+                                <div class="widget_top">
+                                    <span class="h_icon list"></span>
+                                    <h6>User Dustbin</h6>
+                                </div>
+                                <div class="widget_content">
+                                    <h3>Dustbin Information</h3>
+
+                                    <%if (errors.length> 0) { %> <% errors.forEach(error=> { %>
+                                            <blockquote class="quote_orange">
+                                                <p>
+                                                    <%- error.msg %>
+                                                </p>
+                                            </blockquote>
+                                            <% }) %>
+                                                <% } %>
+
+                                                    <%if (errorMessage) { %>
+                                                        <blockquote class="quote_orange">
+                                                            <p>
+                                                                <%- errorMessage %>
+                                                            </p>
+                                                        </blockquote>
+                                                        <% } %>
+
+
+                                                            <%if (successMessage) { %>
+                                                                <blockquote class="quote_green">
+                                                                    <p>
+                                                                        <%- successMessage %>
+                                                                    </p>
+                                                                </blockquote>
+                                                                <% } %>
+
+                                                                    <form
+                                                                        action="<% if (dustbin) { %>/user/dustbin/edit/<%= dustbin.id %><% } else { %>/user/dustbin/add/<%= user.userId %> <% } %>"
+                                                                        method="POST" class="form_container left_label">
+
+                                                                        <input type="hidden" name="dustbinId"
+                                                                            value="<%= dustbin.id %>">
+                                                                        <input type="hidden" name="owner"
+                                                                            value="<%= dustbin.owner %>">
+
+                                                                        <input type="hidden" name="userId"
+                                                                            value="<%= user.userId %>">
+                                                                        <input type="hidden" name="_csrf"
+                                                                            value="<%= csrfToken %>">
+                                                                        <ul>
+                                                                            <li>
+                                                                                <fieldset>
+                                                                                    <legend>Dustbin Information
+                                                                                    </legend>
+                                                                                    <ul>
+                                                                                        <li>
+                                                                                            <div class="form_grid_12">
+                                                                                                <label
+                                                                                                    class="field_title">Location</label>
+                                                                                                <div class="form_input">
+                                                                                                    <div
+                                                                                                        class="form_grid_6 alpha">
+                                                                                                        <input
+                                                                                                            id="places-search"
+                                                                                                            type="text"
+                                                                                                            class="form-control"
+                                                                                                            value="<%= dustbin ? dustbin.location.address : '' %>"
+                                                                                                            
+                                                                                                            placeholder="Search for a location">
+                                                                                                        <input
+                                                                                                            type="hidden"
+                                                                                                            name="hiddenLocation[]"
+                                                                                                            class="hiddenLocation">
+                                                                                                        <span
+                                                                                                            class=" label_intro">Location</span>
+                                                                                                    </div>
+                                                                                                    <div
+                                                                                                        class="form_grid_6 ">
+                                                                                                        <select
+                                                                                                            name="region"
+                                                                                                            id="region"
+                                                                                                            class="form-control"
+                                                                                                            style="height: 29px;"
+                                                                                                            required>
+                                                                                                            <option
+                                                                                                                value="">
+                                                                                                                Select
+                                                                                                                Region
+                                                                                                            </option>
+                                                                                                            <%
+                                                                                                                regions.forEach(reg=>
+                                                                                                                {
+                                                                                                                %>
+                                                                                                                <option
+                                                                                                                    value="<%= reg.name %>"
+                                                                                                                    <%=region===reg.name
+                                                                                                                    ? 'selected'
+                                                                                                                    : ''
+                                                                                                                    %>>
+                                                                                                                    <%= reg.name
+                                                                                                                        %>
+                                                                                                                </option>
+                                                                                                                <% });
+                                                                                                                    %>
+
+                                                                                                        </select>
+                                                                                                        <span
+                                                                                                            class=" label_intro">Region</span>
+                                                                                                    </div>
+
+                                                                                                    <span
+                                                                                                        class="clear"></span>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        </li>
+
+                                                                                        <li>
+                                                                                            <div
+                                                                                                class="form_grid_12 multiline">
+                                                                                                <label
+                                                                                                    class="field_title">Address</label>
+                                                                                                <div class="form_input">
+                                                                                                    <div
+                                                                                                        class="form_grid_6 alpha">
+                                                                                                        <input
+                                                                                                            name="city"
+                                                                                                            value="<%= dustbin ? dustbin.city : '' %>"
+                                                                                                            type="text"
+                                                                                                            required />
+                                                                                                        <span
+                                                                                                            class=" label_intro">Town/City</span>
+                                                                                                    </div>
+                                                                                                    <div
+                                                                                                        class="form_grid_6">
+                                                                                                        <input
+                                                                                                            type="text"
+                                                                                                            name="landmark"
+                                                                                                            value="<%= dustbin ? dustbin.landmark : '' %>"
+                                                                                                            required />
+                                                                                                        <span
+                                                                                                            class=" label_intro">Closest
+                                                                                                            Landmark</span>
+                                                                                                    </div>
+                                                                                                    <span
+                                                                                                        class="clear"></span>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        </li>
+                                                                                    </ul>
+                                                                                </fieldset>
+                                                                            </li>
+
+                                                                            <li>
+                                                                                <fieldset>
+                                                                                    <legend>Owner Information</legend>
+                                                                                    <div class="form_grid_12 multiline">
+                                                                                        <label
+                                                                                            class="field_title">Owner</label>
+                                                                                        <div class="form_input">
+                                                                                            <div
+                                                                                                class="form_grid_6 alpha">
+                                                                                                <input
+                                                                                                    value="<%= user.firstName + ' ' + user.lastName %>"
+                                                                                                    type="text"
+                                                                                                    disabled />
+                                                                                                <span
+                                                                                                    class=" label_intro">
+                                                                                                    Name</span>
+                                                                                            </div>
+                                                                                            <div class="form_grid_6">
+                                                                                                <input
+                                                                                                    value="<%= user ? user.phoneNumber : '' %>"
+                                                                                                    type="text"
+                                                                                                    disabled />
+                                                                                                <span
+                                                                                                    class=" label_intro">
+                                                                                                    Phone Number</span>
+                                                                                            </div>
+
+                                                                                            <span class="clear"></span>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </fieldset>
+                                                                            </li>
+
+
+                                                                        </ul>
+
+                                                                        <ul>
+                                                                            <li>
+                                                                                <div class="form_grid_12">
+                                                                                    <div class="form_input">
+                                                                                        <button type="submit"
+                                                                                            class="btn_small btn_blue">
+                                                                                            <% if (dustbin){ %>
+                                                                                                <span>Edit
+                                                                                                    Dustbin</span>
+                                                                                                <% } else { %>
+                                                                                                    <span>Add
+                                                                                                        Dustbin</span>
+                                                                                                    <% } %>
+                                                                                        </button>
+                                                                                        <button type="reset"
+                                                                                            class="btn_small btn_orange"><span>Reset</span></button>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </li>
+                                                                        </ul>
+                                                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                    <span class="clear"></span>
+                </div>
+
+
+        </div>
+    </body>
+
+    <script>
+        function initMap() {
+            // Function to initialize autocomplete for a given input element
+            function initAutocomplete(input) {
+                var autocomplete = new google.maps.places.Autocomplete(input);
+
+                autocomplete.addListener('place_changed', function () {
+                    var place = autocomplete.getPlace();
+                    if (!place.geometry) {
+                        console.log("Place not found!");
+                        return;
+                    }
+
+                    var location = place.geometry.location;
+                    var lat = location.lat();
+                    var lng = location.lng();
+                    var address = place.name + ', ' + place.formatted_address;
+
+                    const latLngAddress = {
+                        lat: lat,
+                        lng: lng,
+                        address: address
+                    };
+
+                    // Update hidden location input value
+                    input.nextElementSibling.value = JSON.stringify(latLngAddress);
+
+                    console.log("Selected Location: " + lat + ", " + lng);
+                    console.log("Address: " + JSON.stringify(address));
+                });
+            }
+
+            // Initialize autocomplete for the initial input field
+            initAutocomplete(document.getElementById('places-search'));
+
+
+        }
+    </script>
+
+    </html>

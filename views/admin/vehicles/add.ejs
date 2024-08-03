@@ -1,0 +1,343 @@
+<%- include('../../includes/admin/top-with-style.ejs') %>
+    </head>
+
+    <body id="theme-default" class="full_block">
+
+
+        <div id="left_bar">
+            <%- include('../../includes/admin/side-menu.ejs') %>
+        </div>
+
+        <div id="container">
+            <%- include('../../includes/admin/header-banner.ejs') %>
+                <div class="page_title">
+                    <span class="title_icon"><span class="users"></span></span>
+                    <h3>New Vehicle</h3>
+
+
+                </div>
+
+
+                <div id="content">
+                    <div class="grid_container">
+
+                        <div class="grid_12 full_block">
+                            <div class="widget_wrap">
+                                <div class="widget_top">
+                                    <span class="h_icon list"></span>
+                                    <h6>Vehicle</h6>
+                                </div>
+                                <div class="widget_content">
+                                    <h3>Vehicle Information</h3>
+
+                                    <%if (errors.length> 0) { %> <% errors.forEach(error=> { %>
+                                            <blockquote class="quote_orange">
+                                                <p>
+                                                    <%= error.msg %>
+                                                </p>
+                                            </blockquote>
+                                            <% }) %>
+                                                <% } %>
+
+
+                                                    <%if (errorMessage) { %>
+                                                        <blockquote class="quote_orange">
+                                                            <p>
+                                                                <%- errorMessage %>
+                                                            </p>
+                                                        </blockquote>
+                                                        <% } %>
+
+
+                                                            <%if (successMessage) { %>
+                                                                <blockquote class="quote_green">
+                                                                    <p>
+                                                                        <%- successMessage %>
+                                                                    </p>
+                                                                </blockquote>
+                                                                <% } %>
+
+                                                                    <form
+                                                                        action="<% if (vehicle) { %>/vehicle/edit/<%= vehicle.id %><% } else { %>/vehicle/add<% } %>"
+                                                                        method="POST" class="form_container left_label">
+
+                                                                        <input type="hidden" name="adminId"
+                                                                            value="<%= admin.user_id %>">
+                                                                        <input type="hidden" name="_csrf"
+                                                                            value="<%= csrfToken %>">
+                                                                        <ul>
+                                                                            <li>
+                                                                                <fieldset>
+                                                                                    <legend>Vehicle Information
+                                                                                    </legend>
+                                                                                    <ul>
+                                                                                        <li>
+                                                                                            <div class="form_grid_12">
+                                                                                                <label
+                                                                                                    class="field_title">Vehicle</label>
+                                                                                                <div class="form_input">
+                                                                                                    <div
+                                                                                                        class="form_grid_6 alpha">
+                                                                                                        <input
+                                                                                                            name="name"
+                                                                                                            value="<%= userInput.name ? userInput.name : (vehicle ? vehicle.name : '') %>"
+                                                                                                            type="text"
+                                                                                                            required />
+                                                                                                        <span
+                                                                                                            class=" label_intro">Vehicle
+                                                                                                            Name</span>
+                                                                                                    </div>
+                                                                                                    <div
+                                                                                                        class="form_grid_6 alpha">
+                                                                                                        <select
+                                                                                                            name="carType"
+                                                                                                            class="form-control"
+                                                                                                            style="height: 30px;"
+                                                                                                            required>
+                                                                                                            <option
+                                                                                                                value="">
+                                                                                                                Select
+                                                                                                                Type
+                                                                                                            </option>
+                                                                                                            <%
+                                                                                                                carTypes.forEach(item=>
+                                                                                                                {
+                                                                                                                %>
+                                                                                                                <option
+                                                                                                                    value="<%= item %>"
+                                                                                                                    <%=carType===item
+                                                                                                                    ? 'selected'
+                                                                                                                    : ''
+                                                                                                                    %>>
+                                                                                                                    <%= item
+                                                                                                                        %>
+                                                                                                                </option>
+                                                                                                                <% });
+                                                                                                                    %>
+
+                                                                                                        </select>
+                                                                                                        <span
+                                                                                                            class=" label_intro">Car
+                                                                                                            Type</span>
+                                                                                                    </div>
+
+                                                                                                </div>
+                                                                                        </li>
+
+                                                                                        <li style="margin-top: 3em;">
+                                                                                            <div
+                                                                                                class="form_grid_12 multiline">
+                                                                                                <label
+                                                                                                    class="field_title">Contact</label>
+                                                                                                <div class="form_input">
+                                                                                                    <div
+                                                                                                        class="form_grid_6 alpha">
+                                                                                                        <select
+                                                                                                            name="status"
+                                                                                                            class="form-control"
+                                                                                                            style="height: 30px;"
+                                                                                                            required>
+                                                                                                            <option
+                                                                                                                value="">
+                                                                                                                Select
+                                                                                                                Status
+                                                                                                            </option>
+                                                                                                            <%
+                                                                                                                statuses.forEach(carStatus=>
+                                                                                                                {
+                                                                                                                %>
+                                                                                                                <option
+                                                                                                                    value="<%= carStatus %>"
+                                                                                                                    <%=status===carStatus
+                                                                                                                    ? 'selected'
+                                                                                                                    : ''
+                                                                                                                    %>>
+                                                                                                                    <%= carStatus
+                                                                                                                        %>
+                                                                                                                </option>
+                                                                                                                <% });
+                                                                                                                    %>
+
+                                                                                                        </select>
+                                                                                                        <span
+                                                                                                            class=" label_intro">Car
+                                                                                                            Status</span>
+                                                                                                    </div>
+
+
+                                                                                                    <div
+                                                                                                        class="form_grid_6 alpha">
+                                                                                                        <select
+                                                                                                            name="ownership"
+                                                                                                            class="form-control"
+                                                                                                            style="height: 30px;"
+                                                                                                            required>
+                                                                                                            <option
+                                                                                                                value="">
+                                                                                                                Select
+                                                                                                                Ownership
+                                                                                                            </option>
+                                                                                                            <%
+                                                                                                                ownerships.forEach(owner=>
+                                                                                                                {
+                                                                                                                %>
+                                                                                                                <option
+                                                                                                                    value="<%= owner %>"
+                                                                                                                    <%=ownership===owner
+                                                                                                                    ? 'selected'
+                                                                                                                    : ''
+                                                                                                                    %>>
+                                                                                                                    <%= owner
+                                                                                                                        %>
+                                                                                                                </option>
+                                                                                                                <% });
+                                                                                                                    %>
+
+                                                                                                        </select>
+                                                                                                        <span
+                                                                                                            class=" label_intro">
+                                                                                                            Ownership</span>
+                                                                                                    </div>
+                                                                                                    <span
+                                                                                                        class="clear"></span>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        </li>
+
+                                                                                    </ul>
+                                                                                </fieldset>
+                                                                            </li>
+                                                                            <li>
+                                                                                <fieldset>
+                                                                                    <legend>Vehicle Detail </legend>
+                                                                                    <div class="form_grid_12 multiline">
+                                                                                        <label
+                                                                                            class="field_title">Vehicle
+                                                                                            Detail</label>
+                                                                                        <div class="form_input">
+                                                                                            <div
+                                                                                                class="form_grid_2 alpha">
+                                                                                                <input name="year"
+                                                                                                    value="<%= userInput.year ? userInput.year : (vehicle ? vehicle.year : '') %>"
+                                                                                                    type="number"
+                                                                                                    min="2000"
+                                                                                                    max="2030"
+                                                                                                    placeholder="YYYY"
+                                                                                                    class="form-control" />
+                                                                                                <span
+                                                                                                    class=" label_intro">Year</span>
+                                                                                            </div>
+
+                                                                                            <div
+                                                                                                class="form_grid_3 alpha">
+                                                                                                <select name="make"
+                                                                                                    class="form-control"
+                                                                                                    required>
+                                                                                                    <option value="">
+                                                                                                        Select
+                                                                                                        Make
+                                                                                                    </option>
+                                                                                                    <%
+                                                                                                        carMakes.forEach(item=>
+                                                                                                        {
+                                                                                                        %>
+                                                                                                        <option
+                                                                                                            value="<%= item %>"
+                                                                                                            <%=make===item
+                                                                                                            ? 'selected'
+                                                                                                            : '' %>>
+                                                                                                            <%= item %>
+                                                                                                        </option>
+                                                                                                        <% }); %>
+
+                                                                                                </select>
+                                                                                                <span
+                                                                                                    class=" label_intro">Make</span>
+                                                                                            </div>
+                                                                                            <div
+                                                                                                class="form_grid_2 alpha">
+                                                                                                <input name="model"
+                                                                                                    value="<%= userInput.model ? userInput.model : (vehicle ? vehicle.model : '') %>"
+                                                                                                    type="text"
+                                                                                                    class="form-control"
+                                                                                                    required>
+                                                                                                <span
+                                                                                                    class=" label_intro">Model</span>
+                                                                                            </div>
+
+                                                                                            <div class="form_grid_2">
+                                                                                                <input
+                                                                                                    name="vehicleNumber"
+                                                                                                    value="<%= userInput.vehicleNumber ? userInput.vehicleNumber : (vehicle ? vehicle.vehicleNumber : '') %>"
+                                                                                                    type="text"
+                                                                                                    placeholder=""
+                                                                                                    class="form-control" />
+                                                                                                <span
+                                                                                                    class=" label_intro">Vehicle
+                                                                                                    Number</span>
+                                                                                            </div>
+                                                                                            <div
+                                                                                                class="form_grid_3 alpha">
+                                                                                                <select name="fuelType"
+                                                                                                    class="form-control"
+                                                                                                    style="height: 30px;"
+                                                                                                    required>
+                                                                                                    <option value="">
+                                                                                                        Fuel Type
+                                                                                                    </option>
+                                                                                                    <%
+                                                                                                        fuelTypes.forEach(item=>
+                                                                                                        {
+                                                                                                        %>
+                                                                                                        <option
+                                                                                                            value="<%= item %>"
+                                                                                                            <%=fuelType===item
+                                                                                                            ? 'selected'
+                                                                                                            : '' %>>
+                                                                                                            <%= item %>
+                                                                                                        </option>
+                                                                                                        <% }); %>
+
+                                                                                                </select>
+                                                                                                <span
+                                                                                                    class=" label_intro">Fuel
+                                                                                                    Type</span>
+                                                                                            </div>
+
+                                                                                            <span class="clear"></span>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </fieldset>
+                                                                            </li>
+
+
+
+                                                                            </li>
+                                                                        </ul>
+
+                                                                        <ul>
+                                                                            <li>
+                                                                                <div class="form_grid_12">
+                                                                                    <div class="form_input">
+                                                                                        <button type="submit"
+                                                                                            class="btn_small btn_blue"><span>Submit</span></button>
+                                                                                        <button type="reset"
+                                                                                            class="btn_small btn_orange"><span>Reset</span></button>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </li>
+                                                                        </ul>
+                                                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                    <span class="clear"></span>
+                </div>
+
+        </div>
+    </body>
+
+
+    </html>

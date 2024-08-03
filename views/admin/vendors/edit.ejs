@@ -1,0 +1,167 @@
+<%- include('../../includes/admin/top-with-style.ejs') %>
+    </head>
+
+    <body id="theme-default" class="full_block">
+
+
+        <div id="left_bar">
+            <%- include('../../includes/admin/side-menu.ejs') %>
+        </div>
+
+        <div id="container">
+            <%- include('../../includes/admin/header-banner.ejs') %>
+                <div class="page_title">
+                    <span class="title_icon"><span class="folder"></span></span>
+                    <h3>Edit Vendor</h3>
+
+
+                </div>
+
+
+                <div id="content">
+                    <div class="grid_container">
+                        <%if (errors.length> 0) { %> <% errors.forEach(error=> { %>
+                                <blockquote class="quote_orange">
+                                    <p>
+                                        <%- error.msg %>
+                                    </p>
+                                </blockquote>
+                                <% }) %>
+                                    <% } %>
+
+
+                                        <%if (errorMessage) { %>
+                                            <blockquote class="quote_orange">
+                                                <p>
+                                                    <%- errorMessage %>
+                                                </p>
+                                            </blockquote>
+                                            <% } %>
+
+
+                                                <%if (successMessage) { %>
+                                                    <blockquote class="quote_green">
+                                                        <p>
+                                                            <%- successMessage %>
+                                                        </p>
+                                                    </blockquote>
+                                                    <% } %>
+
+                                                        <div class="grid_8 full_block">
+                                                            <form action="/vendor/edit/<%= vendor._id %>"
+                                                                method="POST" class="form_container left_label">
+
+                                                                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+
+                                                                <div class="widget_wrap">
+                                                                    <div class="widget_top">
+                                                                        <span class="h_icon list_image"></span>
+                                                                        <h6>Edit Vendor</h6>
+                                                                    </div>
+                                                                    <div class="widget_content">
+
+                                                                        <div class="">
+                                                                            <div>
+                                                                                <ul>
+                                                                                    <li>
+                                                                                        <div class="form_grid_12">
+                                                                                            <label class="field_title">Vendor Name<span style="color: red">*</span></label>
+                                                                                            <div class="form_input">
+                                                                                                <div class="form-group">
+                                                                                                    <input name="name"
+                                                                                                        value="<%= userInput.name ? userInput.name : (vendor ? vendor.name : '') %>"
+                                                                                                        type="text" class="form-control" title="Please enter vendor name"
+                                                                                                        required />
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </li>
+                                                                                    <li>
+                                                                                        <div class="form_grid_12">
+                                                                                            <label class="field_title">Vendor's Contact<span style="color: red">*</span></label>
+                                                                                            <div class="form_input">
+                                                                                                <div class="form-group">
+                                                                                                    <input name="phoneNumber"
+                                                                                                        value="<%= userInput.phoneNumber ? userInput.phoneNumber : (vendor ? vendor.phoneNumber : '') %>"
+                                                                                                        type="tel" class="form-control"
+                                                                                                        title="Please enter vendor's contact number" required />
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </li>
+                                                                                    <li>
+                                                                                        <div class="form_grid_12">
+                                                                                            <label class="field_title">Vendor's Email<span style="color: red">*</span></label>
+                                                                                            <div class="form_input">
+                                                                                                <div class="form-group">
+                                                                                                    <input name="email"
+                                                                                                        value="<%= userInput.email ? userInput.email : (vendor ? vendor.email : '') %>"
+                                                                                                        type="email" class="form-control"
+                                                                                                        title="Please enter vendor's email address" required />
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </li>
+                                                        
+                                                                                    <li>
+                                                                                        <div class="form_grid_12">
+                                                                                            <label class="field_title">Service<span style="color: red">*</span></label>
+                                                                                            <div class="form_input">
+                                                                                                <div class="form-group">
+                                                                                                    <input name="service"
+                                                                                                        value="<%= userInput.service ? userInput.service : (vendor ? vendor.service : '') %>"
+                                                                                                        type="text" class="form-control"
+                                                                                                        title="Please the service rendered by the vendor" required />
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </li>
+                                                                                    <li>
+                                                                                        <div class="form_grid_12">
+                                                                                            <label class="field_title">Vendor address<span style="color: red">*</span></label>
+                                                                                            <div class="form_input">
+                                                                                                <div class="form-group">
+                                                                                                    <textarea name="address"
+                                                                                                        class="input_grow" cols="62" rows="6" tabindex="5"
+                                                                                                        style="width: auto; height: auto; overflow: hidden;" required><%= userInput.address ? userInput.address : (vendor ? vendor.address : '') %></textarea>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </li>
+                                                        
+                                                                                    <li>
+                                                                                        <div class="form_grid_12">
+                                                                                            <label class="field_title">Note</label>
+                                                                                            <div class="form_input">
+                                                                                                <textarea name="note"
+                                                                                                    class="input_grow" cols="62" rows="6" tabindex="5"
+                                                                                                    style="width: auto; height: auto; overflow: hidden;"><%= userInput.note ? userInput.note : (vendor ? vendor.note : '') %></textarea>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </li>
+                                                                                </ul>
+
+
+                                                                            </div>
+                                                                            <div class="modal-footer">
+                                                                                <button type="submit"
+                                                                                    class="btn btn-primary">Edit
+                                                                                    Vendor</button>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </form>
+                                                        </div>
+
+                    </div>
+                    <span class="clear"></span>
+                </div>
+
+        </div>
+    </body>
+
+
+
+
+    </html>

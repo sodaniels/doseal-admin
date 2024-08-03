@@ -1,0 +1,399 @@
+<%- include('../../includes/admin/top-with-style.ejs') %>
+    </head>
+
+    <body id="theme-default" class="full_block">
+
+
+        <div id="left_bar">
+            <%- include('../../includes/admin/side-menu.ejs') %>
+        </div>
+
+        <div id="container">
+            <%- include('../../includes/admin/header-banner.ejs') %>
+                <div class="page_title">
+                    <span class="title_icon"><span class="application_icons_co"></span></span>
+                    <h3>Districts</h3>
+
+                </div>
+
+                <div id="content">
+                    <div class="grid_container">
+                        <% if (messages.success) { %>
+                            <blockquote class="quote_green">
+                                <%= messages.success %>
+                            </blockquote>
+                            <% } %>
+
+                                <% if (messages.error) { %>
+                                    <blockquote class="quote_red">
+                                        <%= messages.error %>
+                                    </blockquote>
+                                    <% } %>
+
+
+                                        <form class="form" style="width: 80%;"
+                                            action="<% if (district) { %>/district/edit/<%= district.id %><% } else { %>/district/add<% } %>"
+                                            method="POST">
+                                            <div class="modal-content_">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="exampleModalLabel">
+                                                        <%= district ? 'Edit' : 'Add' %>
+                                                            District
+                                                    </h5>
+
+                                                    <%if (errors.length> 0) { %> <% errors.forEach(error=> { %>
+                                                            <blockquote class="quote_orange">
+                                                                <p>
+                                                                    <%- error.msg %>
+                                                                </p>
+                                                            </blockquote>
+                                                            <% }) %>
+                                                                <% } %>
+
+                                                                    <%if (errorMessage) { %>
+                                                                        <blockquote class="quote_orange">
+                                                                            <p>
+                                                                                <%- errorMessage %>
+                                                                            </p>
+                                                                        </blockquote>
+                                                                        <% } %>
+
+
+                                                                            <%if (successMessage) { %>
+                                                                                <blockquote class="quote_green">
+                                                                                    <p>
+                                                                                        <%- successMessage %>
+                                                                                    </p>
+                                                                                </blockquote>
+                                                                                <% } %>
+
+                                                </div>
+
+                                                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+
+                                                <% if (district){ %>
+                                                    <div class="row">
+                                                        <div class="form-body">
+
+                                                            <div class="col-md-12" style="margin-top: 2em;">
+                                                                <div class="form-group">
+                                                                    <label for="userinput1">Region
+                                                                        Name</label>
+                                                                    <select name="region" class="form-control"
+                                                                        style="height: 29px;" required>
+                                                                        <option value="Greater Accra Region"
+                                                                            <%=district.region==='Greater Accra Region'
+                                                                            ? 'selected' : '' %>
+                                                                            >Greater
+                                                                            Accra
+                                                                            Region
+                                                                        </option>
+                                                                        <option value="Ahafo Region"
+                                                                            <%=district.region==='Ahafo Region' ? 'selected'
+                                                                            : '' %>
+                                                                            >Ahafo
+                                                                            Region
+                                                                        </option>
+                                                                        <option value="Ashanti Region"
+                                                                            <%=district.region==='Ashanti Region' ? 'selected'
+                                                                            : '' %>
+                                                                            >Ashanti
+                                                                            Region
+                                                                        </option>
+                                                                        <option value="Bono Region"
+                                                                            <%=district.region==='Bono Region' ? 'selected'
+                                                                            : '' %>
+                                                                            >Bono
+                                                                            Region
+                                                                        </option>
+                                                                        <option value="Bono East Region"
+                                                                            <%=district.region==='Bono East Region'
+                                                                            ? 'selected' : '' %>
+                                                                            >Bono
+                                                                            East
+                                                                            Region
+                                                                        </option>
+                                                                        <option value="Central Region"
+                                                                            <%=district.region==='Central Region' ? 'selected'
+                                                                            : '' %>
+                                                                            >Central
+                                                                            Region
+                                                                        </option>
+                                                                        <option value="Eastern Region"
+                                                                            <%=district.region==='Eastern Region' ? 'selected'
+                                                                            : '' %>
+                                                                            >Eastern Region
+                                                                        </option>
+
+                                                                        <option value="North East Region"
+                                                                            <%=district.region==='North East Region'
+                                                                            ? 'selected' : '' %>
+                                                                            >North
+                                                                            East
+                                                                            Region
+                                                                        </option>
+                                                                        <option value="Northern Region"
+                                                                            <%=district.region==='Northern Region' ? 'selected'
+                                                                            : '' %>
+                                                                            >Northern
+                                                                            Region
+                                                                        </option>
+                                                                        <option value="Oti Region"
+                                                                            <%=district.region==='Oti Region' ? 'selected' : ''
+                                                                            %>
+                                                                            >Oti
+                                                                            Region
+                                                                        </option>
+                                                                        <option value="Savannah Region"
+                                                                            <%=district.region==='Savannah Region' ? 'selected'
+                                                                            : '' %>
+                                                                            >Savannah
+                                                                            Region
+                                                                        </option>
+                                                                        <option value="Upper East Region"
+                                                                            <%=district.region==='Upper East Region'
+                                                                            ? 'selected' : '' %>
+                                                                            >Upper
+                                                                            East
+                                                                            Region
+                                                                        </option>
+                                                                        <option value="Upper West Region"
+                                                                            <%=district.region==='Upper West Region'
+                                                                            ? 'selected' : '' %>
+                                                                            >Upper
+                                                                            West
+                                                                            Region
+                                                                        </option>
+                                                                        <option value="Volta Region"
+                                                                            <%=district.region==='Volta Region' ? 'selected'
+                                                                            : '' %>
+                                                                            >Volta
+                                                                            Region
+                                                                        </option>
+                                                                        <option value="Western Region"
+                                                                            <%=district.region==='Western Region' ? 'selected'
+                                                                            : '' %>
+                                                                            >Western
+                                                                            Region
+                                                                        </option>
+                                                                        <option value="Western Nort Regionh"
+                                                                            <%=district.region==='Western North Region'
+                                                                            ? 'selected' : '' %>
+                                                                            >Western
+                                                                            North
+                                                                            Region
+                                                                        </option>
+                                                                    </select>
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="col-md-12">
+                                                                <div class="form-group">
+                                                                    <label for="userinput1">District
+                                                                        Name</label>
+                                                                    <br />
+                                                                    <input type="text" required
+                                                                        class="form-control border-primary"
+                                                                        placeholder="Name" name="name"
+                                                                        value="<%= district ? district.name : '' %>">
+                                                                </div>
+                                                            </div>
+
+                                                        </div>
+                                                    </div>
+                                                    <% } else { %>
+                                                        <div class="row">
+                                                            <div class="col-md-10">
+                                                                <div class="row" id="newRow">
+                                                                    <div class="form-body">
+
+                                                                        <div class="col-md-12" style="margin-top: 2em;">
+                                                                            <div class="form-group">
+                                                                                <label for="userinput1">Region
+                                                                                    Name</label>
+                                                                                <select name="region[]"
+                                                                                    class="form-control"
+                                                                                    style="height: 29px;" required>
+                                                                                    <option value="Greater Accra Region"
+                                                                                        <%= region==='Greater Accra Region'
+                                                                                        ? 'selected' : '' %>
+                                                                                        >Greater
+                                                                                        Accra
+                                                                                        Region
+                                                                                    </option>
+                                                                                    <option value="Ahafo Region"
+                                                                                        <%=region==='Ahafo Region'
+                                                                                        ? 'selected' : '' %>
+                                                                                        >Ahafo
+                                                                                        Region
+                                                                                    </option>
+                                                                                    <option value="Ashanti Region"
+                                                                                        <%=region==='Ashanti Region'
+                                                                                        ? 'selected' : '' %>
+                                                                                        >Ashanti
+                                                                                        Region
+                                                                                    </option>
+                                                                                    <option value="Bono Region"
+                                                                                        <%=region==='Bono Region'
+                                                                                        ? 'selected' : '' %>
+                                                                                        >Bono
+                                                                                        Region
+                                                                                    </option>
+                                                                                    <option value="Bono East Region"
+                                                                                        <%=region==='Bono East Region'
+                                                                                        ? 'selected' : '' %>
+                                                                                        >Bono
+                                                                                        East
+                                                                                        Region
+                                                                                    </option>
+                                                                                    <option value="Central Region"
+                                                                                        <%=region==='Central Region'
+                                                                                        ? 'selected' : '' %>
+                                                                                        >Central
+                                                                                        Region
+                                                                                    </option>
+                                                                                    <option value="Eastern Region"
+                                                                                        <%=region==='Eastern Region'
+                                                                                        ? 'selected' : '' %>
+                                                                                        >Eastern Region
+                                                                                    </option>
+
+                                                                                    <option value="North East Region"
+                                                                                        <%=region==='North East Region'
+                                                                                        ? 'selected' : '' %>
+                                                                                        >North
+                                                                                        East
+                                                                                        Region
+                                                                                    </option>
+                                                                                    <option value="Northern Region"
+                                                                                        <%=region==='Northern Region'
+                                                                                        ? 'selected' : '' %>
+                                                                                        >Northern
+                                                                                        Region
+                                                                                    </option>
+                                                                                    <option value="Oti Region"
+                                                                                        <%=region==='Oti Region'
+                                                                                        ? 'selected' : '' %>
+                                                                                        >Oti
+                                                                                        Region
+                                                                                    </option>
+                                                                                    <option value="Savannah Region"
+                                                                                        <%=region==='Savannah Region'
+                                                                                        ? 'selected' : '' %>
+                                                                                        >Savannah
+                                                                                        Region
+                                                                                    </option>
+                                                                                    <option value="Upper East Region"
+                                                                                        <%=region==='Upper East Region'
+                                                                                        ? 'selected' : '' %>
+                                                                                        >Upper
+                                                                                        East
+                                                                                        Region
+                                                                                    </option>
+                                                                                    <option value="Upper West Region"
+                                                                                        <%=region==='Upper West Region'
+                                                                                        ? 'selected' : '' %>
+                                                                                        >Upper
+                                                                                        West
+                                                                                        Region
+                                                                                    </option>
+                                                                                    <option value="Volta Region"
+                                                                                        <%=region==='Volta Region'
+                                                                                        ? 'selected' : '' %>
+                                                                                        >Volta
+                                                                                        Region
+                                                                                    </option>
+                                                                                    <option value="Western Region"
+                                                                                        <%=region==='Western Region'
+                                                                                        ? 'selected' : '' %>
+                                                                                        >Western
+                                                                                        Region
+                                                                                    </option>
+                                                                                    <option value="Western Nort Regionh"
+                                                                                        <%=region==='Western North Region'
+                                                                                        ? 'selected' : '' %>
+                                                                                        >Western
+                                                                                        North
+                                                                                        Region
+                                                                                    </option>
+                                                                                </select>
+                                                                            </div>
+                                                                        </div>
+
+                                                                        <div class="col-md-12">
+                                                                            <div class="form-group">
+                                                                                <label for="userinput1">District
+                                                                                    Name</label>
+                                                                                <br />
+                                                                                <input type="text" required
+                                                                                    class="form-control border-primary"
+                                                                                    placeholder="Name" name="name[]"
+                                                                                    value="<%= district ? district.name : '' %>">
+                                                                            </div>
+                                                                        </div>
+
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-2">
+                                                                <div class="btn_30_dark" style="margin-top: 5em;"
+                                                                    id="add_A_NewRow">
+                                                                    <a href="javascript::void(0)"><span
+                                                                            class="icon add_co"></span></a>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <% } %>
+
+
+                                                            <div class="modal-footer">
+                                                                <button type="button"
+                                                                    onclick="window.location.href = '../../../districts'; "
+                                                                    class="btn btn-secondary">Back</button>
+                                                                <button type="submit" class="btn btn-primary">
+                                                                    <%= district ? 'Edit' : 'Add' %>
+                                                                </button>
+                                                            </div>
+                                            </div>
+                                        </form>
+
+                    </div>
+                    <span class="clear"></span>
+                </div>
+        </div>
+    </body>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            document.getElementById("add_A_NewRow").addEventListener("click", function () {
+                // Clone the existing row
+                var newRow = document.getElementById("newRow").cloneNode(true);
+
+                // Update IDs and any other necessary attributes to avoid duplication
+                newRow.id = "newRow_" + Math.floor(Math.random() * 1000); // Generate a unique ID
+
+                // Clear input values in the new row if needed
+                var inputs = newRow.querySelectorAll("input[type=text]");
+                inputs.forEach(function (input) {
+                    input.value = "";
+                });
+
+                // Add a remove button to the new row
+                var removeButton = document.createElement("button");
+                removeButton.textContent = "Remove";
+                removeButton.type = "button";
+                removeButton.classList.add("btn", "btn-danger");
+                removeButton.style.marginLeft = "1.2em"; // Add margin-left
+                removeButton.addEventListener("click", function () {
+                    newRow.remove(); // Remove the new row when remove button is clicked
+                });
+                newRow.appendChild(removeButton);
+
+                // Append the cloned row inside the col-md-10 div
+                document.querySelector('.col-md-10').appendChild(newRow);
+            });
+        });
+    </script>
+
+
+
+    </html>

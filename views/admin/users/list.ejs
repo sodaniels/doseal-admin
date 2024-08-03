@@ -1,0 +1,163 @@
+<%- include('../../includes/admin/top-with-style.ejs') %>
+    </head>
+
+    <body id="theme-default" class="full_block">
+
+
+        <div id="left_bar">
+            <%- include('../../includes/admin/side-menu.ejs') %>
+        </div>
+
+        <div id="container">
+            <%- include('../../includes/admin/header-banner.ejs') %>
+                <div class="page_title">
+                    <span class="title_icon"><span class="users"></span></span>
+                    <h3>Users</h3>
+                    <div class="top_search">
+                        <form action="#" method="post">
+                            <ul id="search_box">
+                                <div class="btn_30_dark">
+                                    <a href="../users/add"><span class="icon add_co"></span><span class="btn_link">Add
+                                            User</span></a>
+                                </div>
+                            </ul>
+                        </form>
+                    </div>
+                </div>
+
+                <div id="content">
+                    <div class="grid_container">
+
+                        <div class="grid_12">
+                            <div class="widget_wrap">
+                                <div class="widget_top">
+                                    <span class="h_icon blocks_images"></span>
+                                    <h6>System Users</h6>
+                                </div>
+                                <div class="widget_content">
+
+                                    <table class="display data_tbl">
+                                        <thead>
+                                            <tr>
+                                                <th></th>
+                                                <th>
+                                                    First Name
+                                                </th>
+                                                <th>
+                                                    Middle Name
+                                                </th>
+                                                <th>
+                                                    Last Name
+                                                </th>
+                                                <th>
+                                                    Email
+                                                </th>
+                                                <th>
+                                                    Phone Number
+                                                </th>
+                                                <th>
+                                                    Role
+                                                </th>
+                                                <th>
+                                                    Status
+                                                </th>
+                                                <th>
+                                                    Date
+                                                </th>
+                                                <th>
+                                                    Action
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <% users.forEach((item, index) => { %>
+                                                <tr>
+                                                    <td>
+                                                        <p><%= index + 1 %></p>
+                                                    </td>
+                                                    <td>
+                                                        <%= item.firstName %>
+                                                    </td>
+                                                    <td>
+                                                        <%= item.middleName %>
+                                                    </td>
+                                                    <td>
+                                                        <%= item.lastName %>
+                                                    </td>
+                                                    <td class="center">
+                                                        <%= item.email %>
+                                                    </td>
+                                                    <td class="center">
+                                                        <%= item.phoneNumber %>
+                                                    </td>
+                                                    <td class="center">
+                                                        <%= item.role %>
+                                                    </td>
+                                                    <td class="center">
+                                                        <span
+                                                            class="badge_style <%= item.status === 'Active' ? 'b_done' : 'b_suspend' %>"
+                                                            style="padding-bottom: 1em;">
+                                                            <%= item.status==='Active' ? 'Active' : 'Inactive' %>
+                                                        </span>
+                                                    </td>
+                                                    <td class="center">
+                                                        <%= shortData(item.createdAt) %>
+                                                    </td>
+                                                    <td class="center">
+                                                        <span>
+                                                            <a href="users/edit/<%= item.userId %>" class="action-icons c-edit" href="#"
+                                                                title="Edit">Edit</a></span><span>
+                                                            <a href="" class="action-icons c-delete" href="#"
+                                                                title="Delete" onclick="confirmDeletion(this)">Delete</a></span><span>
+                                                            <a class="action-icons c-suspend" href="#"
+                                                                title="Suspend">Suspend</a>
+                                                        </span>
+                                                    </td>
+                                                </tr>
+                                                <% }) %>
+                                        </tbody>
+                                        <tfoot>
+                                            <tr>
+                                                <th></th>
+                                                <th>
+                                                    First Name
+                                                </th>
+                                                <th>
+                                                    Middle Name
+                                                </th>
+                                                <th>
+                                                    Last Name
+                                                </th>
+                                                <th>
+                                                    Email
+                                                </th>
+                                                <th>
+                                                    Phone Number
+                                                </th>
+                                                <th>
+                                                    Role
+                                                </th>
+                                                <th>
+                                                    Status
+                                                </th>
+                                                <th>
+                                                    Date
+                                                </th>
+                                                <th>
+                                                    Action
+                                                </th>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                    <span class="clear"></span>
+                </div>
+        </div>
+    </body>
+
+
+    </html>

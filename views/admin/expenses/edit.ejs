@@ -1,0 +1,161 @@
+<%- include('../../includes/admin/top-with-style.ejs') %>
+    </head>
+
+    <body id="theme-default" class="full_block">
+
+
+        <div id="left_bar">
+            <%- include('../../includes/admin/side-menu.ejs') %>
+        </div>
+
+        <div id="container">
+            <%- include('../../includes/admin/header-banner.ejs') %>
+                <div class="page_title">
+                    <span class="title_icon"><span class="folder"></span></span>
+                    <h3>Edit Expense</h3>
+
+
+                </div>
+
+
+                <div id="content">
+                    <div class="grid_container">
+                        <%if (errors.length> 0) { %> <% errors.forEach(error=> { %>
+                                <blockquote class="quote_orange">
+                                    <p>
+                                        <%- error.msg %>
+                                    </p>
+                                </blockquote>
+                                <% }) %>
+                                    <% } %>
+
+
+                                        <%if (errorMessage) { %>
+                                            <blockquote class="quote_orange">
+                                                <p>
+                                                    <%- errorMessage %>
+                                                </p>
+                                            </blockquote>
+                                            <% } %>
+
+
+                                                <%if (successMessage) { %>
+                                                    <blockquote class="quote_green">
+                                                        <p>
+                                                            <%- successMessage %>
+                                                        </p>
+                                                    </blockquote>
+                                                    <% } %>
+
+                                                        <div class="grid_8 full_block">
+                                                            <form action="/expense/edit/<%= expense._id %>"
+                                                                method="POST" class="form_container left_label">
+
+                                                                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+
+                                                                <div class="widget_wrap">
+                                                                    <div class="widget_top">
+                                                                        <span class="h_icon list_image"></span>
+                                                                        <h6>Edit Expense</h6>
+                                                                    </div>
+                                                                    <div class="widget_content">
+
+                                                                        <div class="">
+                                                                            <div>
+                                                                                <ul>
+                                                                                    <li>
+                                                                                        <div class="form_grid_12">
+                                                                                            <label
+                                                                                                class="field_title">Title<span
+                                                                                                    style="color: red">*</span></label>
+                                                                                            <div class="form_input">
+                                                                                                <div class="form-group">
+                                                                                                    <input name="title"
+                                                                                                        value="<%= userInput.title ? userInput.title : (expense ? expense.title : '') %>"
+                                                                                                        type="text"
+                                                                                                        class="form-control"
+                                                                                                        title="Please enter a title"
+                                                                                                        required />
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </li>
+                                                                                    <li>
+                                                                                        <div class="form_grid_12">
+                                                                                            <label
+                                                                                                class="field_title">Amount
+                                                                                                <span
+                                                                                                    style="color: red">*</span></label>
+                                                                                            <div class="form_input">
+                                                                                                <div class="form-group">
+                                                                                                    <div
+                                                                                                        class="form-group">
+                                                                                                        <input
+                                                                                                            name="amount"
+                                                                                                            value="<%= userInput.amount ? userInput.amount : (expense ? expense.amount : '') %>"
+                                                                                                            type="number"
+                                                                                                            class="form-control"
+                                                                                                            title="Please enter an amount"
+                                                                                                            required />
+                                                                                                    </div>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                    </li>
+                                                                                    <li>
+                                                                                        <div class="form_grid_12">
+                                                                                            <label
+                                                                                                class="field_title">Date</label>
+                                                                                            <div class="form_input">
+                                                                                                <input name="date"
+                                                                                                    value="<%= userInput.date ? userInput.date : (expense ? expense.date : '') %>"
+                                                                                                    type="date"
+                                                                                                    class="form-control"
+                                                                                                    pattern="(0[1-9]|1[0-2])/(0[1-9]|[12][0-9]|3[01])/\d{4}"
+                                                                                                    title="Please select a date in the format MM/DD/YYYY"
+                                                                                                    required />
+                                                                                                <span
+                                                                                                    class="clear"></span>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </li>
+
+                                                                                    <li>
+                                                                                        <div class="form_grid_12">
+                                                                                            <label
+                                                                                                class="field_title">Note</label>
+                                                                                            <div class="form_input">
+                                                                                                <textarea name="note"
+                                                                                                    value="<%= userInput.note ? userInput.note : (expense ? expense.note : '') %>"
+                                                                                                    class="input_grow"
+                                                                                                    cols="100" rows="6"
+                                                                                                    tabindex="5"
+                                                                                                    style="width: auto; height: auto; overflow: hidden;"><%= userInput.note ? userInput.note : (expense ? expense.note : '') %></textarea>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </li>
+                                                                                </ul>
+
+
+                                                                            </div>
+                                                                            <div class="modal-footer">
+                                                                                <button type="submit"
+                                                                                    class="btn btn-primary">Edit
+                                                                                    Expense</button>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </form>
+                                                        </div>
+
+                    </div>
+                    <span class="clear"></span>
+                </div>
+
+        </div>
+    </body>
+
+
+
+
+    </html>

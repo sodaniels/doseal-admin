@@ -1,0 +1,59 @@
+BEGIN: Vendor JS
+<script src="/assets/dashboard/js/vendors.min.js"></script>
+<!-- BEGIN Vendor JS-->
+
+<!-- BEGIN: Page Vendor JS-->
+<script src="/assets/dashboard/js/jquery.sticky.js"></script>
+<script src="/assets/dashboard/js/chartist.min.js"></script>
+<script src="/assets/dashboard/js/chartist-plugin-tooltip.min.js"></script>
+<script src="/assets/dashboard/js/raphael-min.js"></script>
+<script src="/assets/dashboard/js/morris.min.js"></script>
+<script src="/assets/dashboard/js/horizontal-timeline.js"></script>
+
+
+<!-- END: Page Vendor JS-->
+
+<!-- BEGIN: Theme JS-->
+<script src="/assets/dashboard/js/app-menu.min.js"></script>
+<script src="/assets/dashboard/js/app.min.js"></script>
+<script src="/assets/dashboard/js/customizer.min.js"></script>
+<script src="/assets/dashboard/js/footer.min.js"></script>
+
+
+<!-- END: Theme JS-->
+
+<!-- BEGIN: Page JS-->
+<script src="/assets/dashboard/js/dashboard-ecommerce.min.js"></script>
+<!-- END: Page JS-->
+
+<script>
+  function confirmLogout() {
+    var result = confirm("Do you want to log out!");
+    if (result) {
+      var logOut = document.getElementById('logout').submit();
+    } else {
+      // don't do anything
+    }
+  }
+</script>
+<script>
+  function confirmDeletion(element) {
+    var route = $(element).data('route');
+
+    var answer = confirm("Are you sure you want to delete this item?");
+
+    
+    if (answer == true) {
+
+      window.location = route;
+
+    } else {
+      //do something
+      return false;
+    }
+  }
+</script>
+</body>
+<!-- END: Body-->
+
+</html>

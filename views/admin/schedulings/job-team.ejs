@@ -1,0 +1,233 @@
+<%- include('../../includes/admin/top-with-style.ejs') %>
+    </head>
+
+    <body id="theme-default" class="full_block">
+
+
+        <div id="left_bar">
+            <%- include('../../includes/admin/side-menu.ejs') %>
+        </div>
+
+        <div id="container">
+            <%- include('../../includes/admin/header-banner.ejs') %>
+                <div class="page_title">
+                    <span class="title_icon"><span class="users"></span></span>
+                    <h3>Job Assignment</h3>
+
+
+                </div>
+
+
+                <div id="content">
+                    <div class="grid_container">
+                        <%if (errors.length> 0) { %> <% errors.forEach(error=> { %>
+                                <blockquote class="quote_orange">
+                                    <p>
+                                        <%- error.msg %>
+                                    </p>
+                                </blockquote>
+                                <% }) %>
+                                    <% } %>
+
+
+                                        <%if (errorMessage) { %>
+                                            <blockquote class="quote_orange">
+                                                <p>
+                                                    <%- errorMessage %>
+                                                </p>
+                                            </blockquote>
+                                            <% } %>
+
+
+                                                <%if (successMessage) { %>
+                                                    <blockquote class="quote_green">
+                                                        <p>
+                                                            <%- successMessage %>
+                                                        </p>
+                                                    </blockquote>
+                                                    <% } %>
+
+                                                        <div class="grid_12 full_block">
+                                                            <form action="../assign/job/teams" method="POST"
+                                                                class="form_container left_label">
+
+                                                                <input type="hidden" name="_csrf"
+                                                                    value="<%= csrfToken %>">
+
+                                                                <input type="hidden" name="jobs"
+                                                                    value="<%= selectedJobs %>">
+
+                                                                <div class="widget_wrap">
+                                                                    <div class="widget_top">
+                                                                        <span class="h_icon list_image"></span>
+                                                                        <h6>Add teams(s)</h6>
+                                                                    </div>
+                                                                    <div class="widget_content">
+                                                                        <form action="#" method="post"
+                                                                            class="form_container left_label">
+                                                                            <ul>
+                                                                                <li>
+                                                                                    <div class="form_grid_12">
+                                                                                        <label class="field_title">
+                                                                                            QR Codes</label>
+                                                                                        <div class="form_input">
+                                                                                            <textarea name="name"
+                                                                                                type="text"
+                                                                                                class="form-control"
+                                                                                                readonly><%= barcodes %></textarea>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </li>
+                                                                                <li>
+                                                                                    <div class="form_grid_12">
+                                                                                        <label class="field_title">
+                                                                                            Locations</label>
+                                                                                        <div class="form_input">
+                                                                                            <textarea name="name"
+                                                                                                type="text"
+                                                                                                class="form-control"
+                                                                                                readonly><%= addresses %></textarea>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </li>
+
+
+                                                                                <li>
+                                                                                    <div class="form_grid_12">
+                                                                                        <label
+                                                                                            class="field_title">Team(s)</label>
+                                                                                        <div class="form_input">
+                                                                                            <p
+                                                                                                style="text-align: center;">
+                                                                                                <strong>NB</strong>:
+                                                                                                Move
+                                                                                                from
+                                                                                                users left to right to
+                                                                                                select
+                                                                                            </p>
+                                                                                            <div class="list_left">
+                                                                                                <div
+                                                                                                    class="list_filter">
+                                                                                                    <label>Filter:
+                                                                                                    </label>
+                                                                                                    <input type="text"
+                                                                                                        id="box1Filter">
+                                                                                                    <span id="box1Clear"
+                                                                                                        class="list_refresh"><span
+                                                                                                            class="filter_btn refresh_3">&nbsp;</span></span>
+                                                                                                </div>
+                                                                                                <select id="box1View"
+                                                                                                    multiple="multiple"
+                                                                                                    class="multiple_list">
+                                                                                                    <%
+                                                                                                        teams.forEach(item=>
+                                                                                                        {
+                                                                                                        %>
+                                                                                                        <option
+                                                                                                            value="<%= item._id %>">
+                                                                                                            <%= item.name
+                                                                                                                %>
+                                                                                                        </option>
+                                                                                                        <% }); %>
+
+                                                                                                </select>
+                                                                                                <div
+                                                                                                    class="list_itemcount">
+                                                                                                    <span
+                                                                                                        id="box1Counter"
+                                                                                                        class="countLabel">Showing
+                                                                                                        14
+                                                                                                        of
+                                                                                                        14</span>
+                                                                                                    <select
+                                                                                                        id="box1Storage"
+                                                                                                        style="display: none;">
+                                                                                                    </select>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                            <div class="list_switch">
+                                                                                                <span id="to2"
+                                                                                                    class="swap_btn"><span
+                                                                                                        class="filter_btn p_next">&nbsp;</span></span><span
+                                                                                                    id="to1"
+                                                                                                    class="swap_btn"><span
+                                                                                                        class="filter_btn p_prev">&nbsp;</span></span><span
+                                                                                                    id="allTo2"
+                                                                                                    class="swap_btn"><span
+                                                                                                        class="filter_btn p_last">&nbsp;</span></span><span
+                                                                                                    id="allTo1"
+                                                                                                    class="swap_btn"><span
+                                                                                                        class="filter_btn p_first">&nbsp;</span></span>
+                                                                                            </div>
+                                                                                            <div class="list_right">
+                                                                                                <div
+                                                                                                    class="list_filter">
+                                                                                                    <label>Filter:
+                                                                                                    </label>
+                                                                                                    <input type="text"
+                                                                                                        id="box2Filter">
+                                                                                                    <span
+                                                                                                        class="list_refresh"
+                                                                                                        id="box2Clear"><span
+                                                                                                            class="filter_btn refresh_3">&nbsp;</span></span>
+                                                                                                </div>
+                                                                                                <select id="box2View"
+                                                                                                    multiple="multiple"
+                                                                                                    class="multiple_list"
+                                                                                                    name="teams[]">
+
+
+
+                                                                                                </select>
+                                                                                                <div
+                                                                                                    class="list_itemcount">
+                                                                                                    <span
+                                                                                                        id="box2Counter"
+                                                                                                        class="countLabel">Showing
+                                                                                                        2
+                                                                                                        of
+                                                                                                        2</span>
+                                                                                                    <select
+                                                                                                        id="box2Storage"
+                                                                                                        style="display: none;">
+                                                                                                    </select>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                            <span class="clear"></span>
+                                                                                        </div>
+
+                                                                                    </div>
+                                                                                </li>
+
+
+                                                                            </ul>
+                                                                            <ul>
+                                                                                <li>
+                                                                                    <div class="form_grid_12">
+                                                                                        <div class="form_input">
+                                                                                            <button type="submit"
+                                                                                                class="btn_small btn_blue">
+                                                                                                Assign Job
+
+                                                                                            </button>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </li>
+                                                                            </ul>
+                                                                        </form>
+                                                                    </div>
+                                                                </div>
+                                                            </form>
+                                                        </div>
+
+                    </div>
+                    <span class="clear"></span>
+                </div>
+
+        </div>
+    </body>
+
+
+
+
+    </html>

@@ -1,0 +1,194 @@
+<%- include('../../includes/admin/top-with-style.ejs') %>
+    </head>
+
+    <body id="theme-default" class="full_block">
+
+
+        <div id="left_bar">
+            <%- include('../../includes/admin/side-menu.ejs') %>
+        </div>
+
+        <div id="container">
+            <%- include('../../includes/admin/header-banner.ejs') %>
+                <div class="page_title">
+                    <span class="title_icon"><span class="users"></span></span>
+                    <h3>Team</h3>
+                </div>
+
+                <div id="content">
+                    <div class="grid_container">
+
+                        <div class="grid_12">
+                            <div class="widget_wrap">
+                                <div class="widget_content">
+                                    <form id="signupform" autocomplete="off" method="get" action="#"
+                                        class="form_container left_label" novalidate="novalidate">
+                                        <ul>
+                                            <li>
+                                                <div class="form_grid_12">
+                                                    <label class="field_title" id="lfirstname" for="firstname">
+                                                        <strong>Team Name: </strong>
+                                                    </label>
+                                                    <div class="form_input">
+                                                        <input type="text" value="<%= user.name %>" disabled
+                                                            class="large">
+                                                    </div>
+                                                </div>
+                                            </li>
+                                            <li>
+                                                <div class="form_grid_12">
+                                                    <label class="field_title" id="llastname" for="lastname">Start
+                                                        Date/Time
+                                                    </label>
+                                                    <div class="form_input">
+                                                        <input type="text"
+                                                            value="<%= user.startDate + ' ' + user.startTime %>"
+                                                            disabled class="large">
+                                                    </div>
+                                                </div>
+                                            </li>
+
+                                            <li>
+                                                <div class="form_grid_12">
+                                                    <label class="field_title" id="lusername" for="username">End
+                                                        Date/Time</label>
+                                                    <div class="form_input">
+                                                        <input type="text"
+                                                            value="<%= user.endDate + ' ' + user.endTime %>" disabled
+                                                            class="large">
+                                                    </div>
+
+                                                </div>
+                                            </li>
+                                            <li>
+                                                <div class="form_grid_12">
+                                                    <label class="field_title" id="lpassword"
+                                                        for="password">Supervisor</label>
+                                                    <div class="form_input">
+                                                        <input type="text"
+                                                            value="<%= user.supervisor.firstName + ' '+user.supervisor.middleName + user.supervisor.lastName %>"
+                                                            disabled class="large">
+                                                        <a href="" style="padding-left: 4em;">View</a>
+                                                    </div>
+                                                </div>
+                                            </li>
+                                            <li>
+                                                <div class="form_grid_12">
+                                                    <label class="field_title" id="lpassword_confirm"
+                                                        for="password_confirm">Driver</label>
+                                                    <div class="form_input">
+                                                        <input type="text"
+                                                            value="<%= user.driver.firstName + ' '+user.driver.middleName + user.driver.lastName %>"
+                                                            disabled class="large">
+                                                        <a href="" style="padding-left: 4em;">View</a>
+                                                    </div>
+                                                </div>
+                                            </li>
+
+                                            <li>
+                                                <div class="form_grid_12">
+                                                    <label class="field_title" id="lpassword_confirm"
+                                                        for="password_confirm">Created
+                                                        Date</label>
+                                                    <div class="form_input">
+                                                        <input type="text" value="<%= longDate(user.createdAt) %>"
+                                                            disabled class="large">
+                                                    </div>
+                                                </div>
+                                            </li>
+                                        </ul>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <span class="clear"></span>
+                </div>
+
+                <div id="content" style="margin-top: -20em !important;">
+                    <div class="grid_container">
+
+                        <div class="grid_12">
+                            <div class="widget_wrap">
+                                <div class="widget_top">
+                                    <span class="h_icon blocks_images"></span>
+                                    <h6>Collectors</h6>
+                                </div>
+                                <div class="widget_content">
+
+                                    <table class="display data_tbl">
+                                        <thead>
+                                            <tr>
+                                                <th>
+
+                                                </th>
+                                                <th>
+                                                 First Name
+                                                </th>
+                                                <th>
+                                                   Middle Name
+                                                </th>
+                                                <th>
+                                                   Last Name
+                                                </th>
+                                                <th>
+                                                    Phone Number
+                                                </th>
+                                               
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <% user.collectors.forEach((item, index)=> { %>
+                                                <tr>
+                                                    <td>
+                                                        <p>
+                                                            <%= index + 1 %>
+                                                        </p>
+                                                    </td>
+                                                    <td>
+                                                        <%= item.firstName %>
+                                                    </td>
+                                                    <td>
+                                                        <%= item.middleName %>
+                                                    </td>
+                                                    <td class="center">
+                                                        <%= item.lastName %>
+                                                    </td>
+                                                    <td class="center">
+                                                        <%= item.phoneNumber %>
+                                                    </td>
+                                                <% }) %>
+                                        </tbody>
+                                        <tfoot>
+                                            <tr>
+                                                <th>
+
+                                                </th>
+                                                <th>
+                                                 First Name
+                                                </th>
+                                                <th>
+                                                   Middle Name
+                                                </th>
+                                                <th>
+                                                   Last Name
+                                                </th>
+                                                <th>
+                                                    Phone Number
+                                                </th>
+                                               
+                                            </tr>
+                                        </tfoot>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                    <span class="clear"></span>
+                </div>
+        </div>
+    </body>
+
+
+    </html>

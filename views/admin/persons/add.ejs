@@ -1,0 +1,383 @@
+<%- include('../../includes/admin/top-with-style.ejs') %>
+    </head>
+
+    <body id="theme-default" class="full_block">
+
+
+        <div id="left_bar">
+            <%- include('../../includes/admin/side-menu.ejs') %>
+        </div>
+
+        <div id="container">
+            <%- include('../../includes/admin/header-banner.ejs') %>
+                <div class="page_title">
+                    <span class="title_icon"><span class="users"></span></span>
+                    <h3>Add Person</h3>
+
+
+                </div>
+
+
+                <div id="content">
+                    <div class="grid_container">
+
+                        <div class="grid_12 full_block">
+                            <div class="widget_wrap">
+                                <div class="widget_top">
+                                    <span class="h_icon list"></span>
+                                    <h6>Person</h6>
+                                </div>
+                                <div class="widget_content">
+                                    <h3>Person Information</h3>
+
+                                    <%if (errors.length> 0) { %> <% errors.forEach(error=> { %>
+                                            <blockquote class="quote_orange">
+                                                <p>
+                                                    <%- error.msg %>
+                                                </p>
+                                            </blockquote>
+                                            <% }) %>
+                                                <% } %>
+
+
+                                                    <%if (errorMessage) { %>
+                                                        <blockquote class="quote_orange">
+                                                            <p>
+                                                                <%- errorMessage %>
+                                                            </p>
+                                                        </blockquote>
+                                                        <% } %>
+
+
+                                                            <%if (successMessage) { %>
+                                                                <blockquote class="quote_green">
+                                                                    <p>
+                                                                        <%- successMessage %>
+                                                                    </p>
+                                                                </blockquote>
+                                                                <% } %>
+
+                                                                    <form
+                                                                        action="<% if (user) { %>/person/edit/<%= user.userId %><% } else { %>/person/add<% } %>"
+                                                                        method="POST" class="form_container left_label">
+
+                                                                        <input type="hidden" name="adminId"
+                                                                            value="<%= admin.user_id %>">
+                                                                        <input type="hidden" name="_csrf"
+                                                                            value="<%= csrfToken %>">
+                                                                        <ul>
+                                                                            <li>
+                                                                                <fieldset>
+                                                                                    <legend>Personal Information
+                                                                                    </legend>
+                                                                                    <ul>
+                                                                                        <li>
+                                                                                            <div class="form_grid_12">
+                                                                                                <label
+                                                                                                    class="field_title">Category</label>
+                                                                                                <div class="form_input">
+                                                                                                    <div
+                                                                                                        class="form_grid_12 alpha">
+                                                                                                        <select
+                                                                                                            name="category"
+                                                                                                            id="category"
+                                                                                                            class="form-control"
+                                                                                                            style="height: 29px;"
+                                                                                                            required>
+                                                                                                            <option
+                                                                                                                value="">
+                                                                                                                Select
+                                                                                                                Category
+                                                                                                            </option>
+                                                                                                            <option
+                                                                                                                value="Supervisor"
+                                                                                                                <%=user.category==='Supervisor'
+                                                                                                                ? 'selected'
+                                                                                                                : '' %>>
+                                                                                                                Supervisor
+                                                                                                            </option>
+                                                                                                            <option
+                                                                                                                value="Driver"
+                                                                                                                <%=user.category==='Driver'
+                                                                                                                ? 'selected'
+                                                                                                                : '' %>>
+                                                                                                                Driver
+                                                                                                            </option>
+                                                                                                            <option
+                                                                                                                value="Collector"
+                                                                                                                <%=user.category==='Collector'
+                                                                                                                ? 'selected'
+                                                                                                                : '' %>>
+                                                                                                                Collector
+                                                                                                            </option>
+
+                                                                                                        </select>
+                                                                                                    </div>
+                                                                                                    <span
+                                                                                                        class="clear"></span>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        </li>
+                                                                                        <li>
+                                                                                            <div class="form_grid_12">
+                                                                                                <label
+                                                                                                    class="field_title">Name</label>
+                                                                                                <div class="form_input">
+                                                                                                    <div
+                                                                                                        class="form_grid_4 alpha">
+                                                                                                        <input
+                                                                                                            name="firstName"
+                                                                                                            type="text"
+                                                                                                            value="<%= userInput.firstName ? userInput.firstName : (user ? user.firstName : '') %>"
+                                                                                                            required />
+                                                                                                        <span
+                                                                                                            class=" label_intro">First
+                                                                                                            Name</span>
+                                                                                                    </div>
+                                                                                                    <div
+                                                                                                        class="form_grid_4 ">
+                                                                                                        <input
+                                                                                                            name="middleName"
+                                                                                                            value="<%= userInput.middleName ? userInput.middleName : (user ? user.middleName : '') %>"
+                                                                                                            type="text" />
+                                                                                                        <span
+                                                                                                            class=" label_intro">Middle
+                                                                                                            Name</span>
+                                                                                                    </div>
+                                                                                                    <div
+                                                                                                        class="form_grid_4 ">
+                                                                                                        <input
+                                                                                                            name="lastName"
+                                                                                                            value="<%= userInput.lastName ? userInput.lastName : (user ? user.lastName : '') %>"
+                                                                                                            type="text"
+                                                                                                            required />
+                                                                                                        <span
+                                                                                                            class=" label_intro">Last
+                                                                                                            Name</span>
+                                                                                                    </div>
+                                                                                                    <span
+                                                                                                        class="clear"></span>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        </li>
+
+                                                                                        <li>
+                                                                                            <div
+                                                                                                class="form_grid_12 multiline">
+                                                                                                <label
+                                                                                                    class="field_title">Contact</label>
+                                                                                                <div class="form_input">
+                                                                                                    <div
+                                                                                                        class="form_grid_4 alpha">
+                                                                                                        <input
+                                                                                                            name="phoneNumber"
+                                                                                                            value="<%= userInput.phoneNumber ? userInput.phoneNumber : (user ? user.phoneNumber : '') %>"
+                                                                                                            type="text"
+                                                                                                            required />
+                                                                                                        <span
+                                                                                                            class=" label_intro">Phone
+                                                                                                            Number</span>
+                                                                                                    </div>
+                                                                                                    <div
+                                                                                                        class="form_grid_4">
+                                                                                                        <input
+                                                                                                            name="email"
+                                                                                                            value="<%= userInput.email ? userInput.email : (user ? user.email : '') %>"
+                                                                                                            type="email"
+                                                                                                            required />
+                                                                                                        <span
+                                                                                                            class=" label_intro">Email</span>
+                                                                                                    </div>
+                                                                                                    <div
+                                                                                                        class="form_grid_4 alpha">
+                                                                                                        <select
+                                                                                                            name="region"
+                                                                                                            id="region"
+                                                                                                            class="form-control"
+                                                                                                            style="height: 29px;"
+                                                                                                            required>
+                                                                                                            <option
+                                                                                                                value="">
+                                                                                                                Select
+                                                                                                                Region
+                                                                                                            </option>
+                                                                                                            <%
+                                                                                                                regions.forEach(reg=>
+                                                                                                                {
+                                                                                                                %>
+                                                                                                                <option
+                                                                                                                    value="<%= reg.name %>"
+                                                                                                                    <%=region===reg.name
+                                                                                                                    ? 'selected'
+                                                                                                                    : ''
+                                                                                                                    %>>
+                                                                                                                    <%= reg.name
+                                                                                                                        %>
+                                                                                                                </option>
+                                                                                                                <% });
+                                                                                                                    %>
+
+                                                                                                        </select>
+                                                                                                        <span
+                                                                                                            class=" label_intro">Region</span>
+                                                                                                    </div>
+                                                                                                    <span
+                                                                                                        class="clear"></span>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        </li>
+
+                                                                                        <% if (!user) { %>
+                                                                                            <li>
+                                                                                                <div
+                                                                                                    class="form_grid_12 multiline">
+                                                                                                    <label
+                                                                                                        class="field_title">Password</label>
+                                                                                                    <div
+                                                                                                        class="form_input">
+                                                                                                        <div
+                                                                                                            class="form_grid_6 alpha">
+                                                                                                            <input
+                                                                                                                name="password"
+                                                                                                                type="password"
+                                                                                                                value="<%= userInput.password ? userInput.password : '' %>"
+                                                                                                                autocomplete="off"
+                                                                                                                <%=user
+                                                                                                                ? ''
+                                                                                                                : 'required'
+                                                                                                                %> />
+                                                                                                            <span
+                                                                                                                class=" label_intro">Password</span>
+                                                                                                        </div>
+                                                                                                        <div
+                                                                                                            class="form_grid_6">
+                                                                                                            <input
+                                                                                                                name="confirmPassword"
+                                                                                                                type="password"
+                                                                                                                value="<%= userInput.confirmPassword ? userInput.confirmPassword : '' %>"
+                                                                                                                autocomplete="off"
+                                                                                                                <%=user
+                                                                                                                ? ''
+                                                                                                                : 'required'
+                                                                                                                %> />
+                                                                                                            <span
+                                                                                                                class=" label_intro">Confirm
+                                                                                                                Password</span>
+                                                                                                        </div>
+                                                                                                        <span
+                                                                                                            class="clear"></span>
+                                                                                                    </div>
+                                                                                                </div>
+                                                                                            </li>
+                                                                                            <% } %>
+
+                                                                                    </ul>
+                                                                                </fieldset>
+                                                                            </li>
+
+
+
+                                                                            <li>
+                                                                                <fieldset>
+                                                                                    <legend>Identification</legend>
+                                                                                    <div class="form_grid_12 multiline">
+                                                                                        <label
+                                                                                            class="field_title">Identification</label>
+                                                                                        <div class="form_input">
+                                                                                            <div
+                                                                                                class="form_grid_4 alpha">
+                                                                                                <select name="idType"
+                                                                                                    id="idType"
+                                                                                                    class="form-control"
+                                                                                                    style="height: 29px;"
+                                                                                                    required>
+                                                                                                    <option value="">
+                                                                                                        Select
+                                                                                                        ID Type
+                                                                                                    </option>
+                                                                                                    <option
+                                                                                                        value="Ghana Card"
+                                                                                                        <%=user.idType==='Ghana Card'
+                                                                                                        ? 'selected'
+                                                                                                        : '' %>
+                                                                                                        >Ghana
+                                                                                                        Card
+                                                                                                    </option>
+                                                                                                    <option
+                                                                                                        value="Passport"
+                                                                                                        <%=user.idType==='APassport'
+                                                                                                        ? 'selected'
+                                                                                                        : '' %>
+                                                                                                        >Passport
+                                                                                                    </option>
+                                                                                                    <option
+                                                                                                        value="Drivers Licence"
+                                                                                                        <%=user.idType==='Drivers Licence'
+                                                                                                        ? 'selected'
+                                                                                                        : '' %>
+                                                                                                        >Drivers
+                                                                                                        Licence
+                                                                                                    </option>
+
+                                                                                                </select>
+                                                                                                <span
+                                                                                                    class=" label_intro">ID
+                                                                                                    Type</span>
+                                                                                            </div>
+                                                                                            <div class="form_grid_4">
+                                                                                                <input name="idNumber"
+                                                                                                    value="<%= userInput.idNumber ? userInput.idNumber : (user ? user.idNumber : '') %>"
+                                                                                                    type="text"
+                                                                                                    required />
+                                                                                                <span
+                                                                                                    class=" label_intro">ID
+                                                                                                    Number</span>
+                                                                                            </div>
+                                                                                            <div class="form_grid_4">
+                                                                                                <input
+                                                                                                    style="height: 28px;"
+                                                                                                    class="form-control"
+                                                                                                    name="idExpiryDate"
+                                                                                                    value="<%= userInput.idExpiryDate ? userInput.idExpiryDate : (user ? user.idExpiryDate : '') %>"
+                                                                                                    type="date"
+                                                                                                    required />
+                                                                                                <span
+                                                                                                    class=" label_intro">Expiry</span>
+                                                                                            </div>
+                                                                                            <span class="clear"></span>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </fieldset>
+                                                                            </li>
+
+
+
+                                                                            </li>
+                                                                        </ul>
+
+                                                                        <ul>
+                                                                            <li>
+                                                                                <div class="form_grid_12">
+                                                                                    <div class="form_input">
+                                                                                        <button type="submit"
+                                                                                            class="btn_small btn_blue"><span>Submit</span></button>
+                                                                                        <button type="reset"
+                                                                                            class="btn_small btn_orange"><span>Reset</span></button>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </li>
+                                                                        </ul>
+                                                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                    <span class="clear"></span>
+                </div>
+
+        </div>
+    </body>
+
+
+    </html>

@@ -1,0 +1,196 @@
+<%- include('../../includes/admin/top-with-style.ejs') %>
+    </head>
+
+    <body id="theme-default" class="full_block">
+
+
+        <div id="left_bar">
+            <%- include('../../includes/admin/side-menu.ejs') %>
+        </div>
+
+        <div id="container">
+            <%- include('../../includes/admin/header-banner.ejs') %>
+                <div class="page_title">
+                    <span class="title_icon"><span class="users"></span></span>
+                    <h3>Job Assignment</h3>
+
+                </div>
+
+                <div class="content">
+                    <%if (errors.length> 0) { %>
+                        <% errors.forEach(error=> { %>
+                            <blockquote class="quote_orange">
+                                <p>
+                                    <%- error.msg %>
+                                </p>
+                            </blockquote>
+                            <% }) %>
+                                <% } %>
+                                    <form action="../../assign/job" method="POST" name="jobAssignment"
+                                        class="form_container left_label">
+                                        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                                        <div style="margin: 3em;">
+                                            <div class="widget_wrap tabby">
+                                                <div class="widget_top">
+                                                    <span class="h_icon list"></span>
+                                                    <h6>Assign Jobs</h6>
+                                                    <button type="submit" style="float: right;"
+                                                        class="btn_small btn_blue"><span>Submit</span></button>
+                                                </div>
+                                                <div class="widget_content">
+
+                                                    <div id="tab1">
+                                                        <div id="content">
+                                                            <div class="grid_container">
+
+                                                                <div class="grid_12">
+                                                                    <div class="widget_wrap">
+                                                                        <div class="widget_content">
+
+                                                                            <table class="display data_tbl">
+                                                                                <thead>
+                                                                                    <tr>
+                                                                                        <th>
+
+                                                                                        </th>
+                                                                                        <th>
+                                                                                            Owner
+                                                                                        </th>
+                                                                                        <th>
+                                                                                            Contact
+                                                                                        </th>
+                                                                                        <th>
+                                                                                            QR Code
+                                                                                        </th>
+                                                                                        <th>
+                                                                                            Region
+                                                                                        </th>
+                                                                                        <th>
+                                                                                            City
+                                                                                        </th>
+                                                                                        <th>
+                                                                                            Landmark
+                                                                                        </th>
+                                                                                        <th>
+                                                                                            Location
+                                                                                        </th>
+                                                                                      
+                                                                                        <th>
+                                                                                            Status
+                                                                                        </th>
+                                                                                        <th>
+                                                                                            Date
+                                                                                        </th>
+                                                                                    </tr>
+                                                                                </thead>
+                                                                                <tbody>
+                                                                                    <% dustbins.forEach((item, index)=>
+                                                                                        { %>
+                                                                                        <tr>
+                                                                                            <td>
+                                                                                                <input name="jobs[]"
+                                                                                                    class="checkbox"
+                                                                                                    type="checkbox"
+                                                                                                    value="<%= item._id %>"
+                                                                                                    tabindex="7"
+                                                                                                    style="opacity: 0;">
+                                                                                            </td>
+                                                                                            <td>
+                                                                                                <%= item.owner.firstName + ' '+item.owner.middleName + ' '+item.owner.lastName %>
+                                                                                            </td>
+                                                                                            <td>
+                                                                                                <%= item.owner.phoneNumber %>
+                                                                                            </td>
+                                                                                            <td>
+                                                                                                <img style="height: 40px;"
+                                                                                                    src="../../../qrcodes/<%= item.barcode +'.png' %>">
+                                                                                            </td>
+                                                                                            <td>
+                                                                                                <%= item.region %>
+                                                                                            </td>
+                                                                                            <td>
+                                                                                                <%= item.city %>
+                                                                                            </td>
+                                                                                            <td class="center">
+                                                                                                <%= item.landmark %>
+                                                                                            </td>
+                                                                                            <td class="center">
+                                                                                                <%= item.location.address
+                                                                                                    %>
+                                                                                            </td>
+
+                                                                                          
+                                                                                            <td class="center">
+                                                                                                <span
+                                                                                                    class="badge_style <%= item.status === 'INITIAL' ? 'b_suspend' : 'b_done' %>"
+                                                                                                    style="padding-bottom: 1em;">
+                                                                                                    <%= item.status==='INITIAL'
+                                                                                                        ? 'INITIAL'
+                                                                                                        : 'Inactive' %>
+                                                                                                </span>
+                                                                                            </td>
+                                                                                            <td class="center">
+                                                                                                <%= shortDate(item.createdAt)
+                                                                                                    %>
+                                                                                            </td>
+                                                                                        </tr>
+                                                                                        <% }) %>
+
+                                                                                </tbody>
+                                                                                <tfoot>
+                                                                                    <tr>
+                                                                                        <th>
+
+                                                                                        </th>
+                                                                                        <th>
+                                                                                            Owner
+                                                                                        </th>
+                                                                                        <th>
+                                                                                            Contact
+                                                                                        </th>
+                                                                                        <th>
+                                                                                            QR Code
+                                                                                        </th>
+                                                                                     
+                                                                                        <th>
+                                                                                            Landmark
+                                                                                        </th>
+                                                                                        <th>
+                                                                                            Location
+                                                                                        </th>
+
+                                                                                        <th>
+                                                                                            Status
+                                                                                        </th>
+                                                                                        <th>
+                                                                                            Date
+                                                                                        </th>
+                                                                                    </tr>
+
+                                                                                </tfoot>
+                                                                            </table>
+
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+
+                                                            </div>
+                                                            <span class="clear"></span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </form>
+                </div>
+
+
+
+
+        </div>
+    </body>
+
+    </div>
+
+    </html>

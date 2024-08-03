@@ -1,0 +1,250 @@
+<%- include('../../includes/admin/top-with-style.ejs') %>
+    </head>
+
+    <body id="theme-default" class="full_block">
+
+
+        <div id="left_bar">
+            <%- include('../../includes/admin/side-menu.ejs') %>
+        </div>
+
+        <div id="container">
+            <%- include('../../includes/admin/header-banner.ejs') %>
+                <div class="page_title">
+                    <span class="title_icon"><span class="users"></span></span>
+                    <h3>Assigned Jobs</h3>
+                    <div class="top_search">
+                        <form action="#" method="post">
+                            <ul id="search_box">
+                                <div class="btn_30_dark">
+                                    <a href="../../../assign/job"><span class="icon add_co"></span><span
+                                            class="btn_link">Assign Job</span></a>
+                                </div>
+                            </ul>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="content">
+                    <div style="margin: 3em;">
+                        <div class="widget_wrap tabby">
+                            <div class="widget_top">
+                                <span class="h_icon list"></span>
+                                <h6>Jobs</h6>
+
+                            </div>
+                            <div class="widget_content">
+                                <div id="tab1">
+                                    <div id="content">
+                                        <div class="grid_container">
+
+                                            <div class="grid_12">
+                                                <div class="widget_wrap">
+                                                    <div class="widget_content">
+                                                        <%if (errors.length> 0) { %> <% errors.forEach(error=> { %>
+                                                                <blockquote class="quote_orange">
+                                                                    <p>
+                                                                        <%- error.msg %>
+                                                                    </p>
+                                                                </blockquote>
+                                                                <% }) %>
+                                                                    <% } %>
+
+                                                                        <%if (errorMessage) { %>
+                                                                            <blockquote class="quote_orange">
+                                                                                <p>
+                                                                                    <%- errorMessage %>
+                                                                                </p>
+                                                                            </blockquote>
+                                                                            <% } %>
+
+
+                                                                                <%if (successMessage) { %>
+                                                                                    <blockquote class="quote_green">
+                                                                                        <p>
+                                                                                            <%- successMessage %>
+                                                                                        </p>
+                                                                                    </blockquote>
+                                                                                    <% } %>
+
+                                                                                        <table class="display data_tbl">
+                                                                                            <thead>
+                                                                                                <tr>
+                                                                                                    <th>
+                                                                                                        Location
+                                                                                                    </th>
+                                                                                                    <th>
+                                                                                                        Region
+                                                                                                    </th>
+                                                                                                    <th>
+                                                                                                        City
+                                                                                                    </th>
+                                                                                                    <th>
+                                                                                                        Landmark
+                                                                                                    </th>
+                                                                                                    <th>
+                                                                                                        QR Code
+                                                                                                    </th>
+                                                                                                    <th>
+                                                                                                        Team
+                                                                                                    </th>
+
+                                                                                                    <th>
+                                                                                                        Created By
+                                                                                                    </th>
+
+                                                                                                    <th>
+                                                                                                        Date
+                                                                                                    </th>
+                                                                                                    <!-- <th>
+                                                                                                        Action
+                                                                                                    </th> -->
+                                                                                                </tr>
+                                                                                            </thead>
+                                                                                            <tbody>
+                                                                                                <% jobs.forEach((item,
+                                                                                                    index)=> { %>
+                                                                                                    <tr>
+                                                                                                        <td>
+                                                                                                            <% item.job.forEach((work,
+                                                                                                                index)=>
+                                                                                                                { %>
+                                                                                                                <span
+                                                                                                                    style="float: left;">
+                                                                                                                    <%= work.location.address
+                                                                                                                        %>
+                                                                                                                </span><br /><br /><br />
+                                                                                                                <%})%>
+                                                                                                        </td>
+                                                                                                        <td>
+                                                                                                            <% item.job.forEach((work,
+                                                                                                                index)=>
+                                                                                                                { %>
+                                                                                                                <span
+                                                                                                                    style="float: left;">
+                                                                                                                    <%= work.region
+                                                                                                                        %>
+                                                                                                                </span>
+                                                                                                                <%})%>
+                                                                                                        </td>
+                                                                                                        <td>
+                                                                                                            <% item.job.forEach((work,
+                                                                                                                index)=>
+                                                                                                                { %>
+                                                                                                                <span
+                                                                                                                    style="float: left;">
+                                                                                                                    <%= work.city
+                                                                                                                        %>
+                                                                                                                </span>
+                                                                                                                <%})%>
+                                                                                                        </td>
+                                                                                                        <td>
+                                                                                                            <% item.job.forEach((work,
+                                                                                                                index)=>
+                                                                                                                { %>
+                                                                                                                <span
+                                                                                                                    style="float: left;">
+                                                                                                                    <%= work.landmark
+                                                                                                                        %>
+                                                                                                                </span>
+                                                                                                                <%})%>
+                                                                                                        </td>
+                                                                                                        <td>
+                                                                                                            <% item.job.forEach((work,
+                                                                                                                index)=>
+                                                                                                                { %>
+                                                                                                                <img style="height: 40px;"
+                                                                                                                    src="../../../qrcodes/<%= work.barcode +'.png' %>"><br /><br />
+                                                                                                                <%})%>
+                                                                                                        </td>
+                                                                                                        <td>
+                                                                                                            <% item.team.forEach((people,
+                                                                                                                index)=>
+                                                                                                                { %>
+                                                                                                                <span
+                                                                                                                    style="float: left;"><a
+                                                                                                                        href="../../team/view/<%= people._id %>">
+                                                                                                                        <%= people.name
+                                                                                                                            %>
+                                                                                                                    </a></span><br /><br /><br />
+                                                                                                                <%})%>
+                                                                                                        </td>
+
+                                                                                                        <td
+                                                                                                            class="center">
+                                                                                                            <%= item.createdBy.firstName
+                                                                                                            +' '+item.createdBy.lastName
+                                                                                                        %>
+                                                                                                        </td>
+                                                                                                        <td
+                                                                                                            class="center">
+                                                                                                            <%= longDate(item.createdAt)
+                                                                                                            %>
+                                                                                                        </td>
+
+                                                                                                        <td
+                                                                                                            class="center">
+                                                                                                            
+                                                                                                        </td>
+                                                                                                      
+                                                                                                        <td
+                                                                                                            class="center">
+                                                                                                            
+                                                                                                        </td>
+                                                                                                    </tr>
+                                                                                                    <% }) %>
+                                                                                            </tbody>
+                                                                                            <tfoot>
+                                                                                                <tr>
+                                                                                                    <th>
+                                                                                                        Location
+                                                                                                    </th>
+                                                                                                    <th>
+                                                                                                        Region
+                                                                                                     </th>
+                                                                                                    <th>
+                                                                                                        City
+                                                                                                     </th>
+                                                                                                     <th>
+                                                                                                        Landmark
+                                                                                                     </th>
+                                                                                                    <th>
+                                                                                                      QR Code
+                                                                                                    </th>
+                                                                                                    <th>
+                                                                                                        Team
+                                                                                                    </th>
+
+                                                                                                    <th>
+                                                                                                        Created By
+                                                                                                    </th>
+                                                                                                    
+                                                                                                    <th>
+                                                                                                        Date
+                                                                                                    </th>
+                                                                                                    <!-- <th>
+                                                                                                        Action
+                                                                                                    </th> -->
+                                                                                                </tr>
+                                                                                            </tfoot>
+                                                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                        <span class="clear"></span>
+                                    </div>
+                                </div>
+                              
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+        </div>
+    </body>
+
+
+    </html>

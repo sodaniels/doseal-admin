@@ -1,0 +1,616 @@
+<%- include('../../includes/admin/top-with-style.ejs') %>
+    </head>
+
+    <body id="theme-default" class="full_block">
+
+
+        <div id="left_bar">
+            <%- include('../../includes/admin/side-menu.ejs') %>
+        </div>
+
+        <div id="container">
+            <%- include('../../includes/admin/header-banner.ejs') %>
+                <div class="page_title">
+                    <span class="title_icon"><span class="users"></span></span>
+                    <h3>Vehicles</h3>
+                    <div class="top_search">
+                        <form action="#" method="post">
+                            <ul id="search_box">
+                                <div class="btn_30_dark">
+                                    <a href="../../../vehicle/add"><span class="icon add_co"></span><span
+                                            class="btn_link">Add
+                                            Vehicle</span></a>
+                                </div>
+                            </ul>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="content">
+                    <div style="margin: 3em;">
+                        <div class="widget_wrap tabby">
+                            <div class="widget_top">
+                                <span class="h_icon list"></span>
+                                <h6>Vehicles</h6>
+                                <div id="widget_tab">
+                                    <ul>
+                                        <li><a href="#tab1" class="active_tab">All</a></li>
+                                        <li><a href="#tab2">Assigned</a></li>
+                                        <li><a href="#tab3" class="">Unassigned</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="widget_content">
+                                <div id="tab1" style="display: none;">
+                                    <div id="content">
+                                        <div class="grid_container">
+
+                                            <div class="grid_12">
+                                                <div class="widget_wrap">
+                                                    <div class="widget_content">
+                                                        <%if (errors.length> 0) { %> <% errors.forEach(error=> { %>
+                                                                <blockquote class="quote_orange">
+                                                                    <p>
+                                                                        <%- error.msg %>
+                                                                    </p>
+                                                                </blockquote>
+                                                                <% }) %>
+                                                                    <% } %>
+
+                                                                        <%if (errorMessage) { %>
+                                                                            <blockquote class="quote_orange">
+                                                                                <p>
+                                                                                    <%- errorMessage %>
+                                                                                </p>
+                                                                            </blockquote>
+                                                                            <% } %>
+
+
+                                                                                <%if (successMessage) { %>
+                                                                                    <blockquote class="quote_green">
+                                                                                        <p>
+                                                                                            <%- successMessage %>
+                                                                                        </p>
+                                                                                    </blockquote>
+                                                                                    <% } %>
+
+                                                                                        <table class="display data_tbl">
+                                                                                            <thead>
+                                                                                                <tr>
+                                                                                                    <th>
+                                                                                                        Vehicle Name
+                                                                                                    </th>
+                                                                                                    <th>
+                                                                                                        Vehicle Type
+                                                                                                    </th>
+                                                                                                    <th>
+                                                                                                        Status
+                                                                                                    </th>
+                                                                                                    <th>
+                                                                                                        Make
+                                                                                                    </th>
+                                                                                                    <th>
+                                                                                                        Vehicle Number
+                                                                                                    </th>
+                                                                                                    <th>
+                                                                                                        Fuel Type
+                                                                                                    </th>
+
+                                                                                                    <th>
+                                                                                                        Created By
+                                                                                                    </th>
+                                                                                                    <th>
+                                                                                                        Assigned Status
+                                                                                                    </th>
+                                                                                                    <th>
+                                                                                                        Date
+                                                                                                    </th>
+                                                                                                    <th>
+                                                                                                        Action
+                                                                                                    </th>
+                                                                                                </tr>
+                                                                                            </thead>
+                                                                                            <tbody>
+                                                                                                <% vehicles.forEach((item,
+                                                                                                    index)=> { %>
+                                                                                                    <tr>
+                                                                                                        <td>
+                                                                                                            <%= '[' +
+                                                                                                                item.name
+                                                                                                                + '] '
+                                                                                                                + '[' +
+                                                                                                                item.year
+                                                                                                                + ' ' +
+                                                                                                                item.make
+                                                                                                                + ' ' +
+                                                                                                                item.model
+                                                                                                                + ']' %>
+                                                                                                        </td>
+                                                                                                        <td>
+                                                                                                            <%= item.carType
+                                                                                                                %>
+                                                                                                        </td>
+                                                                                                        <td>
+                                                                                                            <%= item.status
+                                                                                                                %>
+                                                                                                        </td>
+                                                                                                        <td
+                                                                                                            class="center">
+                                                                                                            <%= item.make
+                                                                                                                %>
+                                                                                                        </td>
+                                                                                                        <td
+                                                                                                            class="center">
+                                                                                                            <%= item.vehicleNumber
+                                                                                                                %>
+                                                                                                        </td>
+                                                                                                        <td
+                                                                                                            class="center">
+                                                                                                            <%= item.fuelType
+                                                                                                                %>
+                                                                                                        </td>
+                                                                                                        <td
+                                                                                                            class="center">
+                                                                                                            <%= item.createdBy.firstName +' '+item.createdBy.lastName
+                                                                                                                %>
+                                                                                                        </td>
+
+                                                                                                        <td class="center">
+                                                                                                            <%= item.assignedStatus %>
+                                                                                                            </td>
+
+                                                                                                        <td
+                                                                                                            class="center">
+                                                                                                            <%= longDate(item.createdAt)
+                                                                                                                %>
+                                                                                                        </td>
+                                                                                                      
+                                                                                                        <td
+                                                                                                            class="center">
+                                                                                                            <span>
+                                                                                                                <a href="../../../vehicle/edit/<%= item.id %>"
+                                                                                                                    class="action-icons c-edit"
+                                                                                                                    href="#"
+                                                                                                                    title="Edit">Edit</a></span><span>
+                                                                                                                <a href="../../../vehicle/delete/<%= item.id %>"
+                                                                                                                    class="action-icons c-delete"
+                                                                                                                    href="#"
+                                                                                                                    title="Delete"
+                                                                                                                    onclick="return confirmDeletion(this)">Delete</a></span>
+                                                                                                            </span>
+                                                                                                        </td>
+                                                                                                    </tr>
+                                                                                                    <% }) %>
+                                                                                            </tbody>
+                                                                                            <tfoot>
+                                                                                                <tr>
+                                                                                                    <th>
+                                                                                                        Vehicle Name
+                                                                                                    </th>
+                                                                                                    <th>
+                                                                                                        Vehicle Type
+                                                                                                    </th>
+                                                                                                    <th>
+                                                                                                        Status
+                                                                                                    </th>
+                                                                                                    <th>
+                                                                                                        Make
+                                                                                                    </th>
+                                                                                                    <th>
+                                                                                                        Vehicle Number
+                                                                                                    </th>
+                                                                                                    <th>
+                                                                                                        Fuel Type
+                                                                                                    </th>
+                                                                                                    <th>
+                                                                                                        Created By
+                                                                                                    </th>
+                                                                                                    <th>
+                                                                                                        Assigned Status
+                                                                                                    </th>
+
+                                                                                                    <th>
+                                                                                                        Date
+                                                                                                    </th>
+                                                                                                    <th>
+                                                                                                        Action
+                                                                                                    </th>
+                                                                                                </tr>
+                                                                                            </tfoot>
+                                                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                        <span class="clear"></span>
+                                    </div>
+                                </div>
+                                <div id="tab2" style="display: block;">
+                                    <div id="content">
+                                        <div class="grid_container">
+
+                                            <div class="grid_12">
+                                                <div class="widget_wrap">
+                                                    <div class="widget_content">
+                                                        <%if (errors.length> 0) { %> <% errors.forEach(error=> { %>
+                                                                <blockquote class="quote_orange">
+                                                                    <p>
+                                                                        <%- error.msg %>
+                                                                    </p>
+                                                                </blockquote>
+                                                                <% }) %>
+                                                                    <% } %>
+
+                                                                        <%if (errorMessage) { %>
+                                                                            <blockquote class="quote_orange">
+                                                                                <p>
+                                                                                    <%- errorMessage %>
+                                                                                </p>
+                                                                            </blockquote>
+                                                                            <% } %>
+
+
+                                                                                <%if (successMessage) { %>
+                                                                                    <blockquote class="quote_green">
+                                                                                        <p>
+                                                                                            <%- successMessage %>
+                                                                                        </p>
+                                                                                    </blockquote>
+                                                                                    <% } %>
+
+                                                                                        <table class="display data_tbl">
+                                                                                            <thead>
+                                                                                                <tr>
+                                                                                                    <th>
+                                                                                                        Vehicle Name
+                                                                                                    </th>
+                                                                                                    <th>
+                                                                                                        Vehicle Type
+                                                                                                    </th>
+                                                                                                    <th>
+                                                                                                        Status
+                                                                                                    </th>
+                                                                                                    <th>
+                                                                                                        Make
+                                                                                                    </th>
+                                                                                                    <th>
+                                                                                                        Vehicle Number
+                                                                                                    </th>
+                                                                                                    <th>
+                                                                                                        Fuel Type
+                                                                                                    </th>
+                                                                                                    <th>
+                                                                                                        Ownership
+                                                                                                    </th>
+
+                                                                                                    <th>
+                                                                                                        Assigned Status
+                                                                                                    </th>
+
+                                                                                                    <th>
+                                                                                                        Date
+                                                                                                    </th>
+                                                                                                    <th>
+                                                                                                        Action
+                                                                                                    </th>
+                                                                                                </tr>
+                                                                                            </thead>
+                                                                                            <tbody>
+                                                                                                <% assigneds.forEach((item,
+                                                                                                    index)=> { %>
+                                                                                                    <tr>
+                                                                                                        <td>
+                                                                                                            <%= '[' +
+                                                                                                                item.name
+                                                                                                                + '] '
+                                                                                                                + '[' +
+                                                                                                                item.year
+                                                                                                                + ' ' +
+                                                                                                                item.make
+                                                                                                                + ' ' +
+                                                                                                                item.model
+                                                                                                                + ']' %>
+                                                                                                        </td>
+                                                                                                        <td>
+                                                                                                            <%= item.carType
+                                                                                                                %>
+                                                                                                        </td>
+                                                                                                        <td>
+                                                                                                            <%= item.status
+                                                                                                                %>
+                                                                                                        </td>
+                                                                                                        <td
+                                                                                                            class="center">
+                                                                                                            <%= item.make
+                                                                                                                %>
+                                                                                                        </td>
+                                                                                                        <td
+                                                                                                            class="center">
+                                                                                                            <%= item.vehicleNumber
+                                                                                                                %>
+                                                                                                        </td>
+                                                                                                        <td
+                                                                                                            class="center">
+                                                                                                            <%= item.fuelType
+                                                                                                                %>
+                                                                                                        </td>
+                                                                                                        <td
+                                                                                                            class="center">
+                                                                                                            <%= item.ownership
+                                                                                                                %>
+                                                                                                        </td>
+                                                                                                        <td
+                                                                                                        class="center">
+                                                                                                        <%= item.assignedStatus %>
+                                                                                                    </td>
+
+                                                                                                        <td
+                                                                                                            class="center">
+                                                                                                            <%= longDate(item.createdAt)
+                                                                                                                %>
+                                                                                                        </td>
+                                                                                                        <td
+                                                                                                            class="center">
+                                                                                                            <span>
+                                                                                                                <a href="../../../vehicle/edit/<%= item.id %>"
+                                                                                                                    class="action-icons c-edit"
+                                                                                                                    href="#"
+                                                                                                                    title="Edit">Edit</a></span><span>
+                                                                                                                <a href="../../../vehicle/delete/<%= item.id %>"
+                                                                                                                    class="action-icons c-delete"
+                                                                                                                    href="#"
+                                                                                                                    title="Delete"
+                                                                                                                    onclick="return confirmDeletion(this)">Delete</a></span>
+                                                                                                            </span>
+                                                                                                        </td>
+                                                                                                    </tr>
+                                                                                                    <% }) %>
+                                                                                            </tbody>
+                                                                                            <tfoot>
+                                                                                                <tr>
+                                                                                                    <th>
+                                                                                                        Vehicle Name
+                                                                                                    </th>
+                                                                                                    <th>
+                                                                                                        Vehicle Type
+                                                                                                    </th>
+                                                                                                    <th>
+                                                                                                        Status
+                                                                                                    </th>
+                                                                                                    <th>
+                                                                                                        Make
+                                                                                                    </th>
+                                                                                                    <th>
+                                                                                                        Vehicle Number
+                                                                                                    </th>
+                                                                                                    <th>
+                                                                                                        Fuel Type
+                                                                                                    </th>
+                                                                                                    <th>
+                                                                                                        Ownership
+                                                                                                    </th>
+                                                                                                    <th>
+                                                                                                        Assigned Status
+                                                                                                    </th>
+
+                                                                                                    <th>
+                                                                                                        Date
+                                                                                                    </th>
+                                                                                                    <th>
+                                                                                                        Action
+                                                                                                    </th>
+                                                                                                </tr>
+                                                                                            </tfoot>
+                                                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                        <span class="clear"></span>
+                                    </div>
+                                </div>
+                                <div id="tab3" style="display: none;">
+                                    <div id="content">
+                                        <div class="grid_container">
+
+                                            <div class="grid_12">
+                                                <div class="widget_wrap">
+                                                    <div class="widget_content">
+                                                        <%if (errors.length> 0) { %> <% errors.forEach(error=> { %>
+                                                                <blockquote class="quote_orange">
+                                                                    <p>
+                                                                        <%- error.msg %>
+                                                                    </p>
+                                                                </blockquote>
+                                                                <% }) %>
+                                                                    <% } %>
+
+                                                                        <%if (errorMessage) { %>
+                                                                            <blockquote class="quote_orange">
+                                                                                <p>
+                                                                                    <%- errorMessage %>
+                                                                                </p>
+                                                                            </blockquote>
+                                                                            <% } %>
+
+
+                                                                                <%if (successMessage) { %>
+                                                                                    <blockquote class="quote_green">
+                                                                                        <p>
+                                                                                            <%- successMessage %>
+                                                                                        </p>
+                                                                                    </blockquote>
+                                                                                    <% } %>
+
+                                                                                        <table class="display data_tbl">
+                                                                                            <thead>
+                                                                                                <tr>
+                                                                                                    <th>
+                                                                                                        Vehicle Name
+                                                                                                    </th>
+                                                                                                    <th>
+                                                                                                        Vehicle Type
+                                                                                                    </th>
+                                                                                                    <th>
+                                                                                                        Status
+                                                                                                    </th>
+                                                                                                    <th>
+                                                                                                        Make
+                                                                                                    </th>
+                                                                                                    <th>
+                                                                                                        Vehicle Number
+                                                                                                    </th>
+                                                                                                    <th>
+                                                                                                        Fuel Type
+                                                                                                    </th>
+                                                                                               
+
+                                                                                                    <th>
+                                                                                                        Ownership
+                                                                                                    </th>
+
+                                                                                                    <th>
+                                                                                                        Assign Status
+                                                                                                    </th>
+
+                                                                                                    <th>
+                                                                                                        Date
+                                                                                                    </th>
+                                                                                                    <th>
+                                                                                                        Action
+                                                                                                    </th>
+                                                                                                </tr>
+                                                                                            </thead>
+                                                                                            <tbody>
+                                                                                                <% unassigneds.forEach((item,
+                                                                                                    index)=> { %>
+                                                                                                    <tr>
+                                                                                                        <td>
+                                                                                                            <%= '[' +
+                                                                                                                item.name
+                                                                                                                + '] '
+                                                                                                                + '[' +
+                                                                                                                item.year
+                                                                                                                + ' ' +
+                                                                                                                item.make
+                                                                                                                + ' ' +
+                                                                                                                item.model
+                                                                                                                + ']' %>
+                                                                                                        </td>
+                                                                                                        <td>
+                                                                                                            <%= item.carType
+                                                                                                                %>
+                                                                                                        </td>
+                                                                                                        <td>
+                                                                                                            <%= item.status
+                                                                                                                %>
+                                                                                                        </td>
+                                                                                                        <td
+                                                                                                            class="center">
+                                                                                                            <%= item.make
+                                                                                                                %>
+                                                                                                        </td>
+                                                                                                        <td
+                                                                                                            class="center">
+                                                                                                            <%= item.vehicleNumber
+                                                                                                                %>
+                                                                                                        </td>
+                                                                                                        <td
+                                                                                                            class="center">
+                                                                                                            <%= item.fuelType
+                                                                                                                %>
+                                                                                                        </td>
+                                                                                                    
+                                                                                                        <td
+                                                                                                            class="center">
+                                                                                                            <%= item.ownership
+                                                                                                                %>
+                                                                                                        </td>
+
+                                                                                                        <td
+                                                                                                        class="center">
+                                                                                                        <%= item.assignedStatus
+                                                                                                            %>
+                                                                                                    </td>
+
+                                                                                                        <td
+                                                                                                            class="center">
+                                                                                                            <%= longDate(item.createdAt)
+                                                                                                                %>
+                                                                                                        </td>
+                                                                                                        <td
+                                                                                                            class="center">
+                                                                                                            <span>
+                                                                                                                <a href="../../../vehicle/edit/<%= item.id %>"
+                                                                                                                    class="action-icons c-edit"
+                                                                                                                    href="#"
+                                                                                                                    title="Edit">Edit</a></span><span>
+                                                                                                                <a href="../../../vehicle/delete/<%= item.id %>"
+                                                                                                                    class="action-icons c-delete"
+                                                                                                                    href="#"
+                                                                                                                    title="Delete"
+                                                                                                                    onclick="return confirmDeletion(this)">Delete</a></span>
+                                                                                                            </span>
+                                                                                                        </td>
+                                                                                                    </tr>
+                                                                                                    <% }) %>
+                                                                                            </tbody>
+                                                                                            <tfoot>
+                                                                                                <tr>
+                                                                                                    <th>
+                                                                                                        Vehicle Name
+                                                                                                    </th>
+                                                                                                    <th>
+                                                                                                        Vehicle Type
+                                                                                                    </th>
+                                                                                                    <th>
+                                                                                                        Status
+                                                                                                    </th>
+                                                                                                    <th>
+                                                                                                        Make
+                                                                                                    </th>
+                                                                                                    <th>
+                                                                                                        Vehicle Number
+                                                                                                    </th>
+                                                                                                    <th>
+                                                                                                        Fuel Type
+                                                                                                    </th>
+                                                                                               
+                                                                                                    <th>
+                                                                                                        Ownership
+                                                                                                    </th>
+
+                                                                                                    <th>
+                                                                                                        Assign Status
+                                                                                                    </th>
+
+                                                                                                    <th>
+                                                                                                        Date
+                                                                                                    </th>
+                                                                                                    <th>
+                                                                                                        Action
+                                                                                                    </th>
+                                                                                                </tr>
+                                                                                            </tfoot>
+                                                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                        <span class="clear"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+        </div>
+    </body>
+
+
+    </html>
