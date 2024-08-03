@@ -67,10 +67,11 @@ async function postTopUpWallet(req, res) {
 		} catch (error) {}
 
 		if (storeWalletTopUp) {
+			Log.info("[ApiController.js][postTopUpWallet]\t Emitting topup update: ");
 			try {
 				io.getIO().emit("walletTopupDataUpdate", walletData);
 				Log.info(
-					"[ApiController.js][postTopUpWallet]\t Emitted upload Image event: "
+					"[ApiController.js][postTopUpWallet]\t Emitted topup update: "
 				);
 			} catch (error) {
 				Log.info(

@@ -1,9 +1,11 @@
 const axios = require("axios");
+const io = require("../../../socket");
+
 const { Log } = require("../../helpers/Log");
 const WalletTopup = require("../../models/wallet-topup.model");
 const { sendText } = require("../../helpers/sendText");
 
-async function walletTopupCallback(req, res) {
+async function postWalletTopupCallback(req, res) {
 	let staveRequest, requestId;
 	Log.info("[CallbackController.js][walletTopupCallback]\tIP: " + req.ip);
 	Log.info(
@@ -22,6 +24,20 @@ async function walletTopupCallback(req, res) {
 		request.externalReference = req.body.externalReference;
 		try {
 			staveRequest = await request.save();
+			Log.info(
+				"[CallbackController.js][postWalletTopupCallback]\t Emitting single topup update: "
+			);
+			try {
+				io.getIO().emit("singleItemTopUpDataUpdate", request);
+				Log.info(
+					"[CallbackController.js][postWalletTopupCallback]\t Emitted single topup update: "
+				);
+			} catch (error) {
+				Log.info(
+					`[CallbackController.js][postWalletTopupCallback]\t error emitting walletTopUp update: `,
+					error
+				);
+			}
 
 			const currency = "GHS";
 			const amount = parseFloat(request.amount).toFixed(2);
@@ -93,5 +109,5 @@ async function getRequestByRequestId(requestId) {
 }
 
 module.exports = {
-	walletTopupCallback,
+	postWalletTopupCallback,
 };
