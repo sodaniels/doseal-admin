@@ -21,5 +21,7 @@ router.put(
 );
 // post add wallet information
 router.post("/wallet", validator.validateWallet, apiController.postWallet);
+// get wallets
+router.get("/wallet", apiController.getWallets);
 
 module.exports = router;

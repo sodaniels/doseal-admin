@@ -233,11 +233,7 @@ async function postWallet(req, res) {
 	}
 	let walletData;
 	try {
-		Log.info(
-			`[ApiController.js][postWallet][${JSON.stringify(
-				req.body
-			)}]\t incoming request: ` + req.ip
-		);
+		Log.info(`[ApiController.js][postWallet]\t incoming request: ` + req.ip);
 
 		const q = req.body.phoneNumber.substr(-9);
 
@@ -250,7 +246,7 @@ async function postWallet(req, res) {
 				success: false,
 				code: 419,
 				status: ServiceCode.ALREADY_EXISTS,
-				message: "Wallet already exists",
+				message: "Wallet has been added already.",
 			});
 		}
 
@@ -296,6 +292,38 @@ async function postWallet(req, res) {
 		});
 	}
 }
+//get wallet
+async function getWallets(req, res) {
+	try {
+		Log.info(
+			`[ApiController.js][getWallets][${req.user._id}]\t retrieving wallets`
+		);
+		const wallets = await Wallet.find({ createdBy: req.user._id }).sort({
+			_id: -1,
+		});
+		if (wallets.length > 0) {
+			return res.json({
+				success: true,
+				code: 200,
+				data: wallets,
+			});
+		} else {
+			return res.json({
+				success: true,
+				code: 404,
+				data: [],
+			});
+		}
+	} catch (error) {
+		Log.info(
+			`[ApiController.js][getWallets]\t error retrieving wallet data: ` + error
+		);
+		return res.json({
+			success: false,
+			code: 500,
+		});
+	}
+}
 
 module.exports = {
 	getPageCategory,
@@ -304,4 +332,5 @@ module.exports = {
 	getProfile,
 	putUpdateProfile,
 	postWallet,
+	getWallets,
 };
