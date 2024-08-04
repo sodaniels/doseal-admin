@@ -13,7 +13,7 @@ const handleValidationErrors = (req, res) => {
 		});
 		return formattedErrors;
 	}
-	return false; // Return false if there are no validation errors
+	return false;
 };
 
 module.exports = { handleValidationErrors };

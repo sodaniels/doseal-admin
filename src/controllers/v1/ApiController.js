@@ -1,5 +1,6 @@
 const Page = require("../../models/page.model");
 const User = require("../../models/user");
+const Wallet = require("../../models/wallet.model");
 const WalletTopup = require("../../models/wallet-topup.model");
 const { Log } = require("../../helpers/Log");
 const ServiceCode = require("../../constants/serviceCode");
@@ -218,6 +219,83 @@ async function putUpdateProfile(req, res) {
 		);
 	}
 }
+// post wallet
+async function postWallet(req, res) {
+	const validationError = handleValidationErrors(req, res);
+	if (validationError) {
+		const errorRes = await apiErrors.create(
+			errorMessages.errors.API_MESSAGE_WALLET_FAILED,
+			"POST",
+			validationError,
+			undefined
+		);
+		return res.json(errorRes);
+	}
+	let walletData;
+	try {
+		Log.info(
+			`[ApiController.js][postWallet][${JSON.stringify(
+				req.body
+			)}]\t incoming request: ` + req.ip
+		);
+
+		const q = req.body.phoneNumber.substr(-9);
+
+		let wallet = await Wallet.findOne({
+			phoneNumber: { $regex: q, $options: "i" },
+		});
+
+		if (wallet) {
+			return res.json({
+				success: false,
+				code: 419,
+				status: ServiceCode.ALREADY_EXISTS,
+				message: "Wallet already exists",
+			});
+		}
+
+		const userWalletData = new Wallet({
+			createdBy: req.user._id,
+			phoneNumber: req.body.phoneNumber,
+			mno: req.body.mno,
+		});
+		const storeWallet = await userWalletData.save();
+
+		try {
+			walletData = await Wallet.find({ createdBy: req.user._id }).sort({
+				_id: -1,
+			});
+		} catch (error) {}
+
+		if (storeWallet) {
+			Log.info("[ApiController.js][postWallet]\t Emitting wallet update: ");
+			try {
+				io.getIO().emit("walletUpdate", walletData);
+				Log.info("[ApiController.js][postWallet]\t Emitted wallet update: ");
+			} catch (error) {
+				Log.info(
+					`[ApiController.js][postWallet]\t error emitting wallet update: `,
+					error
+				);
+			}
+			return res.json({
+				success: true,
+				message: ServiceCode.SUCCESS,
+			});
+		} else {
+			return res.json({
+				success: false,
+				message: ServiceCode.FAILED,
+			});
+		}
+	} catch (error) {
+		return res.json({
+			success: false,
+			error: error.message,
+			message: ServiceCode.ERROR_OCCURED,
+		});
+	}
+}
 
 module.exports = {
 	getPageCategory,
@@ -225,4 +303,5 @@ module.exports = {
 	getTopUpWallets,
 	getProfile,
 	putUpdateProfile,
+	postWallet,
 };

@@ -3,9 +3,10 @@ exports.errors = {
     API_MESSAGE_LOGIN_FAILED : "Request Failed",
     API_MESSAGE_CREATE_DEVICE_FAILED : "Create Device Request Failed",
     API_MESSAGE_UPDATE_PROFILE_FAILED: "Update Profile Request Failed",
+    API_MESSAGE_WALLET_FAILED: "Wallet Request Failed",
 
 
-    
+
     API_MESSAGE_RESET_PIN_FAILED : "Reset PIN Request Failed",
     API_MESSAGE_REGISTRATION_FAILED : "Registration Request Failed",
     API_MESSAGE_CREATE_FEEDBACK_FAILED : "Feedback Request Failed",

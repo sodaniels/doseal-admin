@@ -19,5 +19,7 @@ router.put(
 	validator.validateProfile,
 	apiController.putUpdateProfile
 );
+// post add wallet information
+router.post("/wallet", validator.validateWallet, apiController.postWallet);
 
 module.exports = router;
