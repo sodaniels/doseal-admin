@@ -149,6 +149,7 @@ async function confirmCode(req, res) {
 					lastName: user.lastName,
 					phoneNumber: user.phoneNumber,
 					status: user.registration,
+					balance: user.balance,
 					token: await createJwtToken(user._id),
 				});
 			} else {
@@ -257,6 +258,7 @@ async function completeRegistration(req, res) {
 							lastName: user.lastName,
 							phoneNumber: user.phoneNumber,
 							status: user.registration,
+							balance: user.balance,
 							token: await createJwtToken(user._id),
 						});
 					}

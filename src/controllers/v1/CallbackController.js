@@ -1,6 +1,7 @@
 const axios = require("axios");
-const io = require("../../../socket");
 
+const User = require("../../models/user");
+const io = require("../../../socket");
 const { Log } = require("../../helpers/Log");
 const WalletTopup = require("../../models/wallet-topup.model");
 const { sendText } = require("../../helpers/sendText");
@@ -17,7 +18,7 @@ async function postWalletTopupCallback(req, res) {
 
 	let request = await getRequestByRequestId(requestId);
 
-	if (request) {
+	if (request && request.statusCode === 411) {
 		request.statusCode = req.body.code;
 		request.status = req.body.status;
 		request.statusMessage = req.body.message;
@@ -49,6 +50,20 @@ async function postWalletTopupCallback(req, res) {
 
 			if (staveRequest) {
 				if (req.body.code.toString() === "200") {
+					// update balance
+					try {
+						let user = await User.findOne({
+							_id: request.createdBy._id,
+						});
+						const balance = user.balance ? user.balance : 0;
+						user.balance = Number(balance) + Number(request.amount);
+						await user.save();
+					} catch (error) {
+						Log.info(
+							`[CallbackController.js][getRequestByReference][${requestId}]\t error updating balance: ${error}`
+						);
+					}
+
 					const message = `Hi ${name}, your transfer of ${currency} ${amount} from (${from}) to your wallet has been processed successfully. Request ID: ${requestId}. Date: ${new Date().toLocaleString()}. Reference: ${
 						req.body.externalReference
 					}`;
@@ -57,7 +72,7 @@ async function postWalletTopupCallback(req, res) {
 						Log.info(
 							`[CallbackController.js][getRequestByReference][${requestId}]\t sending success message: ${message}`
 						);
-						await sendText(phoneNumber, message);
+						// await sendText(phoneNumber, message);
 					} catch (error) {
 						Log.info(
 							`[CallbackController.js][getRequestByReference][${requestId}]\t error sending success message: ${error}`

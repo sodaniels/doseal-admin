@@ -70,6 +70,11 @@ const userSchema = new Schema({
 		enum: ["Active", "Inactive", "Blocked"],
 		default: "Inactive",
 	},
+	balance: {
+		type: Number,
+		default: 0,
+		required: false,
+	},
 	createdAt: { type: Date, default: Date.now },
 	updatedAt: { type: Date, default: Date.now },
 });
