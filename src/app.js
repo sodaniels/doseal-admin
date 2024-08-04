@@ -137,19 +137,6 @@ app.use("/", vendorRoutes);
 // error handling middleware
 app.use(errorHandler);
 
-// mongoose
-// 	.connect(
-// 		`mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@${process.env.DB_CLUSTER}.mongodb.net/${process.env.DB_NAME}?retryWrites=true&w=majority`
-// 	)
-// 	.then((result) => {
-// 		app.listen(process.env.APP_PORT, () => {
-// 			console.log(`Server running on port ${process.env.APP_PORT}`);
-// 		});
-// 	})
-// 	.catch((err) => {
-// 		console.log(err);
-// 	});
-
 mongoose
 	.connect(
 		`mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@${process.env.DB_CLUSTER}.mongodb.net/${process.env.DB_NAME}?retryWrites=true&w=majority`

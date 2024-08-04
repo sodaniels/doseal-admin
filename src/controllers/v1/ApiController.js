@@ -1,10 +1,16 @@
 const Page = require("../../models/page.model");
+const User = require("../../models/user");
 const WalletTopup = require("../../models/wallet-topup.model");
 const { Log } = require("../../helpers/Log");
 const ServiceCode = require("../../constants/serviceCode");
 const { rand10Id } = require("../../helpers/randId");
 const io = require("../../../socket");
 
+const { handleValidationErrors } = require("../../helpers/validationHelper");
+const apiErrors = require("../../helpers/errors/errors");
+const errorMessages = require("../../helpers/error-messages");
+
+//get page
 async function getPageCategory(req, res) {
 	const cat = req.params.pageCategory;
 
@@ -37,7 +43,7 @@ async function getPageCategory(req, res) {
 		});
 	}
 }
-
+// get topup wallet
 async function postTopUpWallet(req, res) {
 	let walletData;
 	try {
@@ -130,9 +136,93 @@ async function getTopUpWallets(req, res) {
 		});
 	}
 }
+// get profile information
+async function getProfile(req, res) {
+	try {
+		Log.info(
+			`[ApiController.js][getProfile][${req.user._id}]\t profile information`
+		);
+		const user = await User.findOne({ _id: req.user._id }).select(
+			"firstName middleName lastName email"
+		);
+		if (user) {
+			return res.json({
+				success: true,
+				code: 200,
+				data: user,
+			});
+		} else {
+			return res.json({
+				success: true,
+				code: 404,
+			});
+		}
+	} catch (error) {
+		Log.info(
+			`[ApiController.js][getProfile]\t error retrieving profile information: ` +
+				error
+		);
+		return res.json({
+			success: false,
+			code: 500,
+		});
+	}
+}
+// put update profile
+async function putUpdateProfile(req, res) {
+	const validationError = handleValidationErrors(req, res);
+	if (validationError) {
+		const errorRes = await apiErrors.create(
+			errorMessages.errors.API_MESSAGE_UPDATE_PROFILE_FAILED,
+			"POST",
+			validationError,
+			undefined
+		);
+		return res.json(errorRes);
+	}
+
+	try {
+		Log.info(
+			`[ApiController.js][putUpdateProfile][${req.user._id}]\t updating profile information`
+		);
+		let user = await User.findOne({ _id: req.user._id });
+		if (!user) {
+			return res.json({
+				success: false,
+				code: 404,
+				message: "User not found",
+			});
+		}
+
+		user.firstName = req.body.firstName;
+		user.middleName = req.body.middleName;
+		user.lastName = req.body.lastName;
+		user.email = req.body.email;
+		await user.save();
+		if (user.isModified) {
+			return res.json({
+				success: true,
+				code: 200,
+				message: "Profile updated successfully",
+			});
+		} else {
+			return res.json({
+				success: false,
+				code: 400,
+				message: "Profile could not be updated.",
+			});
+		}
+	} catch (error) {
+		Log.info(
+			`[ApiController.js][putUpdateProfile][${req.user._id}]\t error updating profile: ${error}`
+		);
+	}
+}
 
 module.exports = {
 	getPageCategory,
 	postTopUpWallet,
 	getTopUpWallets,
+	getProfile,
+	putUpdateProfile,
 };
