@@ -58,6 +58,21 @@ async function postWalletTopupCallback(req, res) {
 						const balance = user.balance ? user.balance : 0;
 						user.balance = Number(balance) + Number(request.amount);
 						await user.save();
+						
+						Log.info(
+							"[CallbackController.js][postWalletTopupCallback]\t Emitting balance update: "
+						);
+						try {
+							io.getIO().emit("balanceUpdate", user.balance);
+							Log.info(
+								"[CallbackController.js][postWalletTopupCallback]\t Emitted balance update: "
+							);
+						} catch (error) {
+							Log.info(
+								`[CallbackController.js][postWalletTopupCallback]\t error emitting balance update: `,
+								error
+							);
+						}
 					} catch (error) {
 						Log.info(
 							`[CallbackController.js][getRequestByReference][${requestId}]\t error updating balance: ${error}`

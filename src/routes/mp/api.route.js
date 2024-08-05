@@ -23,5 +23,11 @@ router.put(
 router.post("/wallet", validator.validateWallet, apiController.postWallet);
 // get wallets
 router.get("/wallet", apiController.getWallets);
+// post buy credit
+router.post(
+	"/buy-credit",
+	validator.validateBuyCredit,
+	apiController.postBuyCredit
+);
 
 module.exports = router;

@@ -4,6 +4,7 @@ exports.errors = {
     API_MESSAGE_CREATE_DEVICE_FAILED : "Create Device Request Failed",
     API_MESSAGE_UPDATE_PROFILE_FAILED: "Update Profile Request Failed",
     API_MESSAGE_WALLET_FAILED: "Wallet Request Failed",
+    API_MESSAGE_CREDIT_PURCHASE_FAILED: "Credit Purchase Request Failed",
 
 
 

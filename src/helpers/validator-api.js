@@ -20,9 +20,23 @@ const validateWallet = [
 	body("phoneNumber").exists().withMessage("The Phone Number is required"),
 	body("mno").exists().withMessage("The Network is required"),
 ];
-
+const validateBuyCredit = [
+	body("amount").notEmpty().trim().withMessage("The Amount is required"),
+	body("meterId").notEmpty().trim().withMessage("The Meter ID is required"),
+	body("meterName").notEmpty().trim().withMessage("The Meter Name is required"),
+	body("mno")
+		.if(body("paymentOption").equals("Mobile Money"))
+		.trim()
+		.notEmpty()
+		.withMessage("Networt is required when payment option is Mobile Money"),
+	body("phoneNumber")
+		.notEmpty()
+		.trim()
+		.withMessage("The Phone Number is required"),
+];
 
 module.exports = {
 	validateProfile,
 	validateWallet,
+	validateBuyCredit,
 };

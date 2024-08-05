@@ -1,6 +1,7 @@
 const Page = require("../../models/page.model");
 const User = require("../../models/user");
 const Wallet = require("../../models/wallet.model");
+const BuyCredit = require("../../models/buy-credit.model");
 const WalletTopup = require("../../models/wallet-topup.model");
 const { Log } = require("../../helpers/Log");
 const ServiceCode = require("../../constants/serviceCode");
@@ -324,6 +325,68 @@ async function getWallets(req, res) {
 		});
 	}
 }
+// post buy credit
+async function postBuyCredit(req, res) {
+	const validationError = handleValidationErrors(req, res);
+	if (validationError) {
+		const errorRes = await apiErrors.create(
+			errorMessages.errors.API_MESSAGE_CREDIT_PURCHASE_FAILED,
+			"POST",
+			validationError,
+			undefined
+		);
+		return res.json(errorRes);
+	}
+	let buyCreditData;
+	try {
+		Log.info(`[ApiController.js][postBuyCredit]\t incoming request: ` + req.ip);
+
+		const creditDataObject = new BuyCredit({
+			createdBy: req.user._id,
+			amount: req.body.amount,
+			meterId: req.body.meterId,
+			mno: req.body.mno,
+			meterName: req.body.meterName,
+			paymentOption: req.body.paymentOption,
+			phoneNumber: req.body.phoneNumber,
+		});
+		const storeBuyCredit = await creditDataObject.save();
+
+		try {
+			buyCreditData = await BuyCredit.find({ createdBy: req.user._id }).sort({
+				_id: -1,
+			});
+		} catch (error) {}
+
+		if (storeBuyCredit) {
+			Log.info("[ApiController.js][postBuyCredit]\t Emitting wallet update: ");
+			try {
+				io.getIO().emit("buyCreditUpdate", buyCreditData);
+				Log.info("[ApiController.js][postBuyCredit]\t Emitted wallet update: ");
+			} catch (error) {
+				Log.info(
+					`[ApiController.js][postBuyCredit]\t error emitting wallet update: `,
+					error
+				);
+			}
+			return res.json({
+				success: true,
+				message: ServiceCode.SUCCESS,
+			});
+		} else {
+			return res.json({
+				success: false,
+				message: ServiceCode.FAILED,
+			});
+		}
+	} catch (error) {
+		return res.json({
+			success: false,
+			error: error.message,
+			message: ServiceCode.ERROR_OCCURED,
+		});
+	}
+}
 
 module.exports = {
 	getPageCategory,
@@ -333,4 +396,5 @@ module.exports = {
 	putUpdateProfile,
 	postWallet,
 	getWallets,
+	postBuyCredit,
 };
