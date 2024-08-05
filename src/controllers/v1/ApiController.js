@@ -1,7 +1,7 @@
 const Page = require("../../models/page.model");
 const User = require("../../models/user");
 const Wallet = require("../../models/wallet.model");
-const BuyCredit = require("../../models/buy-credit.model");
+const Tranaction = require("../../models/transaction.model");
 const WalletTopup = require("../../models/wallet-topup.model");
 const { Log } = require("../../helpers/Log");
 const ServiceCode = require("../../constants/serviceCode");
@@ -341,7 +341,7 @@ async function postBuyCredit(req, res) {
 	try {
 		Log.info(`[ApiController.js][postBuyCredit]\t incoming request: ` + req.ip);
 
-		const creditDataObject = new BuyCredit({
+		const creditDataObject = new Tranaction({
 			createdBy: req.user._id,
 			amount: req.body.amount,
 			meterId: req.body.meterId,
