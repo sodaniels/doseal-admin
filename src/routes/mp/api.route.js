@@ -30,4 +30,6 @@ router.post(
 	apiController.postBuyCredit
 );
 
+router.get("/transactions-excerpt", apiController.getExcerptTransactions);
+
 module.exports = router;

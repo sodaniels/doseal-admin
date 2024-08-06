@@ -145,7 +145,7 @@ async function postTransactionCallback(req, res) {
 				"[CallbackController.js][postTransactionCallback]\t Emitting single topup update: "
 			);
 			try {
-				io.getIO().emit("singleItemTransactionUpdate", transaction);
+				io.getIO().emit("singleTransactionUpdate", transaction);
 				Log.info(
 					"[CallbackController.js][postTransactionCallback]\t Emitted single topup update: "
 				);

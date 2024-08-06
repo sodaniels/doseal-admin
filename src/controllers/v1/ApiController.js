@@ -366,6 +366,7 @@ async function postBuyCredit(req, res) {
 			Log.info("[ApiController.js][postBuyCredit]\t Emitting wallet update: ");
 			try {
 				io.getIO().emit("transactionUpdate", transactionData);
+				io.getIO().emit("excerptTransData", transactionData);
 				Log.info("[ApiController.js][postBuyCredit]\t Emitted wallet update: ");
 			} catch (error) {
 				Log.info(
@@ -391,6 +392,42 @@ async function postBuyCredit(req, res) {
 		});
 	}
 }
+// get transaction data
+async function getExcerptTransactions(req, res) {
+	try {
+		//excerptTransData
+		Log.info(
+			`[ApiController.js][getExcerptTransactions][${req.user._id}]\t retrieving transactions`
+		);
+		const transactions = await Tranaction.find({ createdBy: req.user._id })
+			.sort({
+				_id: -1,
+			})
+			.limit(4);
+		if (transactions.length > 0) {
+			return res.json({
+				success: true,
+				code: 200,
+				data: transactions,
+			});
+		} else {
+			return res.json({
+				success: true,
+				code: 404,
+				data: [],
+			});
+		}
+	} catch (error) {
+		Log.info(
+			`[ApiController.js][getExcerptTransactions]\t error retrieving transactions data: ` +
+				error
+		);
+		return res.json({
+			success: false,
+			code: 500,
+		});
+	}
+}
 
 module.exports = {
 	getPageCategory,
@@ -401,4 +438,5 @@ module.exports = {
 	postWallet,
 	getWallets,
 	postBuyCredit,
+	getExcerptTransactions,
 };
