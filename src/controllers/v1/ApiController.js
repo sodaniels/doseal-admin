@@ -337,12 +337,14 @@ async function postBuyCredit(req, res) {
 		);
 		return res.json(errorRes);
 	}
-	let buyCreditData;
+	let transactionData;
 	try {
 		Log.info(`[ApiController.js][postBuyCredit]\t incoming request: ` + req.ip);
+		const transactionId = rand10Id().toString();
 
 		const creditDataObject = new Tranaction({
 			createdBy: req.user._id,
+			transactionId: transactionId,
 			amount: req.body.amount,
 			meterId: req.body.meterId,
 			mno: req.body.mno,
@@ -353,15 +355,17 @@ async function postBuyCredit(req, res) {
 		const storeBuyCredit = await creditDataObject.save();
 
 		try {
-			buyCreditData = await BuyCredit.find({ createdBy: req.user._id }).sort({
-				_id: -1,
-			});
+			transactionData = await Tranaction.find({ createdBy: req.user._id }).sort(
+				{
+					_id: -1,
+				}
+			);
 		} catch (error) {}
 
 		if (storeBuyCredit) {
 			Log.info("[ApiController.js][postBuyCredit]\t Emitting wallet update: ");
 			try {
-				io.getIO().emit("buyCreditUpdate", buyCreditData);
+				io.getIO().emit("transactionUpdate", transactionData);
 				Log.info("[ApiController.js][postBuyCredit]\t Emitted wallet update: ");
 			} catch (error) {
 				Log.info(

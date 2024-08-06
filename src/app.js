@@ -12,7 +12,6 @@ const csrf = require("csurf");
 
 const dashboardRoutes = require("./routes/dashboard/dashboard.route");
 const authRoutes = require("./routes/dashboard/auth.route");
-const callbackRoutes = require("./routes/dashboard/callback.route");
 const usersRoutes = require("./routes/dashboard/users.route");
 const onboardingRoutes = require("./routes/dashboard/onboarding.route");
 const regionRoutes = require("./routes/dashboard/region.route");
@@ -26,6 +25,7 @@ const vendorRoutes = require("./routes/dashboard/vendor.route");
 const authApiRoutes = require("./routes/mp/authApi.route");
 
 const apiRoutes = require("./routes/mp/api.route");
+const callbackRoutes = require("./routes/mp/callback.route");
 
 const passportJwt = require("./helpers/passport-jwt");
 
