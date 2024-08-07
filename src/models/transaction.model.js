@@ -14,6 +14,8 @@ const tranactionSchema = new Schema({
 	type: {
 		type: String,
 		required: false,
+		enum: ["Prepaid", "Postpaid", "Airtime", "Billpay"],
+		default: "Prepaid",
 	},
 	amount: {
 		type: Number,
@@ -36,6 +38,10 @@ const tranactionSchema = new Schema({
 		required: true,
 	},
 	phoneNumber: {
+		type: String,
+		required: false,
+	},
+	cardNumber: {
 		type: String,
 		required: false,
 	},

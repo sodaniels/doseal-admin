@@ -3,6 +3,7 @@ const express = require("express");
 const router = express.Router();
 
 const apiController = require("../../controllers/v1/ApiController");
+const hubtelController = require("../../controllers/v1/HubtelController");
 const validator = require("../../helpers/validator-api");
 
 // get information
@@ -33,5 +34,20 @@ router.post(
 router.get("/transactions-excerpt", apiController.getExcerptTransactions);
 // get transactions
 router.get("/transactions", apiController.getTransactions);
+
+/*HUBTEL API ENDPOINTS */
+router.post(
+	"/account-validation",
+	validator.validateAccount,
+	hubtelController.AccountValidation
+);
+
+router.post(
+	"/prepaid-postpaid-request",
+	validator.validateAccount,
+	hubtelController.PrepaidPostpaidRequest
+);
+
+router.post("/hubtel-airtime-topup", hubtelController.HubtelMTNRequest);
 
 module.exports = router;

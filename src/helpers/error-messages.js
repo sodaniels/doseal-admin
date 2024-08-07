@@ -5,6 +5,7 @@ exports.errors = {
     API_MESSAGE_UPDATE_PROFILE_FAILED: "Update Profile Request Failed",
     API_MESSAGE_WALLET_FAILED: "Wallet Request Failed",
     API_MESSAGE_CREDIT_PURCHASE_FAILED: "Credit Purchase Request Failed",
+    API_MESSAGE_ACCOUNT_VALIDATION_FAILED: "Account Validation Request Failed",
 
 
 

@@ -345,7 +345,15 @@ async function postBuyCredit(req, res) {
 		const creditDataObject = new Tranaction({
 			createdBy: req.user._id,
 			transactionId: transactionId,
+			type: req.body.type,
 			amount: req.body.amount,
+			cardNumber: req.body.cardNumber
+				? `${req.body.cardNumber
+						.trim()
+						.substr(0, 2)}** **** **** ${req.body.cardNumber
+						.trim()
+						.substr(12, 2)}`
+				: undefined,
 			meterId: req.body.meterId,
 			mno: req.body.mno,
 			meterName: req.body.meterName,

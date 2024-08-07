@@ -3,6 +3,7 @@ const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const path = require("path");
 require("dotenv").config();
+const passport = require("passport");
 
 const session = require("express-session");
 const flash = require("express-flash");
@@ -32,6 +33,7 @@ const passportJwt = require("./helpers/passport-jwt");
 const isAuth = require("./Middleware/is-auth");
 const errorHandler = require("./Middleware/errorMiddleware");
 const { Log } = require("./helpers/Log");
+const ensureAuthenticated = require("./Middleware/ensureAuthenticated");
 
 const router = express.Router();
 const app = express();
