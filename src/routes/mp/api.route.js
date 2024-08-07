@@ -31,5 +31,7 @@ router.post(
 );
 
 router.get("/transactions-excerpt", apiController.getExcerptTransactions);
+// get transactions
+router.get("/transactions", apiController.getTransactions);
 
 module.exports = router;

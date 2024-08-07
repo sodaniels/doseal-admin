@@ -428,6 +428,42 @@ async function getExcerptTransactions(req, res) {
 		});
 	}
 }
+// get transactions
+async function getTransactions(req, res) {
+	try {
+		//excerptTransData
+		Log.info(
+			`[ApiController.js][getTransactions][${req.user._id}]\t retrieving transactions`
+		);
+		const transactions = await Tranaction.find({
+			createdBy: req.user._id,
+		}).sort({
+			_id: -1,
+		});
+		if (transactions.length > 0) {
+			return res.json({
+				success: true,
+				code: 200,
+				data: transactions,
+			});
+		} else {
+			return res.json({
+				success: true,
+				code: 404,
+				data: [],
+			});
+		}
+	} catch (error) {
+		Log.info(
+			`[ApiController.js][getTransactions]\t error retrieving transactions data: ` +
+				error
+		);
+		return res.json({
+			success: false,
+			code: 500,
+		});
+	}
+}
 
 module.exports = {
 	getPageCategory,
@@ -439,4 +475,5 @@ module.exports = {
 	getWallets,
 	postBuyCredit,
 	getExcerptTransactions,
+	getTransactions,
 };
