@@ -67,10 +67,14 @@ const validateAccount = [
 	// 	.trim()
 	// 	.withMessage("The Phone Number is required"),
 ];
+const validateEcgSearch = [
+	body("phoneNumber").exists().withMessage("The Phone Number is required"),
+];
 
 module.exports = {
 	validateProfile,
 	validateWallet,
 	validateBuyCredit,
 	validateAccount,
+	validateEcgSearch
 };

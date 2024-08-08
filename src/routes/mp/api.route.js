@@ -47,9 +47,15 @@ router.post(
 	validator.validateAccount,
 	hubtelController.PrepaidPostpaidRequest
 );
-
+// hubtel airtime topup
 router.post("/hubtel-airtime-topup", hubtelController.HubtelMTNRequest);
+// hubtel ecg meter search
+router.post(
+	"/search-ecg-meter",
+	validator.validateEcgSearch,
+	apiController.postHubtelEcgMeterSearch
+);
 
-router.post("/hubtel-payment-checkout", hubtelController.HubtelPaymentCheckout);
+// router.post("/hubtel-payment-checkout", hubtelController.HubtelPaymentCheckout);
 
 module.exports = router;

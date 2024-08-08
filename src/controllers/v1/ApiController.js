@@ -424,7 +424,7 @@ async function postBuyCredit(req, res) {
 
 		try {
 			Log.info(
-				`[ApiController.js][postBuyCredit]\t initiating request to topup: `
+				`[ApiController.js][postBuyCredit][${uniqueId}]\t initiating request to hubtel: `
 			);
 			switch (req.body.type) {
 				case "Airtime":
@@ -436,7 +436,7 @@ async function postBuyCredit(req, res) {
 								uniqueId
 							);
 							Log.info(
-								`[ApiController.js][postBuyCredit]\t hubtelResponse: ${JSON.stringify(
+								`[ApiController.js][postBuyCredit][${uniqueId}]\t hubtelResponse: ${JSON.stringify(
 									hubtelResponse
 								)}`
 							);
@@ -448,7 +448,7 @@ async function postBuyCredit(req, res) {
 								uniqueId
 							);
 							Log.info(
-								`[ApiController.js][postBuyCredit]\t hubtelResponse: ${JSON.stringify(
+								`[ApiController.js][postBuyCredit][${uniqueId}]\t hubtelResponse: ${JSON.stringify(
 									hubtelResponse
 								)}`
 							);
@@ -460,7 +460,7 @@ async function postBuyCredit(req, res) {
 								uniqueId
 							);
 							Log.info(
-								`[ApiController.js][postBuyCredit]\t hubtelResponse: ${JSON.stringify(
+								`[ApiController.js][postBuyCredit][${uniqueId}]\t hubtelResponse: ${JSON.stringify(
 									hubtelResponse
 								)}`
 							);
@@ -468,14 +468,29 @@ async function postBuyCredit(req, res) {
 						default:
 							break;
 					}
-
 					break;
-
+				case "ECG":
+					Log.info(
+						`[ApiController.js][postBuyCredit][${uniqueId}]\t initiating request to ECG: `
+					);
+					hubtelResponse = await restServices.postHubtelECGTopup(
+						req.body.phoneNumber,
+						req.body.amount,
+						uniqueId
+					);
+					Log.info(
+						`[ApiController.js][postBuyCredit][${uniqueId}]\t hubtelResponse: ${JSON.stringify(
+							hubtelResponse
+						)}`
+					);
+					break;
 				default:
 					break;
 			}
 		} catch (error) {
-			Log.info("[ApiController.js][postBuyCredit]\t Emitting wallet update: ");
+			Log.info(
+				`[ApiController.js][postBuyCredit][${uniqueId}]\t Emitting wallet update: `
+			);
 		}
 
 		if (transaction && hubtelResponse) {
@@ -588,6 +603,43 @@ async function getTransactions(req, res) {
 		});
 	}
 }
+// search for ecg meter
+async function postHubtelEcgMeterSearch(req, res) {
+	let hubtelResponse;
+	const validationError = handleValidationErrors(req, res);
+	if (validationError) {
+		const errorRes = await apiErrors.create(
+			errorMessages.errors.API_MESSAGE_CREDIT_PURCHASE_FAILED,
+			"POST",
+			validationError,
+			undefined
+		);
+		return res.json(errorRes);
+	}
+	try {
+		Log.info(
+			`[ApiController.js][postHubtelEcgMeterSearch]\t incoming ecg meter search request: ` +
+				req.ip
+		);
+
+		hubtelResponse = await restServices.postHubtelEcgMeterSearchService(
+			req.body.phoneNumber
+		);
+		if (hubtelResponse) {
+			return res.json(hubtelResponse);
+		}
+		return res.json({
+			success: false,
+			message: ServiceCode.FAILED,
+		});
+	} catch (error) {
+		return res.json({
+			success: false,
+			error: error.message,
+			message: ServiceCode.ERROR_OCCURED,
+		});
+	}
+}
 
 module.exports = {
 	getPageCategory,
@@ -600,4 +652,5 @@ module.exports = {
 	postBuyCredit,
 	getExcerptTransactions,
 	getTransactions,
+	postHubtelEcgMeterSearch,
 };
