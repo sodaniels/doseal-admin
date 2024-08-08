@@ -11,6 +11,8 @@ const io = require("../../../socket");
 const { handleValidationErrors } = require("../../helpers/validationHelper");
 const apiErrors = require("../../helpers/errors/errors");
 const errorMessages = require("../../helpers/error-messages");
+const RestServices = require("../../services/api/RestServices");
+const restServices = new RestServices();
 
 //get page
 async function getPageCategory(req, res) {
@@ -327,6 +329,7 @@ async function getWallets(req, res) {
 }
 // post buy credit
 async function postBuyCredit(req, res) {
+	let transaction, hubtelResponse;
 	const validationError = handleValidationErrors(req, res);
 	if (validationError) {
 		const errorRes = await apiErrors.create(
@@ -354,34 +357,62 @@ async function postBuyCredit(req, res) {
 						.trim()
 						.substr(12, 2)}`
 				: undefined,
-			meterId: req.body.meterId,
-			mno: req.body.mno,
-			meterName: req.body.meterName,
+			meterId: req.body.meterId ? req.body.meterId : undefined,
+			meterName: req.body.meterName ? req.body.meterName : undefined,
+			mno: req.body.mno ? req.body.mno : undefined,
+			network: req.body.network ? req.body.network : undefined,
 			paymentOption: req.body.paymentOption,
 			phoneNumber: req.body.phoneNumber,
 		});
-		const storeBuyCredit = await creditDataObject.save();
+		transaction = await creditDataObject.save();
 
 		try {
-			transactionData = await Tranaction.find({ createdBy: req.user._id }).sort(
-				{
-					_id: -1,
-				}
+			Log.info(
+				`[ApiController.js][postHubtelMtnTopup]\t initiating request to topup: `
 			);
-		} catch (error) {}
+			switch (req.body.type) {
+				case "Airtime":
+					if (req.body.network === "mtn-gh") {
+						hubtelResponse = await restServices.postHubtelMtnTopup(
+							req.body.phoneNumber,
+							req.body.amount,
+							transactionId
+						);
+						Log.info(
+							`[ApiController.js][postBuyCredit]\t hubtelResponse: ${JSON.stringify(
+								hubtelResponse
+							)}`
+						);
+					}
+					break;
 
-		if (storeBuyCredit) {
-			Log.info("[ApiController.js][postBuyCredit]\t Emitting wallet update: ");
-			try {
-				io.getIO().emit("transactionUpdate", transactionData);
-				io.getIO().emit("excerptTransData", transactionData);
-				Log.info("[ApiController.js][postBuyCredit]\t Emitted wallet update: ");
-			} catch (error) {
-				Log.info(
-					`[ApiController.js][postBuyCredit]\t error emitting wallet update: `,
-					error
-				);
+				default:
+					break;
 			}
+		} catch (error) {
+			Log.info("[ApiController.js][postBuyCredit]\t Emitting wallet update: ");
+		}
+
+		if (transaction && hubtelResponse) {
+			let Meta = hubtelResponse.Data.Meta;
+			transaction.ResponseCode = hubtelResponse.ResponseCode;
+			transaction.Description = hubtelResponse.Message;
+			transaction.HubtelTransactionId = hubtelResponse.Data.TransactionId;
+			transaction.Commission = Meta.Commission;
+			switch (transaction.ResponseCode) {
+				case "0001":
+					transaction.status = "Pending";
+					transaction.statusCode = 411;
+					transaction.statusMessage = "Transaction is pending";
+					break;
+
+				default:
+					break;
+			}
+			if (transaction.isModified) {
+				transaction.save();
+			}
+
 			return res.json({
 				success: true,
 				message: ServiceCode.SUCCESS,

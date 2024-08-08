@@ -137,7 +137,7 @@ async function PrepaidPostpaidRequest(req, res) {
 	}
 }
 
-async function HubtelMTNRequest(req, res) {
+async function HubtelMTNRequest_(req, res) {
 	// const validationError = handleValidationErrors(req, res);
 	// if (validationError) {
 	// 	const errorRes = await apiErrors.create(
@@ -151,7 +151,6 @@ async function HubtelMTNRequest(req, res) {
 	Log.info(
 		`[HubtelController.js][AccountValidation] \t requeest to validate account`
 	);
-	// return res.json(req.body);
 
 	try {
 		const response = await restServices.postHubtelMtnTopup(req, res);
@@ -194,8 +193,119 @@ async function HubtelMTNRequest(req, res) {
 	}
 }
 
+async function HubtelMTNRequest(req, res) {
+	// const validationError = handleValidationErrors(req, res);
+	// if (validationError) {
+	// 	const errorRes = await apiErrors.create(
+	// 		errorMessages.errors.API_MESSAGE_ACCOUNT_VALIDATION_FAILED,
+	// 		"POST",
+	// 		validationError,
+	// 		undefined
+	// 	);
+	// 	return res.json(errorRes);
+	// }
+	Log.info(
+		`[HubtelController.js][AccountValidation] \t requeest to validate account`
+	);
+
+	try {
+		const response = await restServices.postHubtelMtnTopup(req, res);
+		return res.json(response);
+	} catch (error) {
+		Log.info(
+			`[HubtelController.js][AccountValidation] error validating account: ${error.message}`
+		);
+		Log.info(
+			`[HubtelController.js][AccountValidation] error details: ${JSON.stringify(
+				error
+			)}`
+		);
+		if (error.response) {
+			Log.info(
+				`[HubtelController.js][AccountValidation] response status: ${error.response.status}`
+			);
+			Log.info(
+				`[HubtelController.js][AccountValidation] response data: ${JSON.stringify(
+					error.response.data
+				)}`
+			);
+		} else if (error.request) {
+			Log.info(
+				`[HubtelController.js][AccountValidation] request: ${error.request}`
+			);
+		} else {
+			Log.info(
+				`[HubtelController.js][AccountValidation] unknown error: ${error.message}`
+			);
+		}
+		return res.json({
+			success: false,
+			error: {
+				message: error.message,
+				...(error.response && { response: error.response.data }),
+			},
+		});
+	}
+}
+
+async function HubtelPaymentCheckout(req, res) {
+	// const validationError = handleValidationErrors(req, res);
+	// if (validationError) {
+	// 	const errorRes = await apiErrors.create(
+	// 		errorMessages.errors.API_MESSAGE_ACCOUNT_VALIDATION_FAILED,
+	// 		"POST",
+	// 		validationError,
+	// 		undefined
+	// 	);
+	// 	return res.json(errorRes);
+	// }
+	Log.info(
+		`[HubtelController.js][HubtelPaymentCheckout] \t requeest to validate account`
+	);
+
+	try {
+		const response = await restServices.postHubtelPaymentService();
+		return res.json(response);
+	} catch (error) {
+		Log.info(
+			`[HubtelController.js][HubtelPaymentCheckout] error validating account: ${error.message}`
+		);
+		Log.info(
+			`[HubtelController.js][HubtelPaymentCheckout] error details: ${JSON.stringify(
+				error
+			)}`
+		);
+		if (error.response) {
+			Log.info(
+				`[HubtelController.js][HubtelPaymentCheckout] response status: ${error.response.status}`
+			);
+			Log.info(
+				`[HubtelController.js][HubtelPaymentCheckout] response data: ${JSON.stringify(
+					error.response.data
+				)}`
+			);
+		} else if (error.request) {
+			Log.info(
+				`[HubtelController.js][HubtelPaymentCheckout] request: ${error.request}`
+			);
+		} else {
+			Log.info(
+				`[HubtelController.js][HubtelPaymentCheckout] unknown error: ${error.message}`
+			);
+		}
+		return res.json({
+			success: false,
+			error: {
+				message: error.message,
+				...(error.response && { response: error.response.data }),
+			},
+		});
+	}
+}
+
 module.exports = {
 	AccountValidation,
 	PrepaidPostpaidRequest,
 	HubtelMTNRequest,
+	HubtelPaymentCheckout
 };

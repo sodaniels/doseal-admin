@@ -7,6 +7,167 @@ const WalletTopup = require("../../models/wallet-topup.model");
 const Transaction = require("../../models/transaction.model");
 const { sendText } = require("../../helpers/sendText");
 
+// post hubtel airtime topup transaction
+async function postHubtelAirtelTopup(req, res) {
+	let saveTransaction, transactionId;
+	Log.info("[CallbackController.js][postHubtelAirtelTopup]\tIP: " + req.ip);
+	Log.info(
+		"[CallbackController.js][postHubtelAirtelTopup]\tCallback Transaction: " +
+			JSON.stringify(req.body)
+	);
+
+	let Data = req.body.Data;
+	let Meta = Data.Meta;
+
+	transactionId = Data.ClientReference;
+
+	let transaction = await getTransactionByTransactionId(transactionId);
+
+	if (transaction && transaction.statusCode === 411) {
+		transaction.statusCode = req.body.code;
+		transaction.status = req.body.status;
+		transaction.statusMessage = req.body.message;
+		transaction.externalReference = req.body.externalReference;
+
+		transaction.ResponseCode = req.body.ResponseCode;
+		transaction.Description = Data.Description;
+		transaction.HubtelTransactionId = Data.TransactionId;
+		transaction.ExternalTransactionId = Data.ExternalTransactionId;
+		transaction.Commission = Meta.Commission;
+		transaction.AmountDebited = Data.AmountDebited;
+		transaction.Charges = Data.Charges;
+		switch (transaction.ResponseCode) {
+			case "0000":
+				transaction.status = "Successful";
+				transaction.statusCode = 200;
+				transaction.statusMessage = "Transaction was successful";
+				break;
+			case "4080":
+				transaction.status = "Failed";
+				transaction.statusCode = 400;
+				transaction.statusMessage = "Insufficient prepaid balance.";
+				break;
+
+			default:
+				transaction.status = "Failed";
+				transaction.statusCode = 400;
+				transaction.statusMessage = "Transaction Failed";
+				break;
+		}
+
+		try {
+			if (transaction.isModified) {
+				await transaction.save();
+			}
+			Log.info(
+				"[CallbackController.js][postHubtelAirtelTopup]\t Emitting single topup update: "
+			);
+			Log.info("[ApiController.js][postBuyCredit]\t Emitting wallet update: ");
+			try {
+				// io.getIO().emit("transactionUpdate", transaction);
+				io.getIO().emit("excerptTransData", transaction);
+				Log.info("[ApiController.js][postBuyCredit]\t Emitted wallet update: ");
+			} catch (error) {
+				Log.info(
+					`[ApiController.js][postBuyCredit]\t error emitting wallet update: `,
+					error
+				);
+			}
+			try {
+				io.getIO().emit("singleTransactionUpdate", transaction);
+				Log.info(
+					"[CallbackController.js][postHubtelAirtelTopup]\t Emitted single topup update: "
+				);
+			} catch (error) {
+				Log.info(
+					`[CallbackController.js][postHubtelAirtelTopup]\t error emitting walletTopUp update: `,
+					error
+				);
+			}
+
+			const currency = "GHS";
+			const amount = parseFloat(transaction.amount).toFixed(2);
+			const phoneNumber = transaction.createdBy.phoneNumber;
+			const name =
+				transaction.createdBy.firstName + " " + transaction.createdBy.lastName;
+			const from = transaction.account_no;
+			const support = process.env.DESEAL_CUSTOMER_CARE;
+
+			if (saveTransaction) {
+				if (req.body.ResponseCode.toString() === "0000") {
+					// update balance
+					try {
+						if (transaction.paymentOption === "Wallet") {
+							let user = await User.findOne({
+								_id: transaction.createdBy._id,
+							});
+							const balance = user.balance ? user.balance : 0;
+							user.balance = Number(balance) - Number(transaction.amount);
+							await user.save();
+
+							Log.info(
+								"[CallbackController.js][postHubtelAirtelTopup]\t Emitting balance update: "
+							);
+							try {
+								io.getIO().emit("balanceUpdate", user.balance);
+								Log.info(
+									"[CallbackController.js][postHubtelAirtelTopup]\t Emitted balance update: "
+								);
+							} catch (error) {
+								Log.info(
+									`[CallbackController.js][postHubtelAirtelTopup]\t error emitting balance update: `,
+									error
+								);
+							}
+						}
+					} catch (error) {
+						Log.info(
+							`[CallbackController.js][postHubtelAirtelTopup][${transactionId}]\t error updating balance: ${error}`
+						);
+					}
+
+					const message = `Hi ${name}, your acccount has been topup with the amount of ${currency} ${amount}. Transaction ID: ${transactionId}. Date: ${new Date().toLocaleString()}. Reference: ${
+						req.body.externalReference
+					}`;
+
+					try {
+						Log.info(
+							`[CallbackController.js][postHubtelAirtelTopup][${transactionId}]\t sending success message: ${message}`
+						);
+						await sendText(phoneNumber, message);
+					} catch (error) {
+						Log.info(
+							`[CallbackController.js][postHubtelAirtelTopup][${transactionId}]\t error sending success message: ${error}`
+						);
+					}
+				} else {
+					const message = `Your topup of ${currency} ${amount} to your account failed. For more information, please contact customer support on ${support} `;
+
+					try {
+						Log.info(
+							`[CallbackController.js][postHubtelAirtelTopup][${transactionId}]\t sending failure message: ${message}`
+						);
+						await sendText(phoneNumber, message);
+					} catch (error) {
+						Log.info(
+							`[CallbackController.js][postHubtelAirtelTopup][${transactionId}]\t error sending success message: ${error}`
+						);
+					}
+				}
+			}
+		} catch (error) {
+			Log.info(
+				`[CallbackController.js][postHubtelAirtelTopup][${transactionId}]\t error saving callback data: ${error}`
+			);
+		}
+	}
+
+	res.status(200).json({
+		code: 200,
+		message: "Callback processed successfully.",
+	});
+}
+
 async function postWalletTopupCallback(req, res) {
 	let staveRequest, requestId;
 	Log.info("[CallbackController.js][walletTopupCallback]\tIP: " + req.ip);
@@ -277,4 +438,5 @@ async function getTransactionByTransactionId(transactionId) {
 module.exports = {
 	postWalletTopupCallback,
 	postTransactionCallback,
+	postHubtelAirtelTopup,
 };

@@ -51,20 +51,16 @@ class RestServices {
 			};
 		}
 	}
-	// req.body.Destination,
-	// 		req.body.Amount,
-	// 		req.body.CallbackURL,
-	// 		req.body.ClientReference
 
-	async postHubtelMtnTopup(req, res) {
+	async postHubtelMtnTopup(Destination, Amount, ClientReference) {
 		try {
 			const response = await axios.post(
 				`https://cs.hubtel.com/commissionservices/${process.env.HUBTEL_PREPAID_DEPOSTI_ACCOUNT}/${process.env.HUBTEL_MTN_SERVICE_ID}`,
 				{
-					Destination: req.body.Destination,
-					Amount: req.body.Amount,
-					CallbackURL: req.body.CallbackURL,
-					ClientReference: req.body.ClientReference,
+					Destination: Destination,
+					Amount: Amount,
+					CallbackURL: `${process.env.HUBTEL_CALLBACK_BASE_URL}/api/v1/hubtel-airtime-callback`,
+					ClientReference: ClientReference,
 				},
 				{
 					headers: {
@@ -76,24 +72,82 @@ class RestServices {
 			return response.data;
 		} catch (error) {
 			Log.info(
-				`[HubtelController.js][AccountValidation] error validating account: ${error.message}`
+				`[HubtelController.js][postHubtelMtnTopup] error validating account: ${error.message}`
 			);
 			if (error.response) {
 				Log.info(
-					`[HubtelController.js][AccountValidation] response status: ${error.response.status}`
+					`[HubtelController.js][postHubtelMtnTopup] response status: ${error.response.status}`
 				);
 				Log.info(
-					`[HubtelController.js][AccountValidation] response data: ${JSON.stringify(
+					`[HubtelController.js][postHubtelMtnTopup] response data: ${JSON.stringify(
 						error.response.data
 					)}`
 				);
 			} else if (error.request) {
 				Log.info(
-					`[HubtelController.js][AccountValidation] request: ${error.request}`
+					`[HubtelController.js][postHubtelMtnTopup] request: ${error.request}`
 				);
 			} else {
 				Log.info(
-					`[HubtelController.js][AccountValidation] unknown error: ${error.message}`
+					`[HubtelController.js][postHubtelMtnTopup] unknown error: ${error.message}`
+				);
+			}
+			return {
+				success: false,
+				code: 500,
+				message: error.message,
+			};
+		}
+	}
+
+	async postHubtelPaymentService(
+		totalAmount,
+		description,
+		returnUrl,
+		clientReference,
+		merchantAccountNumber,
+		cancellationUrl
+	) {
+		try {
+			const response = await axios.post(
+				`${process.env.HUBTEL_CHECKOUT_BASE_URL}`,
+				{
+					totalAmount: totalAmount,
+					description: description,
+					returnUrl: returnUrl,
+					clientReference: clientReference,
+					merchantAccountNumber: merchantAccountNumber,
+					cancellationUrl: cancellationUrl,
+					callbackUrl: `${process.env.HUBTEL_CALLBACK_BASE_URL}/api/v1/hubtel-airtime-callback`,
+				},
+				{
+					headers: {
+						Authorization: `Basic ${token()}`,
+						"Content-Type": "application/json",
+					},
+				}
+			);
+			return response.data;
+		} catch (error) {
+			Log.info(
+				`[HubtelController.js][postHubtelPaymentService] error validating account: ${error.message}`
+			);
+			if (error.response) {
+				Log.info(
+					`[HubtelController.js][postHubtelPaymentService] response status: ${error.response.status}`
+				);
+				Log.info(
+					`[HubtelController.js][postHubtelPaymentService] response data: ${JSON.stringify(
+						error.response.data
+					)}`
+				);
+			} else if (error.request) {
+				Log.info(
+					`[HubtelController.js][postHubtelPaymentService] request: ${error.request}`
+				);
+			} else {
+				Log.info(
+					`[HubtelController.js][postHubtelPaymentService] unknown error: ${error.message}`
 				);
 			}
 			return {

@@ -49,6 +49,10 @@ const tranactionSchema = new Schema({
 		type: String,
 		required: false,
 	},
+	network: {
+		type: String,
+		required: false,
+	},
 	status: {
 		type: String,
 		required: false,
@@ -69,6 +73,35 @@ const tranactionSchema = new Schema({
 		type: String,
 		required: false,
 	},
+	ResponseCode: {
+		type: String,
+		required: false,
+	},
+	Commission: {
+		type: String,
+		required: false,
+	},
+	Description: {
+		type: String,
+		required: false,
+	},
+	HubtelTransactionId: {
+		type: String,
+		required: false,
+	},
+	AmountDebited: {
+		type: Number,
+		required: false,
+	},
+	Charges: {
+		type: Number,
+		required: false,
+	},
+	ExternalTransactionId: {
+		type: String,
+		required: false,
+	},
+
 	createdAt: { type: Date, default: Date.now },
 	updatedAt: { type: Date, default: Date.now },
 });

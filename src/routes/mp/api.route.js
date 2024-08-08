@@ -50,4 +50,6 @@ router.post(
 
 router.post("/hubtel-airtime-topup", hubtelController.HubtelMTNRequest);
 
+router.post("/hubtel-payment-checkout", hubtelController.HubtelPaymentCheckout);
+
 module.exports = router;
