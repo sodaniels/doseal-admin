@@ -22,8 +22,6 @@ const validateWallet = [
 ];
 const validateBuyCredit = [
 	body("amount").notEmpty().trim().withMessage("The Amount is required"),
-	// body("meterId").notEmpty().trim().withMessage("The Meter ID is required"),
-	// body("meterName").notEmpty().trim().withMessage("The Meter Name is required"),
 	body("meterId")
 		.if(body("type").equals("Prepaid") || body("type").equals("Postpaid"))
 		.notEmpty()

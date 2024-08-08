@@ -11,6 +11,16 @@ const tranactionSchema = new Schema({
 		type: String,
 		required: true,
 	},
+	internalReference: {
+		type: String,
+		required: true,
+	},
+	category: {
+		type: String,
+		required: true,
+		enum: ["DR", "CR"],
+		default: "DR",
+	},
 	type: {
 		type: String,
 		required: false,

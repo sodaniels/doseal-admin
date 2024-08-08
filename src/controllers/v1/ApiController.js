@@ -329,7 +329,7 @@ async function getWallets(req, res) {
 }
 // post buy credit
 async function postBuyCredit(req, res) {
-	let transaction, hubtelResponse;
+	let transaction, hubtelResponse, hubtelPaymentResponse, description;
 	const validationError = handleValidationErrors(req, res);
 	if (validationError) {
 		const errorRes = await apiErrors.create(
@@ -340,14 +340,33 @@ async function postBuyCredit(req, res) {
 		);
 		return res.json(errorRes);
 	}
-	let transactionData;
 	try {
 		Log.info(`[ApiController.js][postBuyCredit]\t incoming request: ` + req.ip);
 		const transactionId = rand10Id().toString();
 
+		let currentDate = new Date();
+		let formattedDate = currentDate
+			.toISOString()
+			.replace(/[-:TZ.]/g, "")
+			.slice(0, 14);
+		let uniqueId = `DR_${formattedDate}${
+			Math.floor(Math.random() * 900000) + 100000
+		}`;
+
+		switch (req.body.type) {
+			case "Airtime":
+				description = "Purchase of Airtime";
+				break;
+
+			default:
+				break;
+		}
+
 		const creditDataObject = new Tranaction({
 			createdBy: req.user._id,
 			transactionId: transactionId,
+			internalReference: uniqueId,
+			category: "DR",
 			type: req.body.type,
 			amount: req.body.amount,
 			cardNumber: req.body.cardNumber
@@ -366,24 +385,78 @@ async function postBuyCredit(req, res) {
 		});
 		transaction = await creditDataObject.save();
 
+		// if (transaction) {
+		// 	Log.info(
+		// 		`[ApiController.js][postBuyCredit][${uniqueId}]\t initiating payment request to hubtel`
+		// 	);
+
+		// 	try {
+		// 		hubtelPaymentResponse = await restServices.postHubtelPaymentService(
+		// 			req.body.amount,
+		// 			description,
+		// 			uniqueId
+		// 		);
+
+		// 		if (hubtelPaymentResponse) {
+		// 			Log.info(
+		// 				`[ApiController.js][postBuyCredit][${uniqueId}]\t hubtel payment response : `,
+		// 				hubtelPaymentResponse
+		// 			);
+		// 			return res.json(hubtelPaymentResponse);
+		// 		}
+		// 		return res.json({
+		// 			success: false,
+		// 			code: 400,
+		// 			message: "Payment error occurred",
+		// 		});
+		// 	} catch (error) {
+		// 		Log.info(
+		// 			`[ApiController.js][postBuyCredit][${uniqueId}]\t hubtel payment error : ${error}`
+		// 		);
+		// 		return res.json({
+		// 			success: false,
+		// 			code: 500,
+		// 			error: error.message,
+		// 			message: "Payment error occurred",
+		// 		});
+		// 	}
+		// }
+
 		try {
 			Log.info(
-				`[ApiController.js][postHubtelMtnTopup]\t initiating request to topup: `
+				`[ApiController.js][postBuyCredit]\t initiating request to topup: `
 			);
 			switch (req.body.type) {
 				case "Airtime":
-					if (req.body.network === "mtn-gh") {
-						hubtelResponse = await restServices.postHubtelMtnTopup(
-							req.body.phoneNumber,
-							req.body.amount,
-							transactionId
-						);
-						Log.info(
-							`[ApiController.js][postBuyCredit]\t hubtelResponse: ${JSON.stringify(
-								hubtelResponse
-							)}`
-						);
+					switch (req.body.network) {
+						case "mtn-gh":
+							hubtelResponse = await restServices.postHubtelMtnTopup(
+								req.body.phoneNumber,
+								req.body.amount,
+								uniqueId
+							);
+							Log.info(
+								`[ApiController.js][postBuyCredit]\t hubtelResponse: ${JSON.stringify(
+									hubtelResponse
+								)}`
+							);
+							break;
+						case "vodafone-gh":
+							hubtelResponse = await restServices.postHubtelTelecelTopup(
+								req.body.phoneNumber,
+								req.body.amount,
+								uniqueId
+							);
+							Log.info(
+								`[ApiController.js][postBuyCredit]\t hubtelResponse: ${JSON.stringify(
+									hubtelResponse
+								)}`
+							);
+							break;
+						default:
+							break;
 					}
+
 					break;
 
 				default:
