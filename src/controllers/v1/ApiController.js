@@ -453,6 +453,18 @@ async function postBuyCredit(req, res) {
 								)}`
 							);
 							break;
+						case "tigo-gh":
+							hubtelResponse = await restServices.postHubtelAirtelTigoTopup(
+								req.body.phoneNumber,
+								req.body.amount,
+								uniqueId
+							);
+							Log.info(
+								`[ApiController.js][postBuyCredit]\t hubtelResponse: ${JSON.stringify(
+									hubtelResponse
+								)}`
+							);
+							break;
 						default:
 							break;
 					}

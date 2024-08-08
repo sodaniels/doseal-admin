@@ -120,24 +120,72 @@ class RestServices {
 			return response.data;
 		} catch (error) {
 			Log.info(
-				`[HubtelController.js][postHubtelMtnTopup] error validating account: ${error.message}`
+				`[HubtelController.js][postHubtelTelecelTopup] error validating account: ${error.message}`
 			);
 			if (error.response) {
 				Log.info(
-					`[HubtelController.js][postHubtelMtnTopup] response status: ${error.response.status}`
+					`[HubtelController.js][postHubtelTelecelTopup] response status: ${error.response.status}`
 				);
 				Log.info(
-					`[HubtelController.js][postHubtelMtnTopup] response data: ${JSON.stringify(
+					`[HubtelController.js][postHubtelTelecelTopup] response data: ${JSON.stringify(
 						error.response.data
 					)}`
 				);
 			} else if (error.request) {
 				Log.info(
-					`[HubtelController.js][postHubtelMtnTopup] request: ${error.request}`
+					`[HubtelController.js][postHubtelTelecelTopup] request: ${error.request}`
 				);
 			} else {
 				Log.info(
-					`[HubtelController.js][postHubtelMtnTopup] unknown error: ${error.message}`
+					`[HubtelController.js][postHubtelTelecelTopup] unknown error: ${error.message}`
+				);
+			}
+			return {
+				success: false,
+				code: 500,
+				message: error.message,
+			};
+		}
+	}
+	// hubtel airtel tigo service
+	async postHubtelAirtelTigoTopup(Destination, Amount, ClientReference) {
+		try {
+			const response = await axios.post(
+				`https://cs.hubtel.com/commissionservices/${process.env.HUBTEL_PREPAID_DEPOSTI_ACCOUNT}/${process.env.HUBTEL_AIRTEL_TIGO_SERVICE_ID}`,
+				{
+					Destination: Destination,
+					Amount: Amount,
+					CallbackURL: `${process.env.HUBTEL_CALLBACK_BASE_URL}/api/v1/hubtel-airtime-callback`,
+					ClientReference: ClientReference,
+				},
+				{
+					headers: {
+						Authorization: `Basic ${token()}`,
+						"Content-Type": "application/json",
+					},
+				}
+			);
+			return response.data;
+		} catch (error) {
+			Log.info(
+				`[HubtelController.js][postHubtelAirtelTigoTopup] error validating account: ${error.message}`
+			);
+			if (error.response) {
+				Log.info(
+					`[HubtelController.js][postHubtelAirtelTigoTopup] response status: ${error.response.status}`
+				);
+				Log.info(
+					`[HubtelController.js][postHubtelAirtelTigoTopup] response data: ${JSON.stringify(
+						error.response.data
+					)}`
+				);
+			} else if (error.request) {
+				Log.info(
+					`[HubtelController.js][postHubtelAirtelTigoTopup] request: ${error.request}`
+				);
+			} else {
+				Log.info(
+					`[HubtelController.js][postHubtelAirtelTigoTopup] unknown error: ${error.message}`
 				);
 			}
 			return {

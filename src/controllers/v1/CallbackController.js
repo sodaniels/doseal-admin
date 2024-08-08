@@ -48,12 +48,17 @@ async function postHubtelAirtelTopup(req, res) {
 				transaction.statusMessage = "Insufficient prepaid balance.";
 				break;
 			case "2001":
-				if(Data.Description === "Invalid MSISDN : Invalid MSISDN"){
+				if (Data.Description === "Invalid MSISDN : Invalid MSISDN") {
 					transaction.status = "Failed";
 					transaction.statusCode = 400;
 					transaction.statusMessage = "Invalid Phone Number";
 				}
-				
+				if (Data.Description === "65000 : Subscriber does not exit") {
+					transaction.status = "Failed";
+					transaction.statusCode = 400;
+					transaction.statusMessage = "Invalid Phone Number";
+				}
+
 				break;
 
 			default:
