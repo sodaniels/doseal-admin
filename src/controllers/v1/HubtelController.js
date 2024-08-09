@@ -317,7 +317,6 @@ async function HubtelPaymentCheckout(req, res) {
 	Log.info(
 		`[HubtelController.js][HubtelPaymentCheckout] \t requeest to validate account`
 	);
-
 	try {
 		const response = await restServices.postHubtelPaymentService(
 			req.body.amount,

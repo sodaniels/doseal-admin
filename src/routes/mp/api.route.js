@@ -56,6 +56,6 @@ router.post(
 	apiController.postHubtelEcgMeterSearch
 );
 
-// router.post("/hubtel-payment-checkout", hubtelController.HubtelPaymentCheckout);
+router.post("/hubtel-payment-checkout", hubtelController.HubtelPaymentCheckout);
 
 module.exports = router;

@@ -357,7 +357,9 @@ async function postBuyCredit(req, res) {
 			case "Airtime":
 				description = "Purchase of Airtime";
 				break;
-
+			case "ECG":
+				description = "Purchase of ECG";
+				break;
 			default:
 				break;
 		}
@@ -385,144 +387,144 @@ async function postBuyCredit(req, res) {
 		});
 		transaction = await creditDataObject.save();
 
-		// if (transaction) {
+		if (transaction) {
+			Log.info(
+				`[ApiController.js][postBuyCredit][${uniqueId}]\t initiating payment request to hubtel`
+			);
+
+			try {
+				hubtelPaymentResponse = await restServices.postHubtelPaymentService(
+					req.body.amount,
+					description,
+					uniqueId
+				);
+
+				if (hubtelPaymentResponse) {
+					Log.info(
+						`[ApiController.js][postBuyCredit][${uniqueId}]\t hubtel payment response : `,
+						hubtelPaymentResponse
+					);
+					return res.json(hubtelPaymentResponse);
+				}
+				return res.json({
+					success: false,
+					code: 400,
+					message: "Payment error occurred",
+				});
+			} catch (error) {
+				Log.info(
+					`[ApiController.js][postBuyCredit][${uniqueId}]\t hubtel payment error : ${error}`
+				);
+				return res.json({
+					success: false,
+					code: 500,
+					error: error.message,
+					message: "Payment error occurred",
+				});
+			}
+		}
+
+		// try {
 		// 	Log.info(
-		// 		`[ApiController.js][postBuyCredit][${uniqueId}]\t initiating payment request to hubtel`
+		// 		`[ApiController.js][postBuyCredit][${uniqueId}]\t initiating request to hubtel: `
 		// 	);
-
-		// 	try {
-		// 		hubtelPaymentResponse = await restServices.postHubtelPaymentService(
-		// 			req.body.amount,
-		// 			description,
-		// 			uniqueId
-		// 		);
-
-		// 		if (hubtelPaymentResponse) {
+		// 	switch (req.body.type) {
+		// 		case "Airtime":
+		// 			switch (req.body.network) {
+		// 				case "mtn-gh":
+		// 					hubtelResponse = await restServices.postHubtelMtnTopup(
+		// 						req.body.phoneNumber,
+		// 						req.body.amount,
+		// 						uniqueId
+		// 					);
+		// 					Log.info(
+		// 						`[ApiController.js][postBuyCredit][${uniqueId}]\t hubtelResponse: ${JSON.stringify(
+		// 							hubtelResponse
+		// 						)}`
+		// 					);
+		// 					break;
+		// 				case "vodafone-gh":
+		// 					hubtelResponse = await restServices.postHubtelTelecelTopup(
+		// 						req.body.phoneNumber,
+		// 						req.body.amount,
+		// 						uniqueId
+		// 					);
+		// 					Log.info(
+		// 						`[ApiController.js][postBuyCredit][${uniqueId}]\t hubtelResponse: ${JSON.stringify(
+		// 							hubtelResponse
+		// 						)}`
+		// 					);
+		// 					break;
+		// 				case "tigo-gh":
+		// 					hubtelResponse = await restServices.postHubtelAirtelTigoTopup(
+		// 						req.body.phoneNumber,
+		// 						req.body.amount,
+		// 						uniqueId
+		// 					);
+		// 					Log.info(
+		// 						`[ApiController.js][postBuyCredit][${uniqueId}]\t hubtelResponse: ${JSON.stringify(
+		// 							hubtelResponse
+		// 						)}`
+		// 					);
+		// 					break;
+		// 				default:
+		// 					break;
+		// 			}
+		// 			break;
+		// 		case "ECG":
 		// 			Log.info(
-		// 				`[ApiController.js][postBuyCredit][${uniqueId}]\t hubtel payment response : `,
-		// 				hubtelPaymentResponse
+		// 				`[ApiController.js][postBuyCredit][${uniqueId}]\t initiating request to ECG: `
 		// 			);
-		// 			return res.json(hubtelPaymentResponse);
-		// 		}
-		// 		return res.json({
-		// 			success: false,
-		// 			code: 400,
-		// 			message: "Payment error occurred",
-		// 		});
-		// 	} catch (error) {
-		// 		Log.info(
-		// 			`[ApiController.js][postBuyCredit][${uniqueId}]\t hubtel payment error : ${error}`
-		// 		);
-		// 		return res.json({
-		// 			success: false,
-		// 			code: 500,
-		// 			error: error.message,
-		// 			message: "Payment error occurred",
-		// 		});
+		// 			hubtelResponse = await restServices.postHubtelECGTopup(
+		// 				req.body.phoneNumber,
+		// 				req.body.amount,
+		// 				uniqueId
+		// 			);
+		// 			Log.info(
+		// 				`[ApiController.js][postBuyCredit][${uniqueId}]\t hubtelResponse: ${JSON.stringify(
+		// 					hubtelResponse
+		// 				)}`
+		// 			);
+		// 			break;
+		// 		default:
+		// 			break;
 		// 	}
+		// } catch (error) {
+		// 	Log.info(
+		// 		`[ApiController.js][postBuyCredit][${uniqueId}]\t Emitting wallet update: `
+		// 	);
 		// }
 
-		try {
-			Log.info(
-				`[ApiController.js][postBuyCredit][${uniqueId}]\t initiating request to hubtel: `
-			);
-			switch (req.body.type) {
-				case "Airtime":
-					switch (req.body.network) {
-						case "mtn-gh":
-							hubtelResponse = await restServices.postHubtelMtnTopup(
-								req.body.phoneNumber,
-								req.body.amount,
-								uniqueId
-							);
-							Log.info(
-								`[ApiController.js][postBuyCredit][${uniqueId}]\t hubtelResponse: ${JSON.stringify(
-									hubtelResponse
-								)}`
-							);
-							break;
-						case "vodafone-gh":
-							hubtelResponse = await restServices.postHubtelTelecelTopup(
-								req.body.phoneNumber,
-								req.body.amount,
-								uniqueId
-							);
-							Log.info(
-								`[ApiController.js][postBuyCredit][${uniqueId}]\t hubtelResponse: ${JSON.stringify(
-									hubtelResponse
-								)}`
-							);
-							break;
-						case "tigo-gh":
-							hubtelResponse = await restServices.postHubtelAirtelTigoTopup(
-								req.body.phoneNumber,
-								req.body.amount,
-								uniqueId
-							);
-							Log.info(
-								`[ApiController.js][postBuyCredit][${uniqueId}]\t hubtelResponse: ${JSON.stringify(
-									hubtelResponse
-								)}`
-							);
-							break;
-						default:
-							break;
-					}
-					break;
-				case "ECG":
-					Log.info(
-						`[ApiController.js][postBuyCredit][${uniqueId}]\t initiating request to ECG: `
-					);
-					hubtelResponse = await restServices.postHubtelECGTopup(
-						req.body.phoneNumber,
-						req.body.amount,
-						uniqueId
-					);
-					Log.info(
-						`[ApiController.js][postBuyCredit][${uniqueId}]\t hubtelResponse: ${JSON.stringify(
-							hubtelResponse
-						)}`
-					);
-					break;
-				default:
-					break;
-			}
-		} catch (error) {
-			Log.info(
-				`[ApiController.js][postBuyCredit][${uniqueId}]\t Emitting wallet update: `
-			);
-		}
+		// if (transaction && hubtelResponse) {
+		// 	let Meta = hubtelResponse.Data.Meta;
+		// 	transaction.ResponseCode = hubtelResponse.ResponseCode;
+		// 	transaction.Description = hubtelResponse.Message;
+		// 	transaction.HubtelTransactionId = hubtelResponse.Data.TransactionId;
+		// 	transaction.Commission = Meta.Commission;
+		// 	switch (transaction.ResponseCode) {
+		// 		case "0001":
+		// 			transaction.status = "Pending";
+		// 			transaction.statusCode = 411;
+		// 			transaction.statusMessage = "Transaction is pending";
+		// 			break;
 
-		if (transaction && hubtelResponse) {
-			let Meta = hubtelResponse.Data.Meta;
-			transaction.ResponseCode = hubtelResponse.ResponseCode;
-			transaction.Description = hubtelResponse.Message;
-			transaction.HubtelTransactionId = hubtelResponse.Data.TransactionId;
-			transaction.Commission = Meta.Commission;
-			switch (transaction.ResponseCode) {
-				case "0001":
-					transaction.status = "Pending";
-					transaction.statusCode = 411;
-					transaction.statusMessage = "Transaction is pending";
-					break;
+		// 		default:
+		// 			break;
+		// 	}
+		// 	if (transaction.isModified) {
+		// 		transaction.save();
+		// 	}
 
-				default:
-					break;
-			}
-			if (transaction.isModified) {
-				transaction.save();
-			}
-
-			return res.json({
-				success: true,
-				message: ServiceCode.SUCCESS,
-			});
-		} else {
-			return res.json({
-				success: false,
-				message: ServiceCode.FAILED,
-			});
-		}
+		// 	return res.json({
+		// 		success: true,
+		// 		message: ServiceCode.SUCCESS,
+		// 	});
+		// } else {
+		// 	return res.json({
+		// 		success: false,
+		// 		message: ServiceCode.FAILED,
+		// 	});
+		// }
 	} catch (error) {
 		return res.json({
 			success: false,
@@ -626,6 +628,10 @@ async function postHubtelEcgMeterSearch(req, res) {
 			req.body.phoneNumber
 		);
 		if (hubtelResponse) {
+			if (hubtelResponse.ResponseCode === "0000") {
+				hubtelResponse["success"] = true;
+				return res.json(hubtelResponse);
+			}
 			return res.json(hubtelResponse);
 		}
 		return res.json({
