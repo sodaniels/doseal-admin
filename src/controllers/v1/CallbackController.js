@@ -6,6 +6,9 @@ const { Log } = require("../../helpers/Log");
 const WalletTopup = require("../../models/wallet-topup.model");
 const Transaction = require("../../models/transaction.model");
 const { sendText } = require("../../helpers/sendText");
+const { rand10Id } = require("../../helpers/randId");
+const RestServices = require("../../services/api/RestServices");
+const restServices = new RestServices();
 
 // post hubtel airtime topup transaction
 async function postHubtelAirtelTopup(req, res) {
@@ -71,18 +74,24 @@ async function postHubtelAirtelTopup(req, res) {
 		try {
 			if (transaction.isModified) {
 				await transaction.save();
+				// update debit request for transaction
+				updateDrTransactionStatus(transaction, Data.Description);
 			}
 			Log.info(
 				"[CallbackController.js][postHubtelAirtelTopup]\t Emitting single topup update: "
 			);
-			Log.info("[ApiController.js][postBuyCredit]\t Emitting wallet update: ");
+			Log.info(
+				"[CallbackController.js][postBuyCredit]\t Emitting wallet update: "
+			);
 			try {
 				// io.getIO().emit("transactionUpdate", transaction);
 				io.getIO().emit("excerptTransData", transaction);
-				Log.info("[ApiController.js][postBuyCredit]\t Emitted wallet update: ");
+				Log.info(
+					"[CallbackController.js][postBuyCredit]\t Emitted wallet update: "
+				);
 			} catch (error) {
 				Log.info(
-					`[ApiController.js][postBuyCredit]\t error emitting wallet update: `,
+					`[CallbackController.js][postBuyCredit]\t error emitting wallet update: `,
 					error
 				);
 			}
@@ -180,7 +189,7 @@ async function postHubtelAirtelTopup(req, res) {
 		message: "Callback processed successfully.",
 	});
 }
-
+// post walelt topup callback
 async function postWalletTopupCallback(req, res) {
 	let staveRequest, requestId;
 	Log.info("[CallbackController.js][walletTopupCallback]\tIP: " + req.ip);
@@ -286,6 +295,52 @@ async function postWalletTopupCallback(req, res) {
 		} catch (error) {
 			Log.info(
 				`[CallbackController.js][getRequestByReference][${requestId}]\t error saving callback data: ${error}`
+			);
+		}
+	}
+
+	res.status(200).json({
+		code: 200,
+		message: "Callback processed successfully.",
+	});
+}
+// post payment callback
+async function postHubtelPaymentCallback(req, res) {
+	let transactionId;
+	Log.info("[CallbackController.js][postHubtelPaymentCallback]\tIP: " + req.ip);
+	Log.info(
+		"[CallbackController.js][postHubtelPaymentCallback]\tCallback Transaction: " +
+			JSON.stringify(req.body)
+	);
+
+	let Data = req.body.Data;
+
+	transactionId = Data.ClientReference;
+
+	let transaction = await getTransactionByTransactionId(transactionId);
+
+	if (transaction && transaction.statusCode === 411) {
+		transaction.PaymentResponseCode = req.body.ResponseCode;
+		transaction.PaymentStatus = req.body.Status;
+		transaction.CheckoutId = Data.CheckoutId;
+		transaction.SalesInvoiceId = Data.SalesInvoiceId;
+		transaction.CustomerPhoneNumber = Data.CustomerPhoneNumber;
+		transaction.PaymentAmount = Data.Amount;
+		transaction.PaymentDetails = Data.PaymentDetails;
+		transaction.PaymentDescription = Data.Description;
+		try {
+			if (transaction.isModified) {
+				Log.info(
+					`[CallbackController.js][postHubtelPaymentCallback][${transactionId}]\t payment callback saved`
+				);
+				await transaction.save();
+				if (req.body.ResponseCode === "0000") {
+					commitCreditTransaction(transaction);
+				}
+			}
+		} catch (error) {
+			Log.info(
+				`[CallbackController.js][postHubtelPaymentCallback][${transactionId}]\t error saving callback data: ${error}`
 			);
 		}
 	}
@@ -433,13 +488,13 @@ async function getRequestByRequestId(requestId) {
 
 async function getTransactionByTransactionId(transactionId) {
 	try {
-		const request = await Transaction.findOne({
+		const transaction = await Transaction.findOne({
 			internalReference: transactionId,
 		}).populate({
 			path: "createdBy",
 			select: "firstName middleName lastName phoneNumber ",
 		});
-		return request;
+		return transaction;
 	} catch (error) {
 		Log.info(
 			`[CallbackController.js][getTransactionByTransactionId][${transactionId}]\t error : ${error}`
@@ -448,8 +503,190 @@ async function getTransactionByTransactionId(transactionId) {
 	}
 }
 
+async function commitCreditTransaction(transaction) {
+	let hubtelResponse, creditTransaction;
+	const transactionId = transaction.internalReference;
+	try {
+		const creditTransactionId = rand10Id().toString();
+
+		Log.info(
+			`[CallbackController.js][postHubtelPaymentCallback][commitCreditTransaction][${transactionId}]\t committing credit transaction`
+		);
+		const uniqueId =
+			transaction.internalReference.split("_")[1] ||
+			transaction.internalReference;
+
+		const creditDataObject = new Transaction({
+			createdBy: transaction.createdBy,
+			transactionId: creditTransactionId,
+			internalReference: `CR_${uniqueId}`,
+			category: "CR",
+			type: transaction.type,
+			amount: transaction.amount,
+			cardNumber: transaction.cardNumber ? transaction.cardNumber : undefined,
+			meterId: transaction.meterId ? transaction.meterId : undefined,
+			meterName: transaction.meterName ? transaction.meterName : undefined,
+			mno: transaction.mno ? transaction.mno : undefined,
+			network: transaction.network ? transaction.network : undefined,
+			paymentOption: transaction.paymentOption,
+			phoneNumber: transaction.phoneNumber
+				? transaction.phoneNumber
+				: undefined,
+		});
+		creditTransaction = await creditDataObject.save();
+		const creditUniqueId = `CR_${uniqueId}`;
+		switch (transaction.type) {
+			case "Airtime":
+				switch (transaction.network) {
+					case "mtn-gh":
+						hubtelResponse = await restServices.postHubtelMtnTopup(
+							transaction.phoneNumber,
+							transaction.amount,
+							creditUniqueId
+						);
+						Log.info(
+							`[CallbackController.js][postHubtelPaymentCallback][commitCreditTransaction][${creditUniqueId}]\t hubtelResponse: ${JSON.stringify(
+								hubtelResponse
+							)}`
+						);
+						break;
+					case "vodafone-gh":
+						hubtelResponse = await restServices.postHubtelTelecelTopup(
+							transaction.phoneNumber,
+							transaction.amount,
+							creditUniqueId
+						);
+						Log.info(
+							`[CallbackController.js][postHubtelPaymentCallback][commitCreditTransaction][${creditUniqueId}]\t hubtelResponse: ${JSON.stringify(
+								hubtelResponse
+							)}`
+						);
+						break;
+					case "tigo-gh":
+						hubtelResponse = await restServices.postHubtelAirtelTigoTopup(
+							transaction.phoneNumber,
+							transaction.amount,
+							creditUniqueId
+						);
+						Log.info(
+							`[CallbackController.js][postHubtelPaymentCallback][commitCreditTransaction][${creditUniqueId}]\t hubtelResponse: ${JSON.stringify(
+								hubtelResponse
+							)}`
+						);
+						break;
+					default:
+						break;
+				}
+				break;
+			case "ECG":
+				Log.info(
+					`[CallbackController.js][postHubtelPaymentCallback][commitCreditTransaction][${creditUniqueId}]\t initiating request to ECG: `
+				);
+				hubtelResponse = await restServices.postHubtelECGTopup(
+					transaction.phoneNumber,
+					transaction.amount,
+					creditUniqueId
+				);
+				Log.info(
+					`[CallbackController.js][postHubtelPaymentCallback][commitCreditTransaction][${creditUniqueId}]\t hubtelResponse: ${JSON.stringify(
+						hubtelResponse
+					)}`
+				);
+				break;
+			default:
+				break;
+		}
+		if (creditTransaction && hubtelResponse) {
+			let Meta = hubtelResponse.Data.Meta;
+			creditTransaction.ResponseCode = hubtelResponse.ResponseCode;
+			creditTransaction.Description = hubtelResponse.Message;
+			creditTransaction.HubtelTransactionId = hubtelResponse.Data.TransactionId;
+			creditTransaction.Commission = Meta.Commission;
+			switch (creditTransaction.ResponseCode) {
+				case "0001":
+					creditTransaction.status = "Pending";
+					creditTransaction.statusCode = 411;
+					creditTransaction.statusMessage = "Transaction is pending";
+					break;
+
+				default:
+					break;
+			}
+			if (creditTransaction.isModified) {
+				creditTransaction.save();
+			}
+
+			Log.info(
+				`[CallbackController.js][postHubtelPaymentCallback][processCreditTransaction][${transactionId}]\t ${JSON.stringify(
+					{
+						code: 200,
+						message: "Callback processed successfully.",
+					}
+				)}`
+			);
+		}
+	} catch (error) {
+		Log.info(
+			`[CallbackController.js][postHubtelPaymentCallback][processCreditTransaction][${transactionId}]\t failed committing credit transaction: ${error}`
+		);
+	}
+}
+
+async function updateDrTransactionStatus(transaction, Description) {
+	Log.info(
+		`[CallbackController][updateDrTransactionStatus][${transaction.internalReference}] \t updating DR request`
+	);
+	try {
+		const uniqueId =
+			transaction.internalReference.split("_")[1] ||
+			transaction.internalReference;
+
+		const drTransactionId = `DR_${uniqueId}`;
+		let drTransaction = await getTransactionByTransactionId(drTransactionId);
+		switch (transaction.ResponseCode) {
+			case "0000":
+				drTransaction.status = "Successful";
+				drTransaction.statusCode = 200;
+				drTransaction.statusMessage = "Transaction was successful";
+				break;
+			case "4080":
+				drTransaction.status = "Failed";
+				drTransaction.statusCode = 400;
+				drTransaction.statusMessage = "Insufficient prepaid balance.";
+				break;
+			case "2001":
+				if (Description === "Invalid MSISDN : Invalid MSISDN") {
+					drTransaction.status = "Failed";
+					drTransaction.statusCode = 400;
+					drTransaction.statusMessage = "Invalid Phone Number";
+				}
+				if (Description === "65000 : Subscriber does not exit") {
+					drTransaction.status = "Failed";
+					drTransaction.statusCode = 400;
+					drTransaction.statusMessage = "Invalid Phone Number";
+				}
+
+				break;
+
+			default:
+				drTransaction.status = "Failed";
+				drTransaction.statusCode = 400;
+				drTransaction.statusMessage = "Transaction Failed";
+				break;
+		}
+		if (drTransaction.isModified) {
+			await drTransaction.save();
+		}
+	} catch (error) {
+		Log.info(
+			`[CallbackController][updateDrTransactionStatus][${transaction.internalReference}] \t error udating drTransactionStatus ${error}`
+		);
+	}
+}
+
 module.exports = {
 	postWalletTopupCallback,
 	postTransactionCallback,
 	postHubtelAirtelTopup,
+	postHubtelPaymentCallback,
 };

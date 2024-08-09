@@ -1,7 +1,7 @@
 const Page = require("../../models/page.model");
 const User = require("../../models/user");
 const Wallet = require("../../models/wallet.model");
-const Tranaction = require("../../models/transaction.model");
+const Transaction = require("../../models/transaction.model");
 const WalletTopup = require("../../models/wallet-topup.model");
 const { Log } = require("../../helpers/Log");
 const ServiceCode = require("../../constants/serviceCode");
@@ -329,7 +329,7 @@ async function getWallets(req, res) {
 }
 // post buy credit
 async function postBuyCredit(req, res) {
-	let transaction, hubtelResponse, hubtelPaymentResponse, description;
+	let transaction, hubtelPaymentResponse, description;
 	const validationError = handleValidationErrors(req, res);
 	if (validationError) {
 		const errorRes = await apiErrors.create(
@@ -364,7 +364,7 @@ async function postBuyCredit(req, res) {
 				break;
 		}
 
-		const creditDataObject = new Tranaction({
+		const debitDataObject = new Transaction({
 			createdBy: req.user._id,
 			transactionId: transactionId,
 			internalReference: uniqueId,
@@ -385,7 +385,7 @@ async function postBuyCredit(req, res) {
 			paymentOption: req.body.paymentOption,
 			phoneNumber: req.body.phoneNumber,
 		});
-		transaction = await creditDataObject.save();
+		transaction = await debitDataObject.save();
 
 		if (transaction) {
 			Log.info(
@@ -424,107 +424,6 @@ async function postBuyCredit(req, res) {
 			}
 		}
 
-		// try {
-		// 	Log.info(
-		// 		`[ApiController.js][postBuyCredit][${uniqueId}]\t initiating request to hubtel: `
-		// 	);
-		// 	switch (req.body.type) {
-		// 		case "Airtime":
-		// 			switch (req.body.network) {
-		// 				case "mtn-gh":
-		// 					hubtelResponse = await restServices.postHubtelMtnTopup(
-		// 						req.body.phoneNumber,
-		// 						req.body.amount,
-		// 						uniqueId
-		// 					);
-		// 					Log.info(
-		// 						`[ApiController.js][postBuyCredit][${uniqueId}]\t hubtelResponse: ${JSON.stringify(
-		// 							hubtelResponse
-		// 						)}`
-		// 					);
-		// 					break;
-		// 				case "vodafone-gh":
-		// 					hubtelResponse = await restServices.postHubtelTelecelTopup(
-		// 						req.body.phoneNumber,
-		// 						req.body.amount,
-		// 						uniqueId
-		// 					);
-		// 					Log.info(
-		// 						`[ApiController.js][postBuyCredit][${uniqueId}]\t hubtelResponse: ${JSON.stringify(
-		// 							hubtelResponse
-		// 						)}`
-		// 					);
-		// 					break;
-		// 				case "tigo-gh":
-		// 					hubtelResponse = await restServices.postHubtelAirtelTigoTopup(
-		// 						req.body.phoneNumber,
-		// 						req.body.amount,
-		// 						uniqueId
-		// 					);
-		// 					Log.info(
-		// 						`[ApiController.js][postBuyCredit][${uniqueId}]\t hubtelResponse: ${JSON.stringify(
-		// 							hubtelResponse
-		// 						)}`
-		// 					);
-		// 					break;
-		// 				default:
-		// 					break;
-		// 			}
-		// 			break;
-		// 		case "ECG":
-		// 			Log.info(
-		// 				`[ApiController.js][postBuyCredit][${uniqueId}]\t initiating request to ECG: `
-		// 			);
-		// 			hubtelResponse = await restServices.postHubtelECGTopup(
-		// 				req.body.phoneNumber,
-		// 				req.body.amount,
-		// 				uniqueId
-		// 			);
-		// 			Log.info(
-		// 				`[ApiController.js][postBuyCredit][${uniqueId}]\t hubtelResponse: ${JSON.stringify(
-		// 					hubtelResponse
-		// 				)}`
-		// 			);
-		// 			break;
-		// 		default:
-		// 			break;
-		// 	}
-		// } catch (error) {
-		// 	Log.info(
-		// 		`[ApiController.js][postBuyCredit][${uniqueId}]\t Emitting wallet update: `
-		// 	);
-		// }
-
-		// if (transaction && hubtelResponse) {
-		// 	let Meta = hubtelResponse.Data.Meta;
-		// 	transaction.ResponseCode = hubtelResponse.ResponseCode;
-		// 	transaction.Description = hubtelResponse.Message;
-		// 	transaction.HubtelTransactionId = hubtelResponse.Data.TransactionId;
-		// 	transaction.Commission = Meta.Commission;
-		// 	switch (transaction.ResponseCode) {
-		// 		case "0001":
-		// 			transaction.status = "Pending";
-		// 			transaction.statusCode = 411;
-		// 			transaction.statusMessage = "Transaction is pending";
-		// 			break;
-
-		// 		default:
-		// 			break;
-		// 	}
-		// 	if (transaction.isModified) {
-		// 		transaction.save();
-		// 	}
-
-		// 	return res.json({
-		// 		success: true,
-		// 		message: ServiceCode.SUCCESS,
-		// 	});
-		// } else {
-		// 	return res.json({
-		// 		success: false,
-		// 		message: ServiceCode.FAILED,
-		// 	});
-		// }
 	} catch (error) {
 		return res.json({
 			success: false,

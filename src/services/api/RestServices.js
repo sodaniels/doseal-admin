@@ -301,7 +301,7 @@ class RestServices {
 					clientReference: clientReference,
 					merchantAccountNumber: `${process.env.HUBTEL_POS_SALES_ID}`,
 					cancellationUrl: `${process.env.HUBTEL_CANCELLATION_URL}`,
-					callbackUrl: `${process.env.HUBTEL_CALLBACK_BASE_URL}/api/v1/hubtel-airtime-callback`,
+					callbackUrl: `${process.env.HUBTEL_CALLBACK_BASE_URL}/api/v1/hubtel-payment-callback`,
 				},
 				{
 					headers: {

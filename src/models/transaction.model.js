@@ -6,6 +6,7 @@ const tranactionSchema = new Schema({
 	createdBy: {
 		type: mongoose.Schema.Types.ObjectId,
 		ref: "User",
+		required: false,
 	},
 	transactionId: {
 		type: String,
@@ -107,7 +108,40 @@ const tranactionSchema = new Schema({
 		type: Number,
 		required: false,
 	},
+	
 	ExternalTransactionId: {
+		type: String,
+		required: false,
+	},
+	PaymentResponseCode: {
+		type: String,
+		required: false,
+	},
+	PaymentStatus: {
+		type: String,
+		required: false,
+	},
+	CheckoutId: {
+		type: String,
+		required: false,
+	},
+	SalesInvoiceId: {
+		type: String,
+		required: false,
+	},
+	CustomerPhoneNumber: {
+		type: String,
+		required: false,
+	},
+	PaymentAmount: {
+		type: Number,
+		required: false,
+	},
+	PaymentDetails: {
+		type: Object,
+		required: false,
+	},
+	PaymentDescription: {
 		type: String,
 		required: false,
 	},
@@ -116,4 +150,4 @@ const tranactionSchema = new Schema({
 	updatedAt: { type: Date, default: Date.now },
 });
 
-module.exports = mongoose.model("Tranaction", tranactionSchema);
+module.exports = mongoose.model("Transaction", tranactionSchema);

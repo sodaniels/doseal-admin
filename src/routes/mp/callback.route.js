@@ -21,5 +21,10 @@ router.post(
 	"/hubtel-airtime-callback",
 	callBackController.postHubtelAirtelTopup
 );
+// post hubtel payment callback
+router.post(
+	"/hubtel-payment-callback",
+	callBackController.postHubtelPaymentCallback
+);
 
 module.exports = router;
