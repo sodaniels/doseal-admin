@@ -520,6 +520,7 @@ async function commitCreditTransaction(transaction) {
 			createdBy: transaction.createdBy,
 			transactionId: creditTransactionId,
 			internalReference: `CR_${uniqueId}`,
+			commonReference: transaction.internalReference,
 			category: "CR",
 			type: transaction.type,
 			amount: transaction.amount,

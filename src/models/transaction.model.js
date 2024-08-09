@@ -16,6 +16,10 @@ const tranactionSchema = new Schema({
 		type: String,
 		required: true,
 	},
+	commonReference: {
+		type: String,
+		required: false,
+	},
 	category: {
 		type: String,
 		required: true,
