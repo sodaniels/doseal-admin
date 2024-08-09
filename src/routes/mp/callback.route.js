@@ -26,5 +26,6 @@ router.post(
 	"/hubtel-payment-callback",
 	callBackController.postHubtelPaymentCallback
 );
-
+// post ecg callback
+router.post("/hubtel-ecg-callback", callBackController.postHubtelEcgTopup);
 module.exports = router;

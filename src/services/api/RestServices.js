@@ -238,15 +238,18 @@ class RestServices {
 		}
 	}
 
-	async postHubtelECGTopup(Destination, Amount, ClientReference) {
+	async postHubtelECGTopup(phoneNumber, meterId, Amount, ClientReference) {
 		try {
 			const response = await axios.post(
 				`https://cs.hubtel.com/commissionservices/${process.env.HUBTEL_PREPAID_DEPOSTI_ACCOUNT}/${process.env.HUBTEL_ECG_PREPAID_POSTPAID_SERVICE_ID}`,
 				{
-					Destination: Destination,
+					Destination: phoneNumber,
 					Amount: Amount,
-					CallbackURL: `${process.env.HUBTEL_CALLBACK_BASE_URL}/api/v1/hubtel-airtime-callback`,
+					CallbackURL: `${process.env.HUBTEL_CALLBACK_BASE_URL}/api/v1/hubtel-ecg-callback`,
 					ClientReference: ClientReference,
+					Extradata: {
+						bundle: meterId,
+					},
 				},
 				{
 					headers: {

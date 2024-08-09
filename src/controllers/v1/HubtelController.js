@@ -98,32 +98,31 @@ async function PrepaidPostpaidRequest(req, res) {
 			req.body.mno
 		);
 		return res.json(response);
-		console.log(response);
 	} catch (error) {
 		Log.info(
-			`[HubtelController.js][AccountValidation] error validating account: ${error.message}`
+			`[HubtelController.js][PrepaidPostpaidRequest] error validating account: ${error.message}`
 		);
 		Log.info(
-			`[HubtelController.js][AccountValidation] error details: ${JSON.stringify(
+			`[HubtelController.js][PrepaidPostpaidRequest] error details: ${JSON.stringify(
 				error
 			)}`
 		);
 		if (error.response) {
 			Log.info(
-				`[HubtelController.js][AccountValidation] response status: ${error.response.status}`
+				`[HubtelController.js][PrepaidPostpaidRequest] response status: ${error.response.status}`
 			);
 			Log.info(
-				`[HubtelController.js][AccountValidation] response data: ${JSON.stringify(
+				`[HubtelController.js][PrepaidPostpaidRequest] response data: ${JSON.stringify(
 					error.response.data
 				)}`
 			);
 		} else if (error.request) {
 			Log.info(
-				`[HubtelController.js][AccountValidation] request: ${error.request}`
+				`[HubtelController.js][PrepaidPostpaidRequest] request: ${error.request}`
 			);
 		} else {
 			Log.info(
-				`[HubtelController.js][AccountValidation] unknown error: ${error.message}`
+				`[HubtelController.js][PrepaidPostpaidRequest] unknown error: ${error.message}`
 			);
 		}
 		return res.json({

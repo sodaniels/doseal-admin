@@ -549,7 +549,7 @@ async function postHubtelEcgMeterSearch(req, res) {
 
 		hubtelResponse = await restServices.postHubtelEcgMeterSearchService(
 			req.body.phoneNumber
-		);
+		)
 		if (hubtelResponse) {
 			if (hubtelResponse.ResponseCode === "0000") {
 				hubtelResponse["success"] = true;
@@ -568,18 +568,6 @@ async function postHubtelEcgMeterSearch(req, res) {
 			message: ServiceCode.ERROR_OCCURED,
 		});
 	}
-}
-async function excerptTransactions(_id) {
-	const excerptTransactions = await Transaction.find({
-		createdBy: _id,
-		cr_created: { $ne: true },
-	})
-		.sort({
-			_id: -1,
-		})
-		.limit(4);
-
-	return excerptTransactions;
 }
 
 module.exports = {

@@ -54,7 +54,7 @@ const tranactionSchema = new Schema({
 	},
 	paymentOption: {
 		type: String,
-		required: true,
+		required: false,
 	},
 	phoneNumber: {
 		type: String,

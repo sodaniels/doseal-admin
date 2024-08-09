@@ -32,10 +32,6 @@ const validateBuyCredit = [
 		.notEmpty()
 		.trim()
 		.withMessage("The Meter Name is required"),
-	body("paymentOption")
-		.notEmpty()
-		.trim()
-		.withMessage("The Payment Option is required"),
 	body("mno")
 		.if(body("paymentOption").equals("Mobile Money"))
 		.trim()
@@ -76,5 +72,5 @@ module.exports = {
 	validateWallet,
 	validateBuyCredit,
 	validateAccount,
-	validateEcgSearch
+	validateEcgSearch,
 };
