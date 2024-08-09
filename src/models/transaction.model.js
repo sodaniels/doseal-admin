@@ -97,7 +97,7 @@ const tranactionSchema = new Schema({
 		required: false,
 	},
 	Commission: {
-		type: String,
+		type: Number,
 		required: false,
 	},
 	Description: {

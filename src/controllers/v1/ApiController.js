@@ -391,6 +391,26 @@ async function postBuyCredit(req, res) {
 			Log.info(
 				`[ApiController.js][postBuyCredit][${uniqueId}]\t initiating payment request to hubtel`
 			);
+			try {
+				const excerptTrans = await Transaction.find({
+					createdBy: req.user._id,
+					cr_created: { $ne: true },
+				})
+					.sort({
+						_id: -1,
+					})
+					.limit(4);
+					// console.log("excerptTrans: ", excerptTrans)
+				io.getIO().emit("excerptTransactionUpdate", excerptTrans);
+				Log.info(
+					"[CallbackController.js][postBuyCredit]\t Emitted excerpt update: "
+				);
+			} catch (error) {
+				Log.info(
+					`[CallbackController.js][postBuyCredit]\t error emitting excerpt update: `,
+					error
+				);
+			}
 
 			try {
 				hubtelPaymentResponse = await restServices.postHubtelPaymentService(
@@ -406,6 +426,7 @@ async function postBuyCredit(req, res) {
 					);
 					return res.json(hubtelPaymentResponse);
 				}
+
 				return res.json({
 					success: false,
 					code: 400,
@@ -547,6 +568,18 @@ async function postHubtelEcgMeterSearch(req, res) {
 			message: ServiceCode.ERROR_OCCURED,
 		});
 	}
+}
+async function excerptTransactions(_id) {
+	const excerptTransactions = await Transaction.find({
+		createdBy: _id,
+		cr_created: { $ne: true },
+	})
+		.sort({
+			_id: -1,
+		})
+		.limit(4);
+
+	return excerptTransactions;
 }
 
 module.exports = {

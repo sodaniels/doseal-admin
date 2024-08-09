@@ -84,18 +84,6 @@ async function postHubtelAirtelTopup(req, res) {
 				"[CallbackController.js][postBuyCredit]\t Emitting wallet update: "
 			);
 			try {
-				// io.getIO().emit("transactionUpdate", transaction);
-				io.getIO().emit("excerptTransData", transaction);
-				Log.info(
-					"[CallbackController.js][postBuyCredit]\t Emitted wallet update: "
-				);
-			} catch (error) {
-				Log.info(
-					`[CallbackController.js][postBuyCredit]\t error emitting wallet update: `,
-					error
-				);
-			}
-			try {
 				io.getIO().emit("singleTransactionUpdate", transaction);
 				Log.info(
 					"[CallbackController.js][postHubtelAirtelTopup]\t Emitted single topup update: "
@@ -176,6 +164,18 @@ async function postHubtelAirtelTopup(req, res) {
 						);
 					}
 				}
+			}
+
+			try {
+				io.getIO().emit("excerptTransData", transaction);
+				Log.info(
+					"[CallbackController.js][postBuyCredit]\t Emitted wallet update: "
+				);
+			} catch (error) {
+				Log.info(
+					`[CallbackController.js][postBuyCredit]\t error emitting wallet update: `,
+					error
+				);
 			}
 		} catch (error) {
 			Log.info(
@@ -333,6 +333,8 @@ async function postHubtelPaymentCallback(req, res) {
 				Log.info(
 					`[CallbackController.js][postHubtelPaymentCallback][${transactionId}]\t payment callback saved`
 				);
+
+				transaction.cr_created = true;
 				await transaction.save();
 				if (req.body.ResponseCode === "0000") {
 					commitCreditTransaction(transaction);
@@ -466,41 +468,6 @@ async function postTransactionCallback(req, res) {
 		code: 200,
 		message: "Callback processed successfully.",
 	});
-}
-
-/**single get pull */
-async function getRequestByRequestId(requestId) {
-	try {
-		const request = await WalletTopup.findOne({
-			requestId: requestId,
-		}).populate({
-			path: "createdBy",
-			select: "firstName middleName lastName phoneNumber ",
-		});
-		return request;
-	} catch (error) {
-		Log.info(
-			`[CallbackController.js][getRequestByRequestId][${requestId}]\t error : ${error}`
-		);
-		return null;
-	}
-}
-
-async function getTransactionByTransactionId(transactionId) {
-	try {
-		const transaction = await Transaction.findOne({
-			internalReference: transactionId,
-		}).populate({
-			path: "createdBy",
-			select: "firstName middleName lastName phoneNumber ",
-		});
-		return transaction;
-	} catch (error) {
-		Log.info(
-			`[CallbackController.js][getTransactionByTransactionId][${transactionId}]\t error : ${error}`
-		);
-		return null;
-	}
 }
 
 async function commitCreditTransaction(transaction) {
@@ -676,13 +643,64 @@ async function updateDrTransactionStatus(transaction, Description) {
 				break;
 		}
 		if (drTransaction.isModified) {
-			drTransaction.cr_created = true;
 			await drTransaction.save();
 		}
 	} catch (error) {
 		Log.info(
 			`[CallbackController][updateDrTransactionStatus][${transaction.internalReference}] \t error udating drTransactionStatus ${error}`
 		);
+	}
+}
+
+//helper functions
+async function getTransactionByTransactionId(transactionId) {
+	try {
+		const transaction = await Transaction.findOne({
+			internalReference: transactionId,
+		}).populate({
+			path: "createdBy",
+			select: "firstName middleName lastName phoneNumber ",
+		});
+		return transaction;
+	} catch (error) {
+		Log.info(
+			`[CallbackController.js][getTransactionByTransactionId][${transactionId}]\t error : ${error}`
+		);
+		return null;
+	}
+}
+async function getTransactionByType(transactionId, _type) {
+	try {
+		const transaction = await Transaction.findOne({
+			commonReference: transactionId,
+			type: _type,
+		}).populate({
+			path: "createdBy",
+			select: "firstName middleName lastName phoneNumber ",
+		});
+		return transaction;
+	} catch (error) {
+		Log.info(
+			`[CallbackController.js][getTransactionByTransactionId][${transactionId}]\t error : ${error}`
+		);
+		return null;
+	}
+}
+
+async function getRequestByRequestId(requestId) {
+	try {
+		const request = await WalletTopup.findOne({
+			requestId: requestId,
+		}).populate({
+			path: "createdBy",
+			select: "firstName middleName lastName phoneNumber ",
+		});
+		return request;
+	} catch (error) {
+		Log.info(
+			`[CallbackController.js][getRequestByRequestId][${requestId}]\t error : ${error}`
+		);
+		return null;
 	}
 }
 
