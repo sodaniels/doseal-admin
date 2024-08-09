@@ -438,7 +438,10 @@ async function getExcerptTransactions(req, res) {
 		Log.info(
 			`[ApiController.js][getExcerptTransactions][${req.user._id}]\t retrieving transactions`
 		);
-		const transactions = await Tranaction.find({ createdBy: req.user._id })
+		const transactions = await Transaction.find({
+			createdBy: req.user._id,
+			cr_created: { $ne: true },
+		})
 			.sort({
 				_id: -1,
 			})
@@ -474,8 +477,9 @@ async function getTransactions(req, res) {
 		Log.info(
 			`[ApiController.js][getTransactions][${req.user._id}]\t retrieving transactions`
 		);
-		const transactions = await Tranaction.find({
+		const transactions = await Transaction.find({
 			createdBy: req.user._id,
+			cr_created: { $ne: true },
 		}).sort({
 			_id: -1,
 		});

@@ -676,6 +676,7 @@ async function updateDrTransactionStatus(transaction, Description) {
 				break;
 		}
 		if (drTransaction.isModified) {
+			drTransaction.cr_created = true;
 			await drTransaction.save();
 		}
 	} catch (error) {

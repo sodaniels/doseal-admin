@@ -20,6 +20,10 @@ const tranactionSchema = new Schema({
 		type: String,
 		required: false,
 	},
+	cr_created: {
+		type: Boolean,
+		required: false,
+	},
 	category: {
 		type: String,
 		required: true,
@@ -112,7 +116,7 @@ const tranactionSchema = new Schema({
 		type: Number,
 		required: false,
 	},
-	
+
 	ExternalTransactionId: {
 		type: String,
 		required: false,
