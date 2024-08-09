@@ -401,8 +401,8 @@ async function postBuyCredit(req, res) {
 
 				if (hubtelPaymentResponse) {
 					Log.info(
-						`[ApiController.js][postBuyCredit][${uniqueId}]\t hubtel payment response : `,
-						hubtelPaymentResponse
+						`[ApiController.js][postBuyCredit][${uniqueId}]\t hubtel payment response : ` +
+							JSON.stringify(hubtelPaymentResponse)
 					);
 					return res.json(hubtelPaymentResponse);
 				}
@@ -423,7 +423,6 @@ async function postBuyCredit(req, res) {
 				});
 			}
 		}
-
 	} catch (error) {
 		return res.json({
 			success: false,
