@@ -369,6 +369,9 @@ async function postBuyCredit(req, res) {
 			case "StarTimesTv":
 				description = "Payment for Star Times Tv";
 				break;
+			case "GhanaWater":
+				description = "Payment for Ghana Water";
+				break;
 			default:
 				break;
 		}
@@ -399,9 +402,9 @@ async function postBuyCredit(req, res) {
 			accountNumber: req.body.accountNumber
 				? req.body.accountNumber
 				: undefined,
+			sessionId: req.body.sessionId ? req.body.sessionId : undefined,
 		});
 		transaction = await debitDataObject.save();
-
 		if (transaction) {
 			Log.info(
 				`[ApiController.js][postBuyCredit][${uniqueId}]\t initiating payment request to hubtel`

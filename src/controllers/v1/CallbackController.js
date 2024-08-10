@@ -190,11 +190,13 @@ async function postHubtelAirtelTopup(req, res) {
 	});
 }
 // post hubtel ecg topup
-async function postHubtelEcgTopup(req, res) {
+async function postHubtelUtilityCallbackServices(req, res) {
 	let saveTransaction, transactionId;
-	Log.info("[CallbackController.js][postHubtelEcgTopup]\tIP: " + req.ip);
 	Log.info(
-		"[CallbackController.js][postHubtelEcgTopup]\tCallback Transaction: " +
+		"[CallbackController.js][postHubtelUtilityCallbackServices]\tIP: " + req.ip
+	);
+	Log.info(
+		"[CallbackController.js][postHubtelUtilityCallbackServices]\tCallback Transaction: " +
 			JSON.stringify(req.body)
 	);
 
@@ -213,11 +215,17 @@ async function postHubtelEcgTopup(req, res) {
 
 		transaction.ResponseCode = req.body.ResponseCode;
 		transaction.Description = Data.Description;
-		transaction.HubtelTransactionId = Data.TransactionId;
-		transaction.ExternalTransactionId = Data.ExternalTransactionId;
-		transaction.Commission = Meta.Commission;
-		transaction.AmountDebited = Data.AmountDebited;
-		transaction.Charges = Data.Charges;
+		transaction.HubtelTransactionId = Data.TransactionId
+			? Data.TransactionId
+			: undefined;
+		transaction.ExternalTransactionId = Data.ExternalTransactionId
+			? Data.ExternalTransactionId
+			: undefined;
+		transaction.Commission = Meta ? Meta.Commission : undefined;
+		transaction.AmountDebited = Data.AmountDebited
+			? Data.AmountDebited
+			: undefined;
+		transaction.Charges = Data.Charges ? Data.Charges : undefined;
 		switch (transaction.ResponseCode) {
 			case "0000":
 				transaction.status = "Successful";
@@ -257,19 +265,19 @@ async function postHubtelEcgTopup(req, res) {
 				updateDrTransactionStatus(transaction, Data.Description);
 			}
 			Log.info(
-				"[CallbackController.js][postHubtelEcgTopup]\t Emitting single topup update: "
+				"[CallbackController.js][postHubtelUtilityCallbackServices]\t Emitting single topup update: "
 			);
 			Log.info(
-				"[CallbackController.js][postHubtelEcgTopup]\t Emitting wallet update: "
+				"[CallbackController.js][postHubtelUtilityCallbackServices]\t Emitting wallet update: "
 			);
 			try {
 				io.getIO().emit("singleTransactionUpdate", transaction);
 				Log.info(
-					"[CallbackController.js][postHubtelEcgTopup]\t Emitted single topup update: "
+					"[CallbackController.js][postHubtelUtilityCallbackServices]\t Emitted single topup update: "
 				);
 			} catch (error) {
 				Log.info(
-					`[CallbackController.js][postHubtelEcgTopup]\t error emitting walletTopUp update: `,
+					`[CallbackController.js][postHubtelUtilityCallbackServices]\t error emitting walletTopUp update: `,
 					error
 				);
 			}
@@ -295,23 +303,23 @@ async function postHubtelEcgTopup(req, res) {
 							await user.save();
 
 							Log.info(
-								"[CallbackController.js][postHubtelEcgTopup]\t Emitting balance update: "
+								"[CallbackController.js][postHubtelUtilityCallbackServices]\t Emitting balance update: "
 							);
 							try {
 								io.getIO().emit("balanceUpdate", user.balance);
 								Log.info(
-									"[CallbackController.js][postHubtelEcgTopup]\t Emitted balance update: "
+									"[CallbackController.js][postHubtelUtilityCallbackServices]\t Emitted balance update: "
 								);
 							} catch (error) {
 								Log.info(
-									`[CallbackController.js][postHubtelEcgTopup]\t error emitting balance update: `,
+									`[CallbackController.js][postHubtelUtilityCallbackServices]\t error emitting balance update: `,
 									error
 								);
 							}
 						}
 					} catch (error) {
 						Log.info(
-							`[CallbackController.js][postHubtelEcgTopup][${transactionId}]\t error updating balance: ${error}`
+							`[CallbackController.js][postHubtelUtilityCallbackServices][${transactionId}]\t error updating balance: ${error}`
 						);
 					}
 
@@ -321,12 +329,12 @@ async function postHubtelEcgTopup(req, res) {
 
 					try {
 						Log.info(
-							`[CallbackController.js][postHubtelEcgTopup][${transactionId}]\t sending success message: ${message}`
+							`[CallbackController.js][postHubtelUtilityCallbackServices][${transactionId}]\t sending success message: ${message}`
 						);
 						await sendText(phoneNumber, message);
 					} catch (error) {
 						Log.info(
-							`[CallbackController.js][postHubtelEcgTopup][${transactionId}]\t error sending success message: ${error}`
+							`[CallbackController.js][postHubtelUtilityCallbackServices][${transactionId}]\t error sending success message: ${error}`
 						);
 					}
 				} else {
@@ -334,12 +342,12 @@ async function postHubtelEcgTopup(req, res) {
 
 					try {
 						Log.info(
-							`[CallbackController.js][postHubtelEcgTopup][${transactionId}]\t sending failure message: ${message}`
+							`[CallbackController.js][postHubtelUtilityCallbackServices][${transactionId}]\t sending failure message: ${message}`
 						);
 						await sendText(phoneNumber, message);
 					} catch (error) {
 						Log.info(
-							`[CallbackController.js][postHubtelEcgTopup][${transactionId}]\t error sending success message: ${error}`
+							`[CallbackController.js][postHubtelUtilityCallbackServices][${transactionId}]\t error sending success message: ${error}`
 						);
 					}
 				}
@@ -348,17 +356,17 @@ async function postHubtelEcgTopup(req, res) {
 			try {
 				io.getIO().emit("excerptTransData", transaction);
 				Log.info(
-					"[CallbackController.js][postHubtelEcgTopup]\t Emitted wallet update: "
+					"[CallbackController.js][postHubtelUtilityCallbackServices]\t Emitted wallet update: "
 				);
 			} catch (error) {
 				Log.info(
-					`[CallbackController.js][postHubtelEcgTopup]\t error emitting wallet update: `,
+					`[CallbackController.js][postHubtelUtilityCallbackServices]\t error emitting wallet update: `,
 					error
 				);
 			}
 		} catch (error) {
 			Log.info(
-				`[CallbackController.js][postHubtelEcgTopup][${transactionId}]\t error saving callback data: ${error}`
+				`[CallbackController.js][postHubtelUtilityCallbackServices][${transactionId}]\t error saving callback data: ${error}`
 			);
 		}
 	}
@@ -492,51 +500,60 @@ async function postHubtelPaymentCallback(req, res) {
 			JSON.stringify(req.body)
 	);
 
-	let Data = req.body.Data;
+	try {
+		let Data = req.body.Data;
 
-	transactionId = Data.ClientReference;
+		transactionId = Data.ClientReference;
 
-	let transaction = await getTransactionByTransactionId(transactionId);
+		let transaction = await getTransactionByTransactionId(transactionId);
 
-	if (transaction && transaction.statusCode === 411) {
-		transaction.PaymentResponseCode = req.body.ResponseCode;
-		transaction.PaymentStatus = req.body.Status;
-		transaction.CheckoutId = Data.CheckoutId;
-		transaction.SalesInvoiceId = Data.SalesInvoiceId;
-		transaction.CustomerPhoneNumber = Data.CustomerPhoneNumber;
-		transaction.PaymentAmount = Data.Amount;
-		transaction.PaymentDetails = Data.PaymentDetails;
-		transaction.PaymentDescription = Data.Description;
-		if (req.body.ResponseCode === "2001") {
-			transaction.status = "Failed";
-			transaction.statusCode = 400;
-			transaction.statusMessage = "Payment Failed";
-		}
-		try {
-			if (transaction.isModified) {
-				Log.info(
-					`[CallbackController.js][postHubtelPaymentCallback][${transactionId}]\t payment callback saved`
-				);
+		if (transaction && transaction.statusCode === 411) {
+			transaction.PaymentResponseCode = req.body.ResponseCode;
+			transaction.PaymentStatus = req.body.Status;
+			transaction.CheckoutId = Data.CheckoutId;
+			transaction.SalesInvoiceId = Data.SalesInvoiceId;
+			transaction.CustomerPhoneNumber = Data.CustomerPhoneNumber;
+			transaction.PaymentAmount = Data.Amount;
+			transaction.PaymentDetails = Data.PaymentDetails;
+			transaction.PaymentDescription = Data.Description;
 
-				if (req.body.ResponseCode === "0000") {
-					transaction.cr_created = true;
-				}
-				await transaction.save();
-				if (req.body.ResponseCode === "0000") {
-					commitCreditTransaction(transaction);
-				}
+			if (req.body.ResponseCode === "0000") {
+				transaction.status = "Successful";
+				transaction.statusCode = 200;
+				transaction.statusMessage = "Transaction was successful";
+				transaction.cr_created = true;
+			} else {
+				transaction.status = "Failed";
+				transaction.statusCode = 400;
+				transaction.statusMessage = "Payment Failed";
 			}
-		} catch (error) {
-			Log.info(
-				`[CallbackController.js][postHubtelPaymentCallback][${transactionId}]\t error saving callback data: ${error}`
-			);
-		}
-	}
+			try {
+				if (transaction.isModified) {
+					Log.info(
+						`[CallbackController.js][postHubtelPaymentCallback][${transactionId}]\t payment callback saved`
+					);
+					await transaction.save();
 
-	res.status(200).json({
-		code: 200,
-		message: "Callback processed successfully.",
-	});
+					if (req.body.ResponseCode === "0000") {
+						commitCreditTransaction(transaction);
+					}
+				}
+			} catch (error) {
+				Log.info(
+					`[CallbackController.js][postHubtelPaymentCallback][${transactionId}]\t error saving callback data: ${error}`
+				);
+			}
+		}
+
+		res.status(200).json({
+			code: 200,
+			message: "Callback processed successfully.",
+		});
+	} catch (error) {
+		Log.info(
+			`[CallbackController.js][postHubtelPaymentCallback][${transactionId}]\t error processing payment callback: ${error}`
+		);
+	}
 }
 
 async function postTransactionCallback(req, res) {
@@ -799,6 +816,23 @@ async function commitCreditTransaction(transaction) {
 					)}`
 				);
 				break;
+			case "GhanaWater":
+				Log.info(
+					`[CallbackController.js][postHubtelPaymentCallback][commitCreditTransaction][${creditUniqueId}]\t initiating request to ghana water: `
+				);
+				hubtelResponse = await restServices.postHubtelPayGhanaWater(
+					transaction.accountNumber,
+					transaction.amount,
+					transaction.phoneNumber,
+					creditUniqueId,
+					transaction.sessionId
+				);
+				Log.info(
+					`[CallbackController.js][postHubtelPaymentCallback][commitCreditTransaction][${creditUniqueId}]\t hubtelResponse: ${JSON.stringify(
+						hubtelResponse
+					)}`
+				);
+				break;
 			default:
 				break;
 		}
@@ -807,7 +841,9 @@ async function commitCreditTransaction(transaction) {
 			creditTransaction.ResponseCode = hubtelResponse.ResponseCode;
 			creditTransaction.Description = hubtelResponse.Message;
 			creditTransaction.HubtelTransactionId = hubtelResponse.Data.TransactionId;
-			creditTransaction.Commission = Meta.Commission;
+			creditTransaction.Commission = Meta.Commission
+				? Meta.Commission
+				: undefined;
 			switch (creditTransaction.ResponseCode) {
 				case "0001":
 					creditTransaction.status = "Pending";
@@ -950,5 +986,5 @@ module.exports = {
 	postTransactionCallback,
 	postHubtelAirtelTopup,
 	postHubtelPaymentCallback,
-	postHubtelEcgTopup,
+	postHubtelUtilityCallbackServices,
 };

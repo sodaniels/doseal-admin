@@ -677,6 +677,68 @@ class RestServices {
 			};
 		}
 	}
+	//post pay hubtel ghana water
+	async postHubtelPayGhanaWater(
+		accountNumber,
+		Amount,
+		phoneNumber,
+		ClientReference,
+		sessionId
+	) {
+		try {
+			Log.info(
+				`[HubtelController.js][postHubtelPayGhanaWater][${accountNumber}][${Amount}][${ClientReference}] intial  [POST] to purchase ghana water `
+			);
+			const response = await axios.post(
+				`https://cs.hubtel.com/commissionservices/${process.env.HUBTEL_PREPAID_DEPOSTI_ACCOUNT}/${process.env.HUBTEL_GHANA_WATER_SERVICE_ID}`,
+				{
+					Destination: phoneNumber,
+					Amount: Amount,
+					Extradata: {
+						bundle: accountNumber,
+						Email: "info@doseal.org",
+						SessionId: sessionId,
+					},
+					CallbackURL: `${process.env.HUBTEL_CALLBACK_BASE_URL}/api/v1/hubtel-utility-services-callback`,
+					ClientReference: ClientReference,
+				},
+				{
+					headers: {
+						Authorization: `Basic ${token()}`,
+						"Content-Type": "application/json",
+					},
+				}
+			);
+			return response.data;
+		} catch (error) {
+			Log.info(
+				`[HubtelController.js][postHubtelPayGhanaWater] error validating account: ${error.message}`
+			);
+			if (error.response) {
+				Log.info(
+					`[HubtelController.js][postHubtelPayGhanaWater] response status: ${error.response.status}`
+				);
+				Log.info(
+					`[HubtelController.js][postHubtelPayGhanaWater] response data: ${JSON.stringify(
+						error.response.data
+					)}`
+				);
+			} else if (error.request) {
+				Log.info(
+					`[HubtelController.js][postHubtelPayGhanaWater] request: ${error.request}`
+				);
+			} else {
+				Log.info(
+					`[HubtelController.js][postHubtelPayGhanaWater] unknown error: ${error.message}`
+				);
+			}
+			return {
+				success: false,
+				code: 500,
+				message: error.message,
+			};
+		}
+	}
 }
 
 function token() {

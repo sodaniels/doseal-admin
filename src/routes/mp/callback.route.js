@@ -29,7 +29,7 @@ router.post(
 // post utility services callback
 router.post(
 	"/hubtel-utility-services-callback",
-	callBackController.postHubtelEcgTopup
+	callBackController.postHubtelUtilityCallbackServices
 );
 
 module.exports = router;
