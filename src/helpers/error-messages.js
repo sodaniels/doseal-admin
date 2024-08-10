@@ -10,6 +10,7 @@ exports.errors = {
     API_MESSAGE_DSTV_FAILED: "DSTV Request Failed",
     API_MESSAGE_GOTV_FAILED: "GOTV Request Failed",
     API_MESSAGE_STAR_TIMES_TV_FAILED: "Start Times TV Request Failed",
+    API_MESSAGE_GHANA_WATER_FAILED: "Ghana Water Request Failed",
 
 
 

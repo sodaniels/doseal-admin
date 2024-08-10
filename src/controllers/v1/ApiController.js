@@ -369,7 +369,6 @@ async function postBuyCredit(req, res) {
 			case "StarTimesTv":
 				description = "Payment for Star Times Tv";
 				break;
-				;
 			default:
 				break;
 		}
@@ -709,6 +708,49 @@ async function postHubtelStarTimesTvAccountSearch(req, res) {
 		});
 	}
 }
+// search ghana water account
+async function postHubtelGhanaWaterAccountSearch(req, res) {
+	let hubtelResponse;
+	const validationError = handleValidationErrors(req, res);
+	if (validationError) {
+		const errorRes = await apiErrors.create(
+			errorMessages.errors.API_MESSAGE_GHANA_WATER_FAILED,
+			"POST",
+			validationError,
+			undefined
+		);
+		return res.json(errorRes);
+	}
+	try {
+		Log.info(
+			`[ApiController.js][postHubtelStarTimesTvAccountSearch]\t incoming ghana water account search request: ` +
+				req.ip
+		);
+
+		hubtelResponse =
+			await restServices.postHubtelGhanaWaterAccountSearchService(
+				req.body.accountNumber,
+				req.body.phoneNumber
+			);
+		if (hubtelResponse) {
+			if (hubtelResponse.ResponseCode === "0000") {
+				hubtelResponse["success"] = true;
+				return res.json(hubtelResponse);
+			}
+			return res.json(hubtelResponse);
+		}
+		return res.json({
+			success: false,
+			message: ServiceCode.FAILED,
+		});
+	} catch (error) {
+		return res.json({
+			success: false,
+			error: error.message,
+			message: ServiceCode.ERROR_OCCURED,
+		});
+	}
+}
 
 module.exports = {
 	getPageCategory,
@@ -725,4 +767,5 @@ module.exports = {
 	postHubtelDstvAccountSearch,
 	postHubtelGoTVAccountSearch,
 	postHubtelStarTimesTvAccountSearch,
+	postHubtelGhanaWaterAccountSearch,
 };
