@@ -48,7 +48,7 @@ router.post(
 	hubtelController.PrepaidPostpaidRequest
 );
 // hubtel airtime topup
-router.post("/hubtel-airtime-topup", hubtelController.HubtelMTNRequest);
+router.post("/hubtel-airtime-topup", hubtelController.HubtelAirtimeTopupRequest);
 // hubtel ecg meter search
 router.post(
 	"/search-ecg-meter",

@@ -151,7 +151,7 @@ class RestServices {
 	async postHubtelAirtelTigoTopup(Destination, Amount, ClientReference) {
 		try {
 			const response = await axios.post(
-				`https://cs.hubtel.com/commissionservices/${process.env.HUBTEL_PREPAID_DEPOSTI_ACCOUNT}/${process.env.HUBTEL_AIRTEL_TIGO_SERVICE_ID}`,
+				`https://cs.hubtel.com/commissionservices/${process.env.HUBTEL_PREPAID_DEPOSTI_ACCOUNT}/${process.env.HUBTEL_AIRTEL_TIGO_AIRTIME_SERVICE_ID}`,
 				{
 					Destination: Destination,
 					Amount: Amount,
