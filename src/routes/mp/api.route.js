@@ -73,7 +73,7 @@ router.post(
 router.post(
 	"/search-star-times-tv-account",
 	validator.validateUtilitySearch,
-	apiController.postHubtelGoTVAccountSearch
+	apiController.postHubtelStarTimesTvAccountSearch
 );
 
 module.exports = router;
