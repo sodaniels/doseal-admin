@@ -507,6 +507,11 @@ async function postHubtelPaymentCallback(req, res) {
 		transaction.PaymentAmount = Data.Amount;
 		transaction.PaymentDetails = Data.PaymentDetails;
 		transaction.PaymentDescription = Data.Description;
+		if (req.body.ResponseCode === "2001") {
+			transaction.status = "Failed";
+			transaction.statusCode = 400;
+			transaction.statusMessage = "Payment Failed";
+		}
 		try {
 			if (transaction.isModified) {
 				Log.info(
@@ -681,6 +686,12 @@ async function commitCreditTransaction(transaction) {
 			phoneNumber: transaction.phoneNumber
 				? transaction.phoneNumber
 				: undefined,
+			accountName: transaction.accountName
+				? transaction.accountName
+				: undefined,
+			accountNumber: transaction.accountNumber
+				? transaction.accountNumber
+				: undefined,
 		});
 		creditTransaction = await creditDataObject.save();
 		const creditUniqueId = `CR_${uniqueId}`;
@@ -743,6 +754,21 @@ async function commitCreditTransaction(transaction) {
 					)}`
 				);
 				break;
+			case "DSTV":
+				Log.info(
+					`[CallbackController.js][postHubtelPaymentCallback][commitCreditTransaction][${creditUniqueId}]\t initiating request to DSTV: `
+				);
+				hubtelResponse = await restServices.postHubtelPayDstv(
+					transaction.accountNumber,
+					transaction.amount,
+					creditUniqueId
+				);
+				Log.info(
+					`[CallbackController.js][postHubtelPaymentCallback][commitCreditTransaction][${creditUniqueId}]\t hubtelResponse: ${JSON.stringify(
+						hubtelResponse
+					)}`
+				);
+				break;
 			default:
 				break;
 		}
@@ -760,6 +786,9 @@ async function commitCreditTransaction(transaction) {
 					break;
 
 				default:
+					creditTransaction.status = "Failed";
+					creditTransaction.statusCode = 400;
+					creditTransaction.statusMessage = "Transaction Failed";
 					break;
 			}
 			if (creditTransaction.isModified) {

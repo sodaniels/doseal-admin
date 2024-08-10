@@ -55,7 +55,13 @@ router.post(
 	validator.validateEcgSearch,
 	apiController.postHubtelEcgMeterSearch
 );
-
+// hubtel payment checkout
 router.post("/hubtel-payment-checkout", hubtelController.HubtelPaymentCheckout);
+// hubtel dstv search
+router.post(
+	"/search-dstv-account",
+	validator.validateDstvSearch,
+	apiController.postHubtelDstvAccountSearch
+);
 
 module.exports = router;

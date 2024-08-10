@@ -360,6 +360,8 @@ async function postBuyCredit(req, res) {
 			case "ECG":
 				description = "Purchase of ECG";
 				break;
+			case "DSTV":
+				description = "Payment of DSTV";
 			default:
 				break;
 		}
@@ -382,8 +384,10 @@ async function postBuyCredit(req, res) {
 			meterName: req.body.meterName ? req.body.meterName : undefined,
 			mno: req.body.mno ? req.body.mno : undefined,
 			network: req.body.network ? req.body.network : undefined,
-			paymentOption: req.body.paymentOption,
-			phoneNumber: req.body.phoneNumber,
+			paymentOption: req.body.paymentOption ? req.body.paymentOption : undefined,
+			phoneNumber: req.body.phoneNumber ? req.body.phoneNumber : undefined,
+			accountName: req.body.accountName ? req.body.accountName : undefined,
+			accountNumber: req.body.accountNumber ? req.body.accountNumber : undefined,
 		});
 		transaction = await debitDataObject.save();
 
@@ -400,7 +404,7 @@ async function postBuyCredit(req, res) {
 						_id: -1,
 					})
 					.limit(4);
-					// console.log("excerptTrans: ", excerptTrans)
+				// console.log("excerptTrans: ", excerptTrans)
 				io.getIO().emit("excerptTransactionUpdate", excerptTrans);
 				Log.info(
 					"[CallbackController.js][postBuyCredit]\t Emitted excerpt update: "
@@ -549,7 +553,48 @@ async function postHubtelEcgMeterSearch(req, res) {
 
 		hubtelResponse = await restServices.postHubtelEcgMeterSearchService(
 			req.body.phoneNumber
-		)
+		);
+		if (hubtelResponse) {
+			if (hubtelResponse.ResponseCode === "0000") {
+				hubtelResponse["success"] = true;
+				return res.json(hubtelResponse);
+			}
+			return res.json(hubtelResponse);
+		}
+		return res.json({
+			success: false,
+			message: ServiceCode.FAILED,
+		});
+	} catch (error) {
+		return res.json({
+			success: false,
+			error: error.message,
+			message: ServiceCode.ERROR_OCCURED,
+		});
+	}
+}
+// search hubtel dstv accounts
+async function postHubtelDstvAccountSearch(req, res) {
+	let hubtelResponse;
+	const validationError = handleValidationErrors(req, res);
+	if (validationError) {
+		const errorRes = await apiErrors.create(
+			errorMessages.errors.API_MESSAGE_DSTV_FAILED,
+			"POST",
+			validationError,
+			undefined
+		);
+		return res.json(errorRes);
+	}
+	try {
+		Log.info(
+			`[ApiController.js][postHubtelDstvAccountSearch]\t incoming dstv account search request: ` +
+				req.ip
+		);
+
+		hubtelResponse = await restServices.postHubtelDstvAccountSearchService(
+			req.body.accountNumber
+		);
 		if (hubtelResponse) {
 			if (hubtelResponse.ResponseCode === "0000") {
 				hubtelResponse["success"] = true;
@@ -582,4 +627,5 @@ module.exports = {
 	getExcerptTransactions,
 	getTransactions,
 	postHubtelEcgMeterSearch,
+	postHubtelDstvAccountSearch,
 };

@@ -347,6 +347,99 @@ class RestServices {
 			};
 		}
 	}
+	// post dstv account search service
+	async postHubtelDstvAccountSearchService(accountNumber) {
+		try {
+			const response = await axios.get(
+				`https://cs.hubtel.com/commissionservices/${process.env.HUBTEL_PREPAID_DEPOSTI_ACCOUNT}/${process.env.HUBTEL_DSTV_SERVICE_ID}?destination=${accountNumber}`,
+				{
+					headers: {
+						Authorization: `Basic ${token()}`,
+						"Content-Type": "application/json",
+					},
+				}
+			);
+			return response.data;
+		} catch (error) {
+			Log.info(
+				`[HubtelController.js][postHubtelDstvAccountSearchService] error validating account: ${error.message}`
+			);
+			if (error.response) {
+				Log.info(
+					`[HubtelController.js][postHubtelDstvAccountSearchService] response status: ${error.response.status}`
+				);
+				Log.info(
+					`[HubtelController.js][postHubtelDstvAccountSearchService] response data: ${JSON.stringify(
+						error.response.data
+					)}`
+				);
+			} else if (error.request) {
+				Log.info(
+					`[HubtelController.js][postHubtelDstvAccountSearchService] request: ${error.request}`
+				);
+			} else {
+				Log.info(
+					`[HubtelController.js][postHubtelDstvAccountSearchService] unknown error: ${error.message}`
+				);
+			}
+			return {
+				success: false,
+				code: 500,
+				message: error.response.data ? error.response.data : error.response,
+			};
+		}
+	}
+	// post pay dstv
+	async postHubtelPayDstv(accountNumber, Amount, ClientReference) {
+		try {
+			Log.info(
+				`[HubtelController.js][postHubtelPayDstv][${accountNumber}][${Amount}][${ClientReference}] intial  [POST] to purchase DSTV `
+			);
+			const response = await axios.post(
+				`https://cs.hubtel.com/commissionservices/${process.env.HUBTEL_PREPAID_DEPOSTI_ACCOUNT}/${process.env.HUBTEL_DSTV_SERVICE_ID}`,
+				{
+					Destination: accountNumber,
+					Amount: Amount,
+					CallbackURL: `${process.env.HUBTEL_CALLBACK_BASE_URL}/api/v1/hubtel-ecg-callback`,
+					ClientReference: ClientReference,
+				},
+				{
+					headers: {
+						Authorization: `Basic ${token()}`,
+						"Content-Type": "application/json",
+					},
+				}
+			);
+			return response.data;
+		} catch (error) {
+			Log.info(
+				`[HubtelController.js][postHubtelPayDstv] error validating account: ${error.message}`
+			);
+			if (error.response) {
+				Log.info(
+					`[HubtelController.js][postHubtelPayDstv] response status: ${error.response.status}`
+				);
+				Log.info(
+					`[HubtelController.js][postHubtelPayDstv] response data: ${JSON.stringify(
+						error.response.data
+					)}`
+				);
+			} else if (error.request) {
+				Log.info(
+					`[HubtelController.js][postHubtelPayDstv] request: ${error.request}`
+				);
+			} else {
+				Log.info(
+					`[HubtelController.js][postHubtelPayDstv] unknown error: ${error.message}`
+				);
+			}
+			return {
+				success: false,
+				code: 500,
+				message: error.message,
+			};
+		}
+	}
 }
 
 function token() {
