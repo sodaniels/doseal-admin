@@ -769,11 +769,26 @@ async function commitCreditTransaction(transaction) {
 					)}`
 				);
 				break;
-			case "DSTV":
+			case "GOtv":
 				Log.info(
 					`[CallbackController.js][postHubtelPaymentCallback][commitCreditTransaction][${creditUniqueId}]\t initiating request to GOtv: `
 				);
 				hubtelResponse = await restServices.postHubtelPayGOtv(
+					transaction.accountNumber,
+					transaction.amount,
+					creditUniqueId
+				);
+				Log.info(
+					`[CallbackController.js][postHubtelPaymentCallback][commitCreditTransaction][${creditUniqueId}]\t hubtelResponse: ${JSON.stringify(
+						hubtelResponse
+					)}`
+				);
+				break;
+			case "StarTimesTv":
+				Log.info(
+					`[CallbackController.js][postHubtelPaymentCallback][commitCreditTransaction][${creditUniqueId}]\t initiating request to StarTimesTv: `
+				);
+				hubtelResponse = await restServices.postHubtelPayStarTimeTv(
 					transaction.accountNumber,
 					transaction.amount,
 					creditUniqueId

@@ -60,13 +60,19 @@ router.post("/hubtel-payment-checkout", hubtelController.HubtelPaymentCheckout);
 // hubtel dstv search
 router.post(
 	"/search-dstv-account",
-	validator.validateDstvSearch,
+	validator.validateUtilitySearch,
 	apiController.postHubtelDstvAccountSearch
 );
 // hubtel goTV search
 router.post(
 	"/search-gotv-account",
-	validator.validateDstvSearch,
+	validator.validateUtilitySearch,
+	apiController.postHubtelGoTVAccountSearch
+);
+// hubtel start time tv account search
+router.post(
+	"/search-star-times-tv-account",
+	validator.validateUtilitySearch,
 	apiController.postHubtelGoTVAccountSearch
 );
 

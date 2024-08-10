@@ -237,7 +237,7 @@ class RestServices {
 			};
 		}
 	}
-
+	// post hubtel telecel service
 	async postHubtelECGTopup(phoneNumber, meterId, Amount, ClientReference) {
 		try {
 			const response = await axios.post(
@@ -527,6 +527,102 @@ class RestServices {
 			} else {
 				Log.info(
 					`[HubtelController.js][postHubtelPayGOtv] unknown error: ${error.message}`
+				);
+			}
+			return {
+				success: false,
+				code: 500,
+				message: error.message,
+			};
+		}
+	}
+	// post star times tv account search
+	async postHubtelStartTimeTVAccountSearchService(accountNumber) {
+		try {
+			Log.info(
+				`[HubtelController.js][postHubtelStartTimeTVAccountSearchService][${accountNumber}] intial  [POST] to search star time tv account `
+			);
+			const response = await axios.get(
+				`https://cs.hubtel.com/commissionservices/${process.env.HUBTEL_PREPAID_DEPOSTI_ACCOUNT}/${process.env.HUBTEL_STAR_TIMES_TV_SERVICE_ID}?destination=${accountNumber}`,
+				{
+					headers: {
+						Authorization: `Basic ${token()}`,
+						"Content-Type": "application/json",
+					},
+				}
+			);
+			return response.data;
+		} catch (error) {
+			Log.info(
+				`[HubtelController.js][postHubtelStartTimeTVAccountSearchService] error validating account: ${error.message}`
+			);
+			if (error.response) {
+				Log.info(
+					`[HubtelController.js][postHubtelStartTimeTVAccountSearchService] response status: ${error.response.status}`
+				);
+				Log.info(
+					`[HubtelController.js][postHubtelStartTimeTVAccountSearchService] response data: ${JSON.stringify(
+						error.response.data
+					)}`
+				);
+			} else if (error.request) {
+				Log.info(
+					`[HubtelController.js][postHubtelStartTimeTVAccountSearchService] request: ${error.request}`
+				);
+			} else {
+				Log.info(
+					`[HubtelController.js][postHubtelStartTimeTVAccountSearchService] unknown error: ${error.message}`
+				);
+			}
+			return {
+				success: false,
+				code: 500,
+				message: error.response.data ? error.response.data : error.response,
+			};
+		}
+	}
+	// post pay start times tv
+	async postHubtelPayStarTimeTv(accountNumber, Amount, ClientReference) {
+		try {
+			Log.info(
+				`[HubtelController.js][postHubtelPayStarTimeTv][${accountNumber}][${Amount}][${ClientReference}] intial  [POST] to purchase star times tv `
+			);
+			const response = await axios.post(
+				`https://cs.hubtel.com/commissionservices/${process.env.HUBTEL_PREPAID_DEPOSTI_ACCOUNT}/${process.env.HUBTEL_STAR_TIMES_TV_SERVICE_ID}`,
+				{
+					Destination: accountNumber,
+					Amount: Amount,
+					CallbackURL: `${process.env.HUBTEL_CALLBACK_BASE_URL}/api/v1/hubtel-utility-services-callback`,
+					ClientReference: ClientReference,
+				},
+				{
+					headers: {
+						Authorization: `Basic ${token()}`,
+						"Content-Type": "application/json",
+					},
+				}
+			);
+			return response.data;
+		} catch (error) {
+			Log.info(
+				`[HubtelController.js][postHubtelPayStarTimeTv] error validating account: ${error.message}`
+			);
+			if (error.response) {
+				Log.info(
+					`[HubtelController.js][postHubtelPayStarTimeTv] response status: ${error.response.status}`
+				);
+				Log.info(
+					`[HubtelController.js][postHubtelPayStarTimeTv] response data: ${JSON.stringify(
+						error.response.data
+					)}`
+				);
+			} else if (error.request) {
+				Log.info(
+					`[HubtelController.js][postHubtelPayStarTimeTv] request: ${error.request}`
+				);
+			} else {
+				Log.info(
+					`[HubtelController.js][postHubtelPayStarTimeTv] unknown error: ${error.message}`
 				);
 			}
 			return {

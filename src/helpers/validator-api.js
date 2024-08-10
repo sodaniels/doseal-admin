@@ -67,7 +67,7 @@ const validateEcgSearch = [
 	body("phoneNumber").exists().withMessage("The Phone Number is required"),
 ];
 
-const validateDstvSearch = [
+const validateUtilitySearch = [
 	body("accountNumber").exists().withMessage("The Account Number is required"),
 ];
 
@@ -77,5 +77,5 @@ module.exports = {
 	validateBuyCredit,
 	validateAccount,
 	validateEcgSearch,
-	validateDstvSearch,
+	validateUtilitySearch,
 };

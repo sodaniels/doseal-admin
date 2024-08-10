@@ -361,11 +361,15 @@ async function postBuyCredit(req, res) {
 				description = "Purchase of ECG";
 				break;
 			case "DSTV":
-				description = "Payment of DSTV";
+				description = "Payment for DSTV";
 				break;
 			case "GOtv":
-				description = "Payment of GOtv";
+				description = "Payment for GOtv";
 				break;
+			case "StarTimesTv":
+				description = "Payment for Star Times Tv";
+				break;
+				;
 			default:
 				break;
 		}
@@ -663,6 +667,48 @@ async function postHubtelGoTVAccountSearch(req, res) {
 		});
 	}
 }
+// search star times tv account
+async function postHubtelStarTimesTvAccountSearch(req, res) {
+	let hubtelResponse;
+	const validationError = handleValidationErrors(req, res);
+	if (validationError) {
+		const errorRes = await apiErrors.create(
+			errorMessages.errors.API_MESSAGE_STAR_TIMES_TV_FAILED,
+			"POST",
+			validationError,
+			undefined
+		);
+		return res.json(errorRes);
+	}
+	try {
+		Log.info(
+			`[ApiController.js][postHubtelStarTimesTvAccountSearch]\t incoming star times tv account search request: ` +
+				req.ip
+		);
+
+		hubtelResponse =
+			await restServices.postHubtelStartTimeTVAccountSearchService(
+				req.body.accountNumber
+			);
+		if (hubtelResponse) {
+			if (hubtelResponse.ResponseCode === "0000") {
+				hubtelResponse["success"] = true;
+				return res.json(hubtelResponse);
+			}
+			return res.json(hubtelResponse);
+		}
+		return res.json({
+			success: false,
+			message: ServiceCode.FAILED,
+		});
+	} catch (error) {
+		return res.json({
+			success: false,
+			error: error.message,
+			message: ServiceCode.ERROR_OCCURED,
+		});
+	}
+}
 
 module.exports = {
 	getPageCategory,
@@ -678,4 +724,5 @@ module.exports = {
 	postHubtelEcgMeterSearch,
 	postHubtelDstvAccountSearch,
 	postHubtelGoTVAccountSearch,
+	postHubtelStarTimesTvAccountSearch,
 };
