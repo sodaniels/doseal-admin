@@ -8,6 +8,7 @@ exports.errors = {
     API_MESSAGE_ACCOUNT_VALIDATION_FAILED: "Account Validation Request Failed",
     API_MESSAGE_ACCOUNT_AIRTIME_TOPUP_FAILED: "Airtime Topup Request Failed",
     API_MESSAGE_DSTV_FAILED: "DSTV Request Failed",
+    API_MESSAGE_GOTV_FAILED: "GOTV Request Failed",
 
 
 

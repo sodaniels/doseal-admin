@@ -440,6 +440,51 @@ class RestServices {
 			};
 		}
 	}
+	// post gotv account search
+	async postHubtelGoTVAccountSearchService(accountNumber) {
+		try {
+			Log.info(
+				`[HubtelController.js][postHubtelGoTVAccountSearchService][${accountNumber}] intial  [POST] to search goTv account `
+			);
+			const response = await axios.get(
+				`https://cs.hubtel.com/commissionservices/${process.env.HUBTEL_PREPAID_DEPOSTI_ACCOUNT}/${process.env.HUBTEL_GOTV_SERVICE_ID}?destination=${accountNumber}`,
+				{
+					headers: {
+						Authorization: `Basic ${token()}`,
+						"Content-Type": "application/json",
+					},
+				}
+			);
+			return response.data;
+		} catch (error) {
+			Log.info(
+				`[HubtelController.js][postHubtelGoTVAccountSearchService] error validating account: ${error.message}`
+			);
+			if (error.response) {
+				Log.info(
+					`[HubtelController.js][postHubtelGoTVAccountSearchService] response status: ${error.response.status}`
+				);
+				Log.info(
+					`[HubtelController.js][postHubtelGoTVAccountSearchService] response data: ${JSON.stringify(
+						error.response.data
+					)}`
+				);
+			} else if (error.request) {
+				Log.info(
+					`[HubtelController.js][postHubtelGoTVAccountSearchService] request: ${error.request}`
+				);
+			} else {
+				Log.info(
+					`[HubtelController.js][postHubtelGoTVAccountSearchService] unknown error: ${error.message}`
+				);
+			}
+			return {
+				success: false,
+				code: 500,
+				message: error.response.data ? error.response.data : error.response,
+			};
+		}
+	}
 }
 
 function token() {

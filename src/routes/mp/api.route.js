@@ -63,5 +63,11 @@ router.post(
 	validator.validateDstvSearch,
 	apiController.postHubtelDstvAccountSearch
 );
+// hubtel goTV search
+router.post(
+	"/search-gotv-account",
+	validator.validateDstvSearch,
+	apiController.postHubtelGoTVAccountSearch
+);
 
 module.exports = router;

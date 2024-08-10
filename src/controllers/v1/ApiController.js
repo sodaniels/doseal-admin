@@ -384,10 +384,14 @@ async function postBuyCredit(req, res) {
 			meterName: req.body.meterName ? req.body.meterName : undefined,
 			mno: req.body.mno ? req.body.mno : undefined,
 			network: req.body.network ? req.body.network : undefined,
-			paymentOption: req.body.paymentOption ? req.body.paymentOption : undefined,
+			paymentOption: req.body.paymentOption
+				? req.body.paymentOption
+				: undefined,
 			phoneNumber: req.body.phoneNumber ? req.body.phoneNumber : undefined,
 			accountName: req.body.accountName ? req.body.accountName : undefined,
-			accountNumber: req.body.accountNumber ? req.body.accountNumber : undefined,
+			accountNumber: req.body.accountNumber
+				? req.body.accountNumber
+				: undefined,
 		});
 		transaction = await debitDataObject.save();
 
@@ -614,6 +618,47 @@ async function postHubtelDstvAccountSearch(req, res) {
 		});
 	}
 }
+// search goTv account
+async function postHubtelGoTVAccountSearch(req, res) {
+	let hubtelResponse;
+	const validationError = handleValidationErrors(req, res);
+	if (validationError) {
+		const errorRes = await apiErrors.create(
+			errorMessages.errors.API_MESSAGE_GOTV_FAILED,
+			"POST",
+			validationError,
+			undefined
+		);
+		return res.json(errorRes);
+	}
+	try {
+		Log.info(
+			`[ApiController.js][postHubtelGoTVAccountSearch]\t incoming goTv account search request: ` +
+				req.ip
+		);
+
+		hubtelResponse = await restServices.postHubtelGoTVAccountSearchService(
+			req.body.accountNumber
+		);
+		if (hubtelResponse) {
+			if (hubtelResponse.ResponseCode === "0000") {
+				hubtelResponse["success"] = true;
+				return res.json(hubtelResponse);
+			}
+			return res.json(hubtelResponse);
+		}
+		return res.json({
+			success: false,
+			message: ServiceCode.FAILED,
+		});
+	} catch (error) {
+		return res.json({
+			success: false,
+			error: error.message,
+			message: ServiceCode.ERROR_OCCURED,
+		});
+	}
+}
 
 module.exports = {
 	getPageCategory,
@@ -628,4 +673,5 @@ module.exports = {
 	getTransactions,
 	postHubtelEcgMeterSearch,
 	postHubtelDstvAccountSearch,
+	postHubtelGoTVAccountSearch,
 };
