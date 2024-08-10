@@ -245,7 +245,7 @@ class RestServices {
 				{
 					Destination: phoneNumber,
 					Amount: Amount,
-					CallbackURL: `${process.env.HUBTEL_CALLBACK_BASE_URL}/api/v1/hubtel-ecg-callback`,
+					CallbackURL: `${process.env.HUBTEL_CALLBACK_BASE_URL}/api/v1/hubtel-utility-services-callback`,
 					ClientReference: ClientReference,
 					Extradata: {
 						bundle: meterId,
@@ -400,7 +400,7 @@ class RestServices {
 				{
 					Destination: accountNumber,
 					Amount: Amount,
-					CallbackURL: `${process.env.HUBTEL_CALLBACK_BASE_URL}/api/v1/hubtel-ecg-callback`,
+					CallbackURL: `${process.env.HUBTEL_CALLBACK_BASE_URL}/api/v1/hubtel-utility-services-callback`,
 					ClientReference: ClientReference,
 				},
 				{
@@ -482,6 +482,57 @@ class RestServices {
 				success: false,
 				code: 500,
 				message: error.response.data ? error.response.data : error.response,
+			};
+		}
+	}
+	// post pay dstv
+	async postHubtelPayGOtv(accountNumber, Amount, ClientReference) {
+		try {
+			Log.info(
+				`[HubtelController.js][postHubtelPayGOtv][${accountNumber}][${Amount}][${ClientReference}] intial  [POST] to purchase DSTV `
+			);
+			const response = await axios.post(
+				`https://cs.hubtel.com/commissionservices/${process.env.HUBTEL_PREPAID_DEPOSTI_ACCOUNT}/${process.env.HUBTEL_GOTV_SERVICE_ID}`,
+				{
+					Destination: accountNumber,
+					Amount: Amount,
+					CallbackURL: `${process.env.HUBTEL_CALLBACK_BASE_URL}/api/v1/hubtel-utility-services-callback`,
+					ClientReference: ClientReference,
+				},
+				{
+					headers: {
+						Authorization: `Basic ${token()}`,
+						"Content-Type": "application/json",
+					},
+				}
+			);
+			return response.data;
+		} catch (error) {
+			Log.info(
+				`[HubtelController.js][postHubtelPayGOtv] error validating account: ${error.message}`
+			);
+			if (error.response) {
+				Log.info(
+					`[HubtelController.js][postHubtelPayGOtv] response status: ${error.response.status}`
+				);
+				Log.info(
+					`[HubtelController.js][postHubtelPayGOtv] response data: ${JSON.stringify(
+						error.response.data
+					)}`
+				);
+			} else if (error.request) {
+				Log.info(
+					`[HubtelController.js][postHubtelPayGOtv] request: ${error.request}`
+				);
+			} else {
+				Log.info(
+					`[HubtelController.js][postHubtelPayGOtv] unknown error: ${error.message}`
+				);
+			}
+			return {
+				success: false,
+				code: 500,
+				message: error.message,
 			};
 		}
 	}

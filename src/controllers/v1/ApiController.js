@@ -362,6 +362,10 @@ async function postBuyCredit(req, res) {
 				break;
 			case "DSTV":
 				description = "Payment of DSTV";
+				break;
+			case "GOtv":
+				description = "Payment of GOtv";
+				break;
 			default:
 				break;
 		}

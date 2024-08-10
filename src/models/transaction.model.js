@@ -33,7 +33,7 @@ const tranactionSchema = new Schema({
 	type: {
 		type: String,
 		required: false,
-		enum: ["ECG", "Airtime", "Billpay", "DSTV"],
+		enum: ["ECG", "Airtime", "Billpay", "DSTV", "GOtv"],
 		default: "Prepaid",
 	},
 	amount: {
