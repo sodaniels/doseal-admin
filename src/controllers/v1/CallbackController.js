@@ -864,6 +864,21 @@ async function commitCreditTransaction(transaction) {
 					)}`
 				);
 				break;
+			case "WalletTopup":
+				Log.info(
+					`[CallbackController.js][postHubtelPaymentCallback][commitCreditTransaction][${creditUniqueId}]\t completing wallet topup: `
+				);
+
+				hubtelResponse = {
+					
+				}
+				
+				Log.info(
+					`[CallbackController.js][postHubtelPaymentCallback][commitCreditTransaction][${creditUniqueId}]\t hubtelResponse: ${JSON.stringify(
+						hubtelResponse
+					)}`
+				);
+				break;
 			default:
 				break;
 		}

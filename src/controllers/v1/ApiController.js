@@ -78,16 +78,16 @@ async function postTopUpWallet(req, res) {
 			Math.floor(Math.random() * 900000) + 100000
 		}`;
 
-		const requestId = rand10Id().toString();
-
-		const walletTopupData = new WalletTopup({
+		const debitDataObject = new Transaction({
 			createdBy: req.user._id,
-			requestId: requestId,
+			transactionId: transactionId,
+			internalReference: uniqueId,
+			paymentOption: req.body.paymentOption,
+			category: "DR",
+			type: "WalletTopup",
 			amount: req.body.amount,
-			mno: req.body.mno,
-			account_no: req.body.phoneNumber,
 		});
-		transaction = await walletTopupData.save();
+		transaction = await debitDataObject.save();
 
 		try {
 			walletData = await WalletTopup.find({ createdBy: req.user._id }).sort({
@@ -162,7 +162,10 @@ async function getTopUpWallets(req, res) {
 		Log.info(
 			`[ApiController.js][postTopUpWallet][${req.user._id}]\t retrieving top-up wallets`
 		);
-		const wallets = await WalletTopup.find({ createdBy: req.user._id }).sort({
+		const wallets = await Transaction.find({
+			createdBy: req.user._id,
+			type: "WalletTopup",
+		}).sort({
 			_id: -1,
 		});
 		if (wallets.length > 0) {
