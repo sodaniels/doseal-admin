@@ -76,66 +76,6 @@ async function AccountValidation(req, res) {
 	}
 }
 
-async function PrepaidPostpaidRequest_(req, res) {
-	const validationError = handleValidationErrors(req, res);
-	if (validationError) {
-		const errorRes = await apiErrors.create(
-			errorMessages.errors.API_MESSAGE_ECG_ACCOUNT_VALIDATION_FAILED,
-			"POST",
-			validationError,
-			undefined
-		);
-		return res.json(errorRes);
-	}
-	Log.info(
-		`[HubtelController.js][PrepaidPostpaidRequest] \t requeest to validate account`
-	);
-	// return res.json(req.body);
-
-	try {
-		const response = await restServices.postECGRequest(
-			req.body.phoneNumber,
-			req.body.mno
-		);
-		return res.json(response);
-	} catch (error) {
-		Log.info(
-			`[HubtelController.js][PrepaidPostpaidRequest] error validating account: ${error.message}`
-		);
-		Log.info(
-			`[HubtelController.js][PrepaidPostpaidRequest] error details: ${JSON.stringify(
-				error
-			)}`
-		);
-		if (error.response) {
-			Log.info(
-				`[HubtelController.js][PrepaidPostpaidRequest] response status: ${error.response.status}`
-			);
-			Log.info(
-				`[HubtelController.js][PrepaidPostpaidRequest] response data: ${JSON.stringify(
-					error.response.data
-				)}`
-			);
-		} else if (error.request) {
-			Log.info(
-				`[HubtelController.js][PrepaidPostpaidRequest] request: ${error.request}`
-			);
-		} else {
-			Log.info(
-				`[HubtelController.js][PrepaidPostpaidRequest] unknown error: ${error.message}`
-			);
-		}
-		return res.json({
-			success: false,
-			error: {
-				message: error.message,
-				// Add more properties if needed
-				...(error.response && { response: error.response.data }),
-			},
-		});
-	}
-}
-
 // hubtel mtn topup request
 async function HubtelAirtimeTopupRequest(req, res) {
 	let response;

@@ -94,7 +94,9 @@ app.use("/api/v1/", callbackRoutes);
 
 app.use(
 	"/api/v1/",
+	// ensureAuthenticated,
 	passportJwt.authenticate("jwt", { session: false }),
+
 	apiRoutes
 );
 

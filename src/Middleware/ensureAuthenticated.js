@@ -1,8 +1,8 @@
 const ensureAuthenticated = (req, res, next) => {
-	if (req.isAuthenticated()) {
+	if (req.user) {
 		return next();
 	}
-	return res.status(401).json({ code: 401, message: "Unauthorized" });
+	return res.json({ code: 401, message: "Unauthorized" });
 };
 
 module.exports = ensureAuthenticated;

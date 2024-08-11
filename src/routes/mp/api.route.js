@@ -41,12 +41,6 @@ router.post(
 	validator.validateAccount,
 	hubtelController.AccountValidation
 );
-
-// router.post(
-// 	"/prepaid-postpaid-request",
-// 	validator.validatePayEcg,
-// 	hubtelController.PrepaidPostpaidRequest
-// );
 // hubtel airtime topup
 router.post(
 	"/hubtel-airtime-topup",
@@ -84,5 +78,7 @@ router.post(
 	validator.validateUtilitySearch,
 	apiController.postHubtelGhanaWaterAccountSearch
 );
+// get stored ecg meters
+router.get("/stored-ecg-meters", apiController.getStoredECGMeters);
 
 module.exports = router;

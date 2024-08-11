@@ -2,6 +2,7 @@ const Page = require("../../models/page.model");
 const User = require("../../models/user");
 const Wallet = require("../../models/wallet.model");
 const Transaction = require("../../models/transaction.model");
+const Meter = require("../../models/meter.model");
 const WalletTopup = require("../../models/wallet-topup.model");
 const { Log } = require("../../helpers/Log");
 const ServiceCode = require("../../constants/serviceCode");
@@ -13,6 +14,7 @@ const apiErrors = require("../../helpers/errors/errors");
 const errorMessages = require("../../helpers/error-messages");
 const RestServices = require("../../services/api/RestServices");
 const restServices = new RestServices();
+const callbackController = require("../v1/CallbackController");
 
 //get page
 async function getPageCategory(req, res) {
@@ -431,11 +433,20 @@ async function postBuyCredit(req, res) {
 			}
 
 			try {
-				hubtelPaymentResponse = await restServices.postHubtelPaymentService(
-					req.body.amount,
-					description,
-					uniqueId
-				);
+				if (req.body.paymentOption === "Wallet") {
+					hubtelPaymentResponse = await processAccountWalletPayment(
+						req,
+						uniqueId,
+						res
+					);
+					return res.json(hubtelPaymentResponse);
+				} else {
+					hubtelPaymentResponse = await restServices.postHubtelPaymentService(
+						req.body.amount,
+						description,
+						uniqueId
+					);
+				}
 
 				if (hubtelPaymentResponse) {
 					Log.info(
@@ -754,6 +765,118 @@ async function postHubtelGhanaWaterAccountSearch(req, res) {
 		});
 	}
 }
+// get stored meters
+async function getStoredECGMeters(req, res) {
+	try {
+		Log.info(
+			`[ApiController.js][getStoredECGMeters]\t retrieving stored ECG meters ` +
+				req.ip
+		);
+
+		const meters = await Meter.find({ createdBy: req.user._id });
+		if (meters.length > 0) {
+			return res.json({
+				success: true,
+				code: 200,
+				status: ServiceCode.SUCCESS,
+				data: meters,
+			});
+		} else {
+			return res.json({
+				success: false,
+				code: 200,
+				status: ServiceCode.NO_DATA_FOUND,
+				data: [],
+			});
+		}
+	} catch (error) {
+		return res.json({
+			success: false,
+			error: error.message,
+			code: 500,
+			message: ServiceCode.ERROR_OCCURED,
+		});
+	}
+}
+
+async function processAccountWalletPayment(req, uniqueId, res) {
+	try {
+		Log.info(
+			`[ApiController.js][postBuyCredit][processAccountWalletPayment][${uniqueId}]\t processing account wallet payment`
+		);
+		let user = await User.findOne({ _id: req.user._id });
+		if (Number(user.balance) < Number(req.body.amount)) {
+			console.log(user.balance);
+			return {
+				success: false,
+				code: 401,
+				message: ServiceCode.ACCOUNT_BALANCE_EXCEEDED,
+			};
+		}
+		const balance = user.balance ? user.balance : 0;
+		user.balance = Number(balance) - Number(req.body.amount);
+		if (user.isModified) {
+			await user.save();
+		}
+
+		Log.info(
+			"[ApiController.js][processAccountWalletPayment]\t Emitting balance update: "
+		);
+		try {
+			io.getIO().emit("balanceUpdate", user.balance);
+			Log.info(
+				"[ApiController.js][processAccountWalletPayment]\t Emitted balance update: "
+			);
+		} catch (error) {
+			Log.info(
+				`[ApiController.js][processAccountWalletPayment]\t error emitting balance update: `,
+				error
+			);
+		}
+
+		const CheckoutId = rand10Id().toString() + rand10Id().toString();
+		const SalesInvoiceId = rand10Id().toString() + rand10Id().toString();
+
+		const Data = {
+			CheckoutId: CheckoutId,
+			SalesInvoiceId: SalesInvoiceId,
+			ClientReference: uniqueId,
+			Status: "Success",
+			Amount: req.body.amount,
+			CustomerPhoneNumber: req.body.phoneNumber,
+			PaymentDetails: {
+				PaymentType: "InternalWallet",
+				Channel: "Wallet",
+			},
+			Description: "Transaction sucessful",
+		};
+
+		delete req.body;
+
+		req.body = {};
+		req.body["ResponseCode"] = "0000";
+		req.body["Status"] = "Success";
+		req.body["Data"] = Data;
+		Log.info(
+			`[ApiController.js][postBuyCredit][processAccountWalletPayment][${uniqueId}]\t account wallet payment response: ${req.body}`
+		);
+
+		try {
+			const callback = await callbackController.postHubtelPaymentCallback(req);
+		} catch (error) {}
+
+		const callbackResponse = {
+			success: true,
+			status: "Success",
+			message: ServiceCode.ACCOUNT_WALLET_IN_PROGRESS,
+		};
+		return callbackResponse;
+	} catch (error) {
+		Log.info(
+			`[ApiController.js][postBuyCredit]processAccountWalletPayment\t error processing account wallet payment ${error}`
+		);
+	}
+}
 
 module.exports = {
 	getPageCategory,
@@ -771,4 +894,6 @@ module.exports = {
 	postHubtelGoTVAccountSearch,
 	postHubtelStarTimesTvAccountSearch,
 	postHubtelGhanaWaterAccountSearch,
+	getStoredECGMeters,
+	processAccountWalletPayment,
 };
