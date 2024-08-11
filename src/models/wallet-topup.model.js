@@ -17,25 +17,37 @@ const pageSchema = new Schema({
 	},
 	mno: {
 		type: String,
-		required: true,
+		required: false,
 	},
 	account_no: {
 		type: String,
-		required: true,
+		required: false,
 	},
 	status: {
 		type: String,
 		required: false,
+		enum: ["Pending", "Successful", "Failed", "Refunded"],
+		default: "Pending",
 	},
 	statusCode: {
 		type: Number,
 		required: false,
+		default: 411,
 	},
 	statusMessage: {
 		type: String,
 		required: false,
+		default: "Transaction is pending",
 	},
 	externalReference: {
+		type: String,
+		required: false,
+	},
+	ResponseCode: {
+		type: String,
+		required: false,
+	},
+	Description: {
 		type: String,
 		required: false,
 	},

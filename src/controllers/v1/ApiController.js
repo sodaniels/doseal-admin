@@ -51,13 +51,32 @@ async function getPageCategory(req, res) {
 }
 // get topup wallet
 async function postTopUpWallet(req, res) {
-	let walletData;
+	const validationError = handleValidationErrors(req, res);
+	if (validationError) {
+		const errorRes = await apiErrors.create(
+			errorMessages.errors.API_MESSAGE_WALLET_TOPUP_VALIDATION_FAILED,
+			"POST",
+			validationError,
+			undefined
+		);
+		return res.json(errorRes);
+	}
+	let walletData, hubtelPaymentResponse, transaction;
 	try {
 		Log.info(
 			`[ApiController.js][postTopUpWallet][${JSON.stringify(
 				req.body
 			)}]\t incoming request: ` + req.ip
 		);
+		const transactionId = rand10Id().toString();
+		let currentDate = new Date();
+		let formattedDate = currentDate
+			.toISOString()
+			.replace(/[-:TZ.]/g, "")
+			.slice(0, 14);
+		let uniqueId = `DR_${formattedDate}${
+			Math.floor(Math.random() * 900000) + 100000
+		}`;
 
 		const requestId = rand10Id().toString();
 
@@ -67,18 +86,46 @@ async function postTopUpWallet(req, res) {
 			amount: req.body.amount,
 			mno: req.body.mno,
 			account_no: req.body.phoneNumber,
-			status: "Pending",
-			statusCode: 411,
 		});
-		const storeWalletTopUp = await walletTopupData.save();
+		transaction = await walletTopupData.save();
 
 		try {
 			walletData = await WalletTopup.find({ createdBy: req.user._id }).sort({
 				_id: -1,
 			});
-		} catch (error) {}
+		} catch (error) {
+			Log.info(
+				`[ApiController.js][postTopUpWallet]\t error getting wallet top ups  ${error}`
+			);
+		}
 
-		if (storeWalletTopUp) {
+		try {
+			const description = "Transfer to account wallet";
+			hubtelPaymentResponse = await restServices.postHubtelPaymentService(
+				req.body.amount,
+				description,
+				uniqueId
+			);
+			if (hubtelPaymentResponse) {
+				Log.info(
+					`[ApiController.js][postTopUpWallet][${uniqueId}]\t hubtel payment response : ` +
+						JSON.stringify(hubtelPaymentResponse)
+				);
+				return res.json(hubtelPaymentResponse);
+			}
+
+			return res.json({
+				success: false,
+				code: 400,
+				message: "Payment error occurred",
+			});
+		} catch (error) {
+			Log.info(
+				`[ApiController.js][postTopUpWallet]\t error processing payment on hubtel ${error}`
+			);
+		}
+
+		if (transaction) {
 			Log.info("[ApiController.js][postTopUpWallet]\t Emitting topup update: ");
 			try {
 				io.getIO().emit("walletTopupDataUpdate", walletData);

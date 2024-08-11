@@ -9,7 +9,11 @@ const validator = require("../../helpers/validator-api");
 // get information
 router.get("/pages/:pageCategory", apiController.getPageCategory);
 // post topup wallet
-router.post("/topup-wallet", apiController.postTopUpWallet);
+router.post(
+	"/topup-wallet",
+	validator.validateWalletTopup,
+	apiController.postTopUpWallet
+);
 // get topup wallet
 router.get("/topup-wallets", apiController.getTopUpWallets);
 // get profile  information
