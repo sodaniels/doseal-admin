@@ -5,6 +5,7 @@ const io = require("../../../socket");
 const { Log } = require("../../helpers/Log");
 const WalletTopup = require("../../models/wallet-topup.model");
 const Transaction = require("../../models/transaction.model");
+const Meter = require("../../models/meter.model");
 const { sendText } = require("../../helpers/sendText");
 const { rand10Id } = require("../../helpers/randId");
 const RestServices = require("../../services/api/RestServices");
@@ -770,6 +771,36 @@ async function commitCreditTransaction(transaction) {
 						hubtelResponse
 					)}`
 				);
+				try {
+					Log.info(
+						`[CallbackController.js][postHubtelPaymentCallback][${creditUniqueId}]\t storing meter information if not already present`
+					);
+					if (hubtelResponse) {
+						const meterExists = await Meter.findOne({
+							createdBy: transaction.createdBy._id,
+							phoneNumber: transaction.phoneNumber,
+							meterId: transaction.meterId,
+						});
+						if (!meterExists) {
+							const prepareMeter = new Meter({
+								createdBy: transaction.createdBy._id,
+								phoneNumber: transaction.phoneNumber,
+								meterName: transaction.meterName,
+								meterId: transaction.meterId,
+							});
+							const storeMeter = await prepareMeter.save();
+							if (storeMeter) {
+								Log.info(
+									`[CallbackController.js][postHubtelPaymentCallback][${transaction.meterId}][${transaction.phoneNumber}]\t new meter information stored`
+								);
+							}
+						}
+					}
+				} catch (error) {
+					Log.info(
+						`[CallbackController.js][postHubtelPaymentCallback][${creditUniqueId}]\t error ocurred while storing meter information: ${error}`
+					);
+				}
 				break;
 			case "DSTV":
 				Log.info(

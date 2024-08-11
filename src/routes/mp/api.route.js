@@ -42,11 +42,11 @@ router.post(
 	hubtelController.AccountValidation
 );
 
-router.post(
-	"/prepaid-postpaid-request",
-	validator.validateAccount,
-	hubtelController.PrepaidPostpaidRequest
-);
+// router.post(
+// 	"/prepaid-postpaid-request",
+// 	validator.validatePayEcg,
+// 	hubtelController.PrepaidPostpaidRequest
+// );
 // hubtel airtime topup
 router.post(
 	"/hubtel-airtime-topup",

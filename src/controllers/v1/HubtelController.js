@@ -76,19 +76,19 @@ async function AccountValidation(req, res) {
 	}
 }
 
-async function PrepaidPostpaidRequest(req, res) {
-	// const validationError = handleValidationErrors(req, res);
-	// if (validationError) {
-	// 	const errorRes = await apiErrors.create(
-	// 		errorMessages.errors.API_MESSAGE_ACCOUNT_VALIDATION_FAILED,
-	// 		"POST",
-	// 		validationError,
-	// 		undefined
-	// 	);
-	// 	return res.json(errorRes);
-	// }
+async function PrepaidPostpaidRequest_(req, res) {
+	const validationError = handleValidationErrors(req, res);
+	if (validationError) {
+		const errorRes = await apiErrors.create(
+			errorMessages.errors.API_MESSAGE_ECG_ACCOUNT_VALIDATION_FAILED,
+			"POST",
+			validationError,
+			undefined
+		);
+		return res.json(errorRes);
+	}
 	Log.info(
-		`[HubtelController.js][HubtelAirtimeTopupRequest] \t requeest to validate account`
+		`[HubtelController.js][PrepaidPostpaidRequest] \t requeest to validate account`
 	);
 	// return res.json(req.body);
 
@@ -100,29 +100,29 @@ async function PrepaidPostpaidRequest(req, res) {
 		return res.json(response);
 	} catch (error) {
 		Log.info(
-			`[HubtelController.js][HubtelAirtimeTopupRequest] error validating account: ${error.message}`
+			`[HubtelController.js][PrepaidPostpaidRequest] error validating account: ${error.message}`
 		);
 		Log.info(
-			`[HubtelController.js][HubtelAirtimeTopupRequest] error details: ${JSON.stringify(
+			`[HubtelController.js][PrepaidPostpaidRequest] error details: ${JSON.stringify(
 				error
 			)}`
 		);
 		if (error.response) {
 			Log.info(
-				`[HubtelController.js][HubtelAirtimeTopupRequest] response status: ${error.response.status}`
+				`[HubtelController.js][PrepaidPostpaidRequest] response status: ${error.response.status}`
 			);
 			Log.info(
-				`[HubtelController.js][HubtelAirtimeTopupRequest] response data: ${JSON.stringify(
+				`[HubtelController.js][PrepaidPostpaidRequest] response data: ${JSON.stringify(
 					error.response.data
 				)}`
 			);
 		} else if (error.request) {
 			Log.info(
-				`[HubtelController.js][HubtelAirtimeTopupRequest] request: ${error.request}`
+				`[HubtelController.js][PrepaidPostpaidRequest] request: ${error.request}`
 			);
 		} else {
 			Log.info(
-				`[HubtelController.js][HubtelAirtimeTopupRequest] unknown error: ${error.message}`
+				`[HubtelController.js][PrepaidPostpaidRequest] unknown error: ${error.message}`
 			);
 		}
 		return res.json({
@@ -266,7 +266,7 @@ async function HubtelPaymentCheckout(req, res) {
 
 module.exports = {
 	AccountValidation,
-	PrepaidPostpaidRequest,
+	// PrepaidPostpaidRequest,
 	HubtelAirtimeTopupRequest,
 	HubtelPaymentCheckout,
 };

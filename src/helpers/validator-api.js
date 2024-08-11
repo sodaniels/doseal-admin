@@ -23,12 +23,12 @@ const validateWallet = [
 const validateBuyCredit = [
 	body("amount").notEmpty().trim().withMessage("The Amount is required"),
 	body("meterId")
-		.if(body("type").equals("Prepaid") || body("type").equals("Postpaid"))
+		.if(body("type").equals("ECG"))
 		.notEmpty()
 		.trim()
 		.withMessage("The Meter ID is required"),
 	body("meterName")
-		.if(body("type").equals("Prepaid") || body("type").equals("Postpaid"))
+		.if(body("type").equals("ECG"))
 		.notEmpty()
 		.trim()
 		.withMessage("The Meter Name is required"),
@@ -38,7 +38,9 @@ const validateBuyCredit = [
 		.notEmpty()
 		.withMessage("Networt is required when payment option is Mobile Money"),
 	body("phoneNumber")
-		.if(body("paymentOption").equals("Mobile Money"))
+		.if(
+			body("paymentOption").equals("Mobile Money") || body("type").equals("ECG")
+		)
 		.notEmpty()
 		.trim()
 		.withMessage("The Phone Number is required"),
@@ -70,6 +72,12 @@ const validateEcgSearch = [
 const validateUtilitySearch = [
 	body("accountNumber").exists().withMessage("The Account Number is required"),
 ];
+const validatePayEcg = [
+	body("phoneNumber").exists().withMessage("The Phone Number is required"),
+	body("meterName").exists().withMessage("The Meter Name is required"),
+	body("meterId").exists().withMessage("The Meter ID is required"),
+	body("amount").exists().withMessage("The Amount is required"),
+];
 
 module.exports = {
 	validateProfile,
@@ -78,4 +86,5 @@ module.exports = {
 	validateAccount,
 	validateEcgSearch,
 	validateUtilitySearch,
+	validatePayEcg,
 };

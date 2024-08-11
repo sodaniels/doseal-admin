@@ -11,6 +11,7 @@ exports.errors = {
     API_MESSAGE_GOTV_FAILED: "GOTV Request Failed",
     API_MESSAGE_STAR_TIMES_TV_FAILED: "Start Times TV Request Failed",
     API_MESSAGE_GHANA_WATER_FAILED: "Ghana Water Request Failed",
+    API_MESSAGE_ECG_ACCOUNT_VALIDATION_FAILED: "ECG Request Failed",
 
 
 
