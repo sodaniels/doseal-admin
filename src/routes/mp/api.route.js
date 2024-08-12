@@ -86,9 +86,10 @@ router.post(
 router.get("/stored-ecg-meters", apiController.getStoredECGMeters);
 // post report issue
 router.post(
-	"/report-issue",
+	"/report-issues",
 	validator.validateIssueReport,
 	apiController.postReportedIssue
 );
+router.get("/report-issues", apiController.getReportedIssues);
 
 module.exports = router;

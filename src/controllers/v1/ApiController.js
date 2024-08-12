@@ -948,6 +948,9 @@ async function postReportedIssue(req, res) {
 	}
 
 	try {
+		Log.info(
+			`[ApiController.js][postReportedIssue]\t storing reported issue for ${req.user._id} `
+		);
 		const issueObject = new ReportIssue({
 			createdBy: req.user._id,
 			title: req.body.title,
@@ -958,6 +961,23 @@ async function postReportedIssue(req, res) {
 
 		const storeIssue = await issueObject.save();
 		if (storeIssue) {
+			const issues = await ReportIssue.find({ createdBy: req.user._id }).sort({
+				_id: -1,
+			});
+			try {
+				io.getIO().emit("issuesDataUpdate", issues);
+				Log.info(
+					"[ApiController.js][postReportedIssue]\t Emitted issues update: "
+				);
+			} catch (error) {
+				Log.info(
+					`[ApiController.js][postReportedIssue]\t error emitting issues update: `,
+					error
+				);
+			}
+			Log.info(
+				`[ApiController.js][postReportedIssue]\t stored reported issue for ${req.user._id} `
+			);
 			return res.json({
 				success: true,
 				code: 200,
@@ -966,6 +986,9 @@ async function postReportedIssue(req, res) {
 					"We have received your message successfully. We will get back to you where necessary.",
 			});
 		} else {
+			Log.info(
+				`[ApiController.js][postReportedIssue]\t couldnt store reported issue for ${req.user._id} `
+			);
 			return res.json({
 				success: true,
 				code: 400,
@@ -974,11 +997,46 @@ async function postReportedIssue(req, res) {
 			});
 		}
 	} catch (error) {
+		Log.info(
+			`[ApiController.js][postReportedIssue]\t an error occurred while storing reported issue for ${req.user._id} `
+		);
 		return res.json({
 			success: true,
 			code: 500,
 			status: ServiceCode.ERROR_OCCURED,
 			message: "An error occcured while submitting the message.",
+		});
+	}
+}
+// get reported issues
+async function getReportedIssues(req, res) {
+	try {
+		Log.info(
+			`[ApiController.js][getReportedIssues]\t retrieving reported issues for ${req.user._id} ` +
+				req.ip
+		);
+		const issues = await ReportIssue.find({ createdBy: req.user._id });
+		if (issues.length > 0) {
+			return res.json({
+				success: true,
+				code: 200,
+				status: ServiceCode.SUCCESS,
+				data: issues,
+			});
+		} else {
+			return res.json({
+				success: false,
+				code: 200,
+				status: ServiceCode.NO_DATA_FOUND,
+				data: [],
+			});
+		}
+	} catch (error) {
+		return res.json({
+			success: false,
+			error: error.message,
+			code: 500,
+			message: ServiceCode.ERROR_OCCURED,
 		});
 	}
 }
@@ -1002,4 +1060,5 @@ module.exports = {
 	getStoredECGMeters,
 	processAccountWalletPayment,
 	postReportedIssue,
+	getReportedIssues,
 };
