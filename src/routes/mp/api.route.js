@@ -84,5 +84,11 @@ router.post(
 );
 // get stored ecg meters
 router.get("/stored-ecg-meters", apiController.getStoredECGMeters);
+// post report issue
+router.post(
+	"/report-issue",
+	validator.validateIssueReport,
+	apiController.postReportedIssue
+);
 
 module.exports = router;

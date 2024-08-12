@@ -2,6 +2,7 @@ const Page = require("../../models/page.model");
 const User = require("../../models/user");
 const Wallet = require("../../models/wallet.model");
 const Transaction = require("../../models/transaction.model");
+const ReportIssue = require("../../models/report-issue.model");
 const Meter = require("../../models/meter.model");
 const WalletTopup = require("../../models/wallet-topup.model");
 const { Log } = require("../../helpers/Log");
@@ -848,7 +849,7 @@ async function getStoredECGMeters(req, res) {
 		});
 	}
 }
-
+// process account wallet payment
 async function processAccountWalletPayment(req, uniqueId, res) {
 	try {
 		Log.info(
@@ -933,6 +934,54 @@ async function processAccountWalletPayment(req, uniqueId, res) {
 		);
 	}
 }
+// post reported issue
+async function postReportedIssue(req, res) {
+	const validationError = handleValidationErrors(req, res);
+	if (validationError) {
+		const errorRes = await apiErrors.create(
+			errorMessages.errors.API_MESSAGE_ISSUE_REPORT_VALIDATION_FAILED,
+			"POST",
+			validationError,
+			undefined
+		);
+		return res.json(errorRes);
+	}
+
+	try {
+		const issueObject = new ReportIssue({
+			createdBy: req.user._id,
+			title: req.body.title,
+			category: req.body.category,
+			message: req.body.message,
+			reference: req.body.reference,
+		});
+
+		const storeIssue = await issueObject.save();
+		if (storeIssue) {
+			return res.json({
+				success: true,
+				code: 200,
+				status: ServiceCode.SUCCESS,
+				message:
+					"We have received your message successfully. We will get back to you where necessary.",
+			});
+		} else {
+			return res.json({
+				success: true,
+				code: 400,
+				status: ServiceCode.FAILED,
+				message: "Your report could not be saved. Please try again.",
+			});
+		}
+	} catch (error) {
+		return res.json({
+			success: true,
+			code: 500,
+			status: ServiceCode.ERROR_OCCURED,
+			message: "An error occcured while submitting the message.",
+		});
+	}
+}
 
 module.exports = {
 	getPageCategory,
@@ -952,4 +1001,5 @@ module.exports = {
 	postHubtelGhanaWaterAccountSearch,
 	getStoredECGMeters,
 	processAccountWalletPayment,
+	postReportedIssue,
 };

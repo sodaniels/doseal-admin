@@ -13,6 +13,7 @@ exports.errors = {
     API_MESSAGE_GHANA_WATER_FAILED: "Ghana Water Request Failed",
     API_MESSAGE_ECG_ACCOUNT_VALIDATION_FAILED: "ECG Request Failed",
     API_MESSAGE_WALLET_TOPUP_VALIDATION_FAILED: "Wallet Topup Request Failed",
+    API_MESSAGE_ISSUE_REPORT_VALIDATION_FAILED: "Issue Report Request Failed",
 
 
 

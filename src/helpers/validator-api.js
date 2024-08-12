@@ -83,6 +83,12 @@ const validateWalletTopup = [
 	body("amount").exists().withMessage("The Amount is required"),
 ];
 
+const validateIssueReport = [
+	body("title").exists().withMessage("The title is required"),
+	body("category").exists().withMessage("The category is required"),
+	body("message").exists().withMessage("The message is required"),
+];
+
 module.exports = {
 	validateProfile,
 	validateWallet,
@@ -92,4 +98,5 @@ module.exports = {
 	validateUtilitySearch,
 	validatePayEcg,
 	validateWalletTopup,
+	validateIssueReport,
 };
