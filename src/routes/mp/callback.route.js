@@ -19,7 +19,7 @@ router.post(
 // post hubtel airtime callback
 router.post(
 	"/hubtel-airtime-callback",
-	callBackController.postHubtelAirtelTopup
+	callBackController.postHubtelAirtimeTopup
 );
 // post hubtel payment callback
 router.post(

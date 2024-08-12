@@ -908,12 +908,18 @@ async function processAccountWalletPayment(req, uniqueId, res) {
 		req.body["Status"] = "Success";
 		req.body["Data"] = Data;
 		Log.info(
-			`[ApiController.js][postBuyCredit][processAccountWalletPayment][${uniqueId}]\t account wallet payment response: ${req.body}`
+			`[ApiController.js][postBuyCredit][processAccountWalletPayment][${uniqueId}]\t account wallet payment response: ${JSON.stringify(
+				req.body
+			)}`
 		);
 
 		try {
-			const callback = await callbackController.postHubtelPaymentCallback(req);
-		} catch (error) {}
+			await callbackController.postHubtelPaymentCallback(req);
+		} catch (error) {
+			Log.info(
+				`[ApiController.js][postBuyCredit][processAccountWalletPayment][${uniqueId}]\t error processing account wallet callback: ${error}`
+			);
+		}
 
 		const callbackResponse = {
 			success: true,

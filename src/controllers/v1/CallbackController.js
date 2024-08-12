@@ -12,11 +12,11 @@ const RestServices = require("../../services/api/RestServices");
 const restServices = new RestServices();
 
 // post hubtel airtime topup transaction
-async function postHubtelAirtelTopup(req, res) {
+async function postHubtelAirtimeTopup(req, res) {
 	let saveTransaction, transactionId;
-	Log.info("[CallbackController.js][postHubtelAirtelTopup]\tIP: " + req.ip);
+	Log.info("[CallbackController.js][postHubtelAirtimeTopup]\tIP: " + req.ip);
 	Log.info(
-		"[CallbackController.js][postHubtelAirtelTopup]\tCallback Transaction: " +
+		"[CallbackController.js][postHubtelAirtimeTopup]\tCallback Transaction: " +
 			JSON.stringify(req.body)
 	);
 
@@ -79,7 +79,7 @@ async function postHubtelAirtelTopup(req, res) {
 				updateDrTransactionStatus(transaction, Data.Description);
 			}
 			Log.info(
-				"[CallbackController.js][postHubtelAirtelTopup]\t Emitting single topup update: "
+				"[CallbackController.js][postHubtelAirtimeTopup]\t Emitting single topup update: "
 			);
 			Log.info(
 				"[CallbackController.js][postBuyCredit]\t Emitting wallet update: "
@@ -87,11 +87,11 @@ async function postHubtelAirtelTopup(req, res) {
 			try {
 				io.getIO().emit("singleTransactionUpdate", transaction);
 				Log.info(
-					"[CallbackController.js][postHubtelAirtelTopup]\t Emitted single topup update: "
+					"[CallbackController.js][postHubtelAirtimeTopup]\t Emitted single topup update: "
 				);
 			} catch (error) {
 				Log.info(
-					`[CallbackController.js][postHubtelAirtelTopup]\t error emitting walletTopUp update: `,
+					`[CallbackController.js][postHubtelAirtimeTopup]\t error emitting walletTopUp update: `,
 					error
 				);
 			}
@@ -117,23 +117,23 @@ async function postHubtelAirtelTopup(req, res) {
 							await user.save();
 
 							Log.info(
-								"[CallbackController.js][postHubtelAirtelTopup]\t Emitting balance update: "
+								"[CallbackController.js][postHubtelAirtimeTopup]\t Emitting balance update: "
 							);
 							try {
 								io.getIO().emit("balanceUpdate", user.balance);
 								Log.info(
-									"[CallbackController.js][postHubtelAirtelTopup]\t Emitted balance update: "
+									"[CallbackController.js][postHubtelAirtimeTopup]\t Emitted balance update: "
 								);
 							} catch (error) {
 								Log.info(
-									`[CallbackController.js][postHubtelAirtelTopup]\t error emitting balance update: `,
+									`[CallbackController.js][postHubtelAirtimeTopup]\t error emitting balance update: `,
 									error
 								);
 							}
 						}
 					} catch (error) {
 						Log.info(
-							`[CallbackController.js][postHubtelAirtelTopup][${transactionId}]\t error updating balance: ${error}`
+							`[CallbackController.js][postHubtelAirtimeTopup][${transactionId}]\t error updating balance: ${error}`
 						);
 					}
 
@@ -143,12 +143,12 @@ async function postHubtelAirtelTopup(req, res) {
 
 					try {
 						Log.info(
-							`[CallbackController.js][postHubtelAirtelTopup][${transactionId}]\t sending success message: ${message}`
+							`[CallbackController.js][postHubtelAirtimeTopup][${transactionId}]\t sending success message: ${message}`
 						);
 						await sendText(phoneNumber, message);
 					} catch (error) {
 						Log.info(
-							`[CallbackController.js][postHubtelAirtelTopup][${transactionId}]\t error sending success message: ${error}`
+							`[CallbackController.js][postHubtelAirtimeTopup][${transactionId}]\t error sending success message: ${error}`
 						);
 					}
 				} else {
@@ -156,12 +156,12 @@ async function postHubtelAirtelTopup(req, res) {
 
 					try {
 						Log.info(
-							`[CallbackController.js][postHubtelAirtelTopup][${transactionId}]\t sending failure message: ${message}`
+							`[CallbackController.js][postHubtelAirtimeTopup][${transactionId}]\t sending failure message: ${message}`
 						);
 						await sendText(phoneNumber, message);
 					} catch (error) {
 						Log.info(
-							`[CallbackController.js][postHubtelAirtelTopup][${transactionId}]\t error sending success message: ${error}`
+							`[CallbackController.js][postHubtelAirtimeTopup][${transactionId}]\t error sending success message: ${error}`
 						);
 					}
 				}
@@ -180,7 +180,7 @@ async function postHubtelAirtelTopup(req, res) {
 			}
 		} catch (error) {
 			Log.info(
-				`[CallbackController.js][postHubtelAirtelTopup][${transactionId}]\t error saving callback data: ${error}`
+				`[CallbackController.js][postHubtelAirtimeTopup][${transactionId}]\t error saving callback data: ${error}`
 			);
 		}
 	}
@@ -870,7 +870,7 @@ async function commitCreditTransaction(transaction) {
 				);
 
 				hubtelResponse = {
-					
+
 				}
 				
 				Log.info(
@@ -1030,7 +1030,7 @@ async function getRequestByRequestId(requestId) {
 module.exports = {
 	postWalletTopupCallback,
 	postTransactionCallback,
-	postHubtelAirtelTopup,
+	postHubtelAirtimeTopup,
 	postHubtelPaymentCallback,
 	postHubtelUtilityCallbackServices,
 };
