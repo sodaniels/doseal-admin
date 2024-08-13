@@ -88,6 +88,9 @@ const validateIssueReport = [
 	body("category").exists().withMessage("The category is required"),
 	body("message").exists().withMessage("The message is required"),
 ];
+const validateFeedback = [
+	body("rating").exists().withMessage("The rating is required"),
+];
 
 module.exports = {
 	validateProfile,
@@ -99,4 +102,5 @@ module.exports = {
 	validatePayEcg,
 	validateWalletTopup,
 	validateIssueReport,
+	validateFeedback
 };

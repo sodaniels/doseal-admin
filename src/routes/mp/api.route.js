@@ -90,6 +90,15 @@ router.post(
 	validator.validateIssueReport,
 	apiController.postReportedIssue
 );
+// get reported issues
 router.get("/report-issues", apiController.getReportedIssues);
+//post feedback
+router.post(
+	"/feedbacks",
+	// validator.validateFeedback,
+	apiController.postFeedback
+);
+// get feedbacks 
+router.get("/feedbacks", apiController.getFeedback);
 
 module.exports = router;

@@ -3,6 +3,7 @@ const User = require("../../models/user");
 const Wallet = require("../../models/wallet.model");
 const Transaction = require("../../models/transaction.model");
 const ReportIssue = require("../../models/report-issue.model");
+const Feedback = require("../../models/feedback.model");
 const Meter = require("../../models/meter.model");
 const WalletTopup = require("../../models/wallet-topup.model");
 const { Log } = require("../../helpers/Log");
@@ -1040,6 +1041,108 @@ async function getReportedIssues(req, res) {
 		});
 	}
 }
+// post feedback
+async function postFeedback(req, res) {
+	const validationError = handleValidationErrors(req, res);
+	if (validationError) {
+		const errorRes = await apiErrors.create(
+			errorMessages.errors.API_MESSAGE_FEEDBACK_VALIDATION_FAILED,
+			"POST",
+			validationError,
+			undefined
+		);
+		return res.json(errorRes);
+	}
+
+	try {
+		Log.info(
+			`[ApiController.js][postFeedback]\t storing feedback for ${req.user._id} `
+		);
+		const feedbackObject = new Feedback({
+			createdBy: req.user._id,
+			rating: req.body.rating,
+			message: req.body.message,
+		});
+
+		const storeFeedback = await feedbackObject.save();
+		if (storeFeedback) {
+			const feedbacks = await Feedback.find({ createdBy: req.user._id }).sort({
+				_id: -1,
+			});
+			try {
+				io.getIO().emit("postFeedbackUpdate", feedbacks);
+				Log.info("[ApiController.js][postFeedback]\t Emitted feeback update: ");
+			} catch (error) {
+				Log.info(
+					`[ApiController.js][postFeedback]\t error emitting feedback update: `,
+					error
+				);
+			}
+			Log.info(
+				`[ApiController.js][postFeedback]\t stored reported issue for ${req.user._id} `
+			);
+			return res.json({
+				success: true,
+				code: 200,
+				status: ServiceCode.SUCCESS,
+				message:
+					"We have received your feedback successfully. Thank you for helping to improve our services.",
+			});
+		} else {
+			Log.info(
+				`[ApiController.js][postFeedback]\t error sending feedback for ${req.user._id} `
+			);
+			return res.json({
+				success: true,
+				code: 400,
+				status: ServiceCode.FAILED,
+				message: "Something wrong happened while sending your feedback.",
+			});
+		}
+	} catch (error) {
+		Log.info(
+			`[ApiController.js][postFeedback]\t an error occurred while storing reported issue for ${req.user._id} `
+		);
+		return res.json({
+			success: true,
+			code: 500,
+			status: ServiceCode.ERROR_OCCURED,
+			message: "An error occcured while submitting the message.",
+		});
+	}
+}
+// get feedbacks
+async function getFeedback(req, res) {
+	try {
+		Log.info(
+			`[ApiController.js][getFeedback]\t retrieving feedback for ${req.user._id} ` +
+				req.ip
+		);
+		const feedbacks = await Feedback.find({ createdBy: req.user._id });
+		if (feedbacks.length > 0) {
+			return res.json({
+				success: true,
+				code: 200,
+				status: ServiceCode.SUCCESS,
+				data: feedbacks,
+			});
+		} else {
+			return res.json({
+				success: false,
+				code: 200,
+				status: ServiceCode.NO_DATA_FOUND,
+				data: [],
+			});
+		}
+	} catch (error) {
+		return res.json({
+			success: false,
+			error: error.message,
+			code: 500,
+			message: ServiceCode.ERROR_OCCURED,
+		});
+	}
+}
 
 module.exports = {
 	getPageCategory,
@@ -1061,4 +1164,6 @@ module.exports = {
 	processAccountWalletPayment,
 	postReportedIssue,
 	getReportedIssues,
+	postFeedback,
+	getFeedback,
 };
