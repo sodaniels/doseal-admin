@@ -1093,18 +1093,16 @@ async function postFeedback(req, res) {
 				`[ApiController.js][postFeedback]\t error sending feedback for ${req.user._id} `
 			);
 			return res.json({
-				success: true,
+				success: false,
 				code: 400,
 				status: ServiceCode.FAILED,
 				message: "Something wrong happened while sending your feedback.",
 			});
 		}
 	} catch (error) {
-		Log.info(
-			`[ApiController.js][postFeedback]\t an error occurred while storing reported issue for ${req.user._id} `
-		);
+		Log.info(`[ApiController.js][postFeedback]\t an error occurred  ${error} `);
 		return res.json({
-			success: true,
+			success: false,
 			code: 500,
 			status: ServiceCode.ERROR_OCCURED,
 			message: "An error occcured while submitting the message.",

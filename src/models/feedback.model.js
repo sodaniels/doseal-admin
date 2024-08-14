@@ -13,7 +13,7 @@ const feeedbackSchema = new Schema({
 	},
 	message: {
 		type: String,
-		required: true,
+		required: false,
 	},
 	createdAt: { type: Date, default: Date.now },
 	updatedAt: { type: Date, default: Date.now },
