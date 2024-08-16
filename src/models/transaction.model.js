@@ -42,6 +42,7 @@ const tranactionSchema = new Schema({
 			"StarTimesTv",
 			"GhanaWater",
 			"WalletTopup",
+			"DATA",
 		],
 		default: "Prepaid",
 	},

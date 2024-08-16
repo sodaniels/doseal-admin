@@ -869,15 +869,55 @@ async function commitCreditTransaction(transaction) {
 					`[CallbackController.js][postHubtelPaymentCallback][commitCreditTransaction][${creditUniqueId}]\t completing wallet topup: `
 				);
 
-				hubtelResponse = {
+				hubtelResponse = {};
 
-				}
-				
 				Log.info(
 					`[CallbackController.js][postHubtelPaymentCallback][commitCreditTransaction][${creditUniqueId}]\t hubtelResponse: ${JSON.stringify(
 						hubtelResponse
 					)}`
 				);
+				break;
+			case "DATA":
+				switch (transaction.network) {
+					case "mtn-gh":
+						hubtelResponse = await restServices.postHubtelMtnDataBundle(
+							transaction.phoneNumber,
+							transaction.amount,
+							creditUniqueId
+						);
+						Log.info(
+							`[CallbackController.js][postHubtelPaymentCallback][commitCreditTransaction][${creditUniqueId}]\t hubtelResponse: ${JSON.stringify(
+								hubtelResponse
+							)}`
+						);
+						break;
+					case "vodafone-gh":
+						hubtelResponse = await restServices.postHubtelTelecelTopup(
+							transaction.phoneNumber,
+							transaction.amount,
+							creditUniqueId
+						);
+						Log.info(
+							`[CallbackController.js][postHubtelPaymentCallback][commitCreditTransaction][${creditUniqueId}]\t hubtelResponse: ${JSON.stringify(
+								hubtelResponse
+							)}`
+						);
+						break;
+					case "tigo-gh":
+						hubtelResponse = await restServices.postHubtelAirtelTigoTopup(
+							transaction.phoneNumber,
+							transaction.amount,
+							creditUniqueId
+						);
+						Log.info(
+							`[CallbackController.js][postHubtelPaymentCallback][commitCreditTransaction][${creditUniqueId}]\t hubtelResponse: ${JSON.stringify(
+								hubtelResponse
+							)}`
+						);
+						break;
+					default:
+						break;
+				}
 				break;
 			default:
 				break;

@@ -739,6 +739,99 @@ class RestServices {
 			};
 		}
 	}
+	// post search mtn bundle
+	async postMtnDataSearchService(accountNumber) {
+		try {
+			Log.info(
+				`[HubtelController.js][postMtnDataSearchService][${accountNumber}] intial  [POST] to search mtn bundle account `
+			);
+			const response = await axios.get(
+				`https://cs.hubtel.com/commissionservices/${process.env.HUBTEL_PREPAID_DEPOSTI_ACCOUNT}/${process.env.HUBTEL_MTN_DATA_SERVICE_ID}?destination=${accountNumber}`,
+				{
+					headers: {
+						Authorization: `Basic ${token()}`,
+						"Content-Type": "application/json",
+					},
+				}
+			);
+			return response.data;
+		} catch (error) {
+			Log.info(
+				`[HubtelController.js][postMtnDataSearchService] error validating account: ${error.message}`
+			);
+			if (error.response) {
+				Log.info(
+					`[HubtelController.js][postMtnDataSearchService] response status: ${error.response.status}`
+				);
+				Log.info(
+					`[HubtelController.js][postMtnDataSearchService] response data: ${JSON.stringify(
+						error.response.data
+					)}`
+				);
+			} else if (error.request) {
+				Log.info(
+					`[HubtelController.js][postMtnDataSearchService] request: ${error.request}`
+				);
+			} else {
+				Log.info(
+					`[HubtelController.js][postMtnDataSearchService] unknown error: ${error.message}`
+				);
+			}
+			return {
+				success: false,
+				code: 500,
+				message: error.response.data ? error.response.data : error.response,
+			};
+		}
+	}
+	// post mtn data bundle
+	async postHubtelMtnDataBundle(Destination, Amount, ClientReference) {
+		try {
+			const response = await axios.post(
+				`https://cs.hubtel.com/commissionservices/${process.env.HUBTEL_PREPAID_DEPOSTI_ACCOUNT}/${process.env.HUBTEL_MTN_DATA_SERVICE_ID}`,
+				{
+					Destination: Destination,
+					Amount: Amount,
+					CallbackURL: `${process.env.HUBTEL_CALLBACK_BASE_URL}/api/v1/hubtel-airtime-callback`,
+					ClientReference: ClientReference,
+				},
+				{
+					headers: {
+						Authorization: `Basic ${token()}`,
+						"Content-Type": "application/json",
+					},
+				}
+			);
+			return response.data;
+		} catch (error) {
+			Log.info(
+				`[HubtelController.js][postHubtelMtnDataBundle] error validating account: ${error.message}`
+			);
+			if (error.response) {
+				Log.info(
+					`[HubtelController.js][postHubtelMtnDataBundle] response status: ${error.response.status}`
+				);
+				Log.info(
+					`[HubtelController.js][postHubtelMtnDataBundle] response data: ${JSON.stringify(
+						error.response.data
+					)}`
+				);
+			} else if (error.request) {
+				Log.info(
+					`[HubtelController.js][postHubtelMtnDataBundle] request: ${error.request}`
+				);
+			} else {
+				Log.info(
+					`[HubtelController.js][postHubtelMtnDataBundle] unknown error: ${error.message}`
+				);
+			}
+			return {
+				success: false,
+				code: 500,
+				message: error.message,
+			};
+		}
+	}
 }
 
 function token() {

@@ -98,7 +98,13 @@ router.post(
 	// validator.validateFeedback,
 	apiController.postFeedback
 );
-// get feedbacks 
+// get feedbacks
 router.get("/feedbacks", apiController.getFeedback);
+// search mtn bundle
+router.post(
+	"/search-mtn-data-bundle",
+	validator.validateUtilitySearch,
+	apiController.postSearchMtnBundle
+);
 
 module.exports = router;

@@ -426,6 +426,9 @@ async function postBuyCredit(req, res) {
 			case "GhanaWater":
 				description = "Payment for Ghana Water";
 				break;
+			case "DATA":
+				description = "Payment for Mobile data";
+				break;
 			default:
 				break;
 		}
@@ -1141,6 +1144,47 @@ async function getFeedback(req, res) {
 		});
 	}
 }
+// search mtn bundle
+async function postSearchMtnBundle(req, res) {
+	let hubtelResponse;
+	const validationError = handleValidationErrors(req, res);
+	if (validationError) {
+		const errorRes = await apiErrors.create(
+			errorMessages.errors.API_MESSAGE_DATA_BUNDLE_FAILED,
+			"POST",
+			validationError,
+			undefined
+		);
+		return res.json(errorRes);
+	}
+	try {
+		Log.info(
+			`[ApiController.js][postSearchMtnBundle]\t incoming mtn bundle search request: ` +
+				req.ip
+		);
+
+		hubtelResponse = await restServices.postMtnDataSearchService(
+			req.body.accountNumber
+		);
+		if (hubtelResponse) {
+			if (hubtelResponse.ResponseCode === "0000") {
+				hubtelResponse["success"] = true;
+				return res.json(hubtelResponse);
+			}
+			return res.json(hubtelResponse);
+		}
+		return res.json({
+			success: false,
+			message: ServiceCode.FAILED,
+		});
+	} catch (error) {
+		return res.json({
+			success: false,
+			error: error.message,
+			message: ServiceCode.ERROR_OCCURED,
+		});
+	}
+}
 
 module.exports = {
 	getPageCategory,
@@ -1164,4 +1208,5 @@ module.exports = {
 	getReportedIssues,
 	postFeedback,
 	getFeedback,
+	postSearchMtnBundle,
 };
