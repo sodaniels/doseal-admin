@@ -103,7 +103,7 @@ router.get("/feedbacks", apiController.getFeedback);
 // search mtn bundle
 router.post(
 	"/search-data-bundle-by-network",
-	validator.validateUtilitySearch,
+	validator.validateDataBundleSearch,
 	apiController.postSearchDataBundleByNetwork
 );
 router.get(

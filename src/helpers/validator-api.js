@@ -71,8 +71,12 @@ const validateEcgSearch = [
 
 const validateUtilitySearch = [
 	body("accountNumber").exists().withMessage("The Account Number is required"),
+];
+const validateDataBundleSearch = [
+	body("accountNumber").exists().withMessage("The Account Number is required"),
 	body("network").exists().withMessage("The Network is required"),
 ];
+
 const validatePayEcg = [
 	body("phoneNumber").exists().withMessage("The Phone Number is required"),
 	body("meterName").exists().withMessage("The Meter Name is required"),
@@ -108,4 +112,5 @@ module.exports = {
 	validateIssueReport,
 	validateFeedback,
 	validateTransactionStatus,
+	validateDataBundleSearch,
 };
