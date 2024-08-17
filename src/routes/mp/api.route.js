@@ -106,5 +106,9 @@ router.post(
 	validator.validateUtilitySearch,
 	apiController.postSearchMtnBundle
 );
+router.get(
+	"/transaction-status-check",
+	apiController.getTransactionStatusCheck
+);
 
 module.exports = router;

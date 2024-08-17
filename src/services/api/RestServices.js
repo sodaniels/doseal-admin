@@ -832,6 +832,50 @@ class RestServices {
 			};
 		}
 	}
+	// post transaction status check
+	async getTransactionStatusCheckService(clientReference) {
+		try {
+			const url = `https://api-txnstatus.hubtel.com/transactions/${process.env.HUBTEL_POS_SALES_ID}/status?clientReference=${clientReference}`;
+			Log.info(
+				`[HubtelController.js][getTransactionStatusCheckService][${clientReference}] intial  [GET] to ${url}`
+			);
+
+			const response = await axios.get(url, {
+				headers: {
+					Authorization: `Basic ${token()}`,
+					"Content-Type": "application/json",
+				},
+			});
+			return response.data;
+		} catch (error) {
+			Log.info(
+				`[HubtelController.js][getTransactionStatusCheckService] error validating account: ${error.message}`
+			);
+			if (error.response) {
+				Log.info(
+					`[HubtelController.js][getTransactionStatusCheckService] response status: ${error.response.status}`
+				);
+				Log.info(
+					`[HubtelController.js][getTransactionStatusCheckService] response data: ${JSON.stringify(
+						error.response.data
+					)}`
+				);
+			} else if (error.request) {
+				Log.info(
+					`[HubtelController.js][getTransactionStatusCheckService] request: ${error.request}`
+				);
+			} else {
+				Log.info(
+					`[HubtelController.js][getTransactionStatusCheckService] unknown error: ${error.message}`
+				);
+			}
+			return {
+				success: false,
+				code: 500,
+				message: error.response.data ? error.response.data : error.response,
+			};
+		}
+	}
 }
 
 function token() {

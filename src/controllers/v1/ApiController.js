@@ -1185,6 +1185,47 @@ async function postSearchMtnBundle(req, res) {
 		});
 	}
 }
+// post transaction status check
+async function getTransactionStatusCheck(req, res) {
+	let hubtelResponse;
+	const validationError = handleValidationErrors(req, res);
+	if (validationError) {
+		const errorRes = await apiErrors.create(
+			errorMessages.errors.API_MESSAGE_DATA_BUNDLE_FAILED,
+			"GET",
+			validationError,
+			undefined
+		);
+		return res.json(errorRes);
+	}
+	try {
+		Log.info(
+			`[ApiController.js][getTransactionStatusCheck]\t incoming transaction status check: ` +
+				req.ip
+		);
+
+		hubtelResponse = await restServices.getTransactionStatusCheckService(
+			req.query.clientReference
+		);
+		if (hubtelResponse) {
+			if (hubtelResponse.ResponseCode === "0000") {
+				hubtelResponse["success"] = true;
+				return res.json(hubtelResponse);
+			}
+			return res.json(hubtelResponse);
+		}
+		return res.json({
+			success: false,
+			message: ServiceCode.FAILED,
+		});
+	} catch (error) {
+		return res.json({
+			success: false,
+			error: error.message,
+			message: ServiceCode.ERROR_OCCURED,
+		});
+	}
+}
 
 module.exports = {
 	getPageCategory,
@@ -1209,4 +1250,5 @@ module.exports = {
 	postFeedback,
 	getFeedback,
 	postSearchMtnBundle,
+	getTransactionStatusCheck,
 };
