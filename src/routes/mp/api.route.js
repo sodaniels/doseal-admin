@@ -102,13 +102,14 @@ router.post(
 router.get("/feedbacks", apiController.getFeedback);
 // search mtn bundle
 router.post(
-	"/search-mtn-data-bundle",
+	"/search-data-bundle-by-network",
 	validator.validateUtilitySearch,
-	apiController.postSearchMtnBundle
+	apiController.postSearchDataBundleByNetwork
 );
 router.get(
 	"/transaction-status-check",
 	apiController.getTransactionStatusCheck
 );
+
 
 module.exports = router;

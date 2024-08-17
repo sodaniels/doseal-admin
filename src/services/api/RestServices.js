@@ -739,6 +739,7 @@ class RestServices {
 			};
 		}
 	}
+	/**SEARCH DATA BUNDLE */
 	// post search mtn bundle
 	async postMtnDataSearchService(accountNumber) {
 		try {
@@ -784,6 +785,98 @@ class RestServices {
 			};
 		}
 	}
+	// post telelcel data bundle search
+	async postTelecelDataSearchService(accountNumber) {
+		try {
+			Log.info(
+				`[HubtelController.js][postTelecelDataSearchService][${accountNumber}] intial  [POST] to search telecel bundle account `
+			);
+			const response = await axios.get(
+				`https://cs.hubtel.com/commissionservices/${process.env.HUBTEL_PREPAID_DEPOSTI_ACCOUNT}/${process.env.HUBTEL_TELECEL_DATA_SERVICE_ID}?destination=${accountNumber}`,
+				{
+					headers: {
+						Authorization: `Basic ${token()}`,
+						"Content-Type": "application/json",
+					},
+				}
+			);
+			return response.data;
+		} catch (error) {
+			Log.info(
+				`[HubtelController.js][postTelecelDataSearchService] error validating account: ${error.message}`
+			);
+			if (error.response) {
+				Log.info(
+					`[HubtelController.js][postTelecelDataSearchService] response status: ${error.response.status}`
+				);
+				Log.info(
+					`[HubtelController.js][postTelecelDataSearchService] response data: ${JSON.stringify(
+						error.response.data
+					)}`
+				);
+			} else if (error.request) {
+				Log.info(
+					`[HubtelController.js][postTelecelDataSearchService] request: ${error.request}`
+				);
+			} else {
+				Log.info(
+					`[HubtelController.js][postTelecelDataSearchService] unknown error: ${error.message}`
+				);
+			}
+			return {
+				success: false,
+				code: 500,
+				message: error.response.data ? error.response.data : error.response,
+			};
+		}
+	}
+	// post airtel tigo data bundle search
+	async postAirtelTigoDataSearchService(accountNumber) {
+		try {
+			Log.info(
+				`[HubtelController.js][postAirtelTigoDataSearchService][${accountNumber}] intial  [POST] to airtel tigo data bundle account `
+			);
+			const response = await axios.get(
+				`https://cs.hubtel.com/commissionservices/${process.env.HUBTEL_PREPAID_DEPOSTI_ACCOUNT}/${process.env.HUBTEL_AIRTEL_TIGO_DATA_SERVICE_ID}?destination=${accountNumber}`,
+				{
+					headers: {
+						Authorization: `Basic ${token()}`,
+						"Content-Type": "application/json",
+					},
+				}
+			);
+			return response.data;
+		} catch (error) {
+			Log.info(
+				`[HubtelController.js][postAirtelTigoDataSearchService] error validating account: ${error.message}`
+			);
+			if (error.response) {
+				Log.info(
+					`[HubtelController.js][postAirtelTigoDataSearchService] response status: ${error.response.status}`
+				);
+				Log.info(
+					`[HubtelController.js][postAirtelTigoDataSearchService] response data: ${JSON.stringify(
+						error.response.data
+					)}`
+				);
+			} else if (error.request) {
+				Log.info(
+					`[HubtelController.js][postAirtelTigoDataSearchService] request: ${error.request}`
+				);
+			} else {
+				Log.info(
+					`[HubtelController.js][postAirtelTigoDataSearchService] unknown error: ${error.message}`
+				);
+			}
+			return {
+				success: false,
+				code: 500,
+				message: error.response.data ? error.response.data : error.response,
+			};
+		}
+	}
+	/**SEARCH DATA BUNDLE */
+	/**PAY DATA BUNDLE */
 	// post mtn data bundle
 	async postHubtelMtnDataBundle(Destination, Amount, ClientReference) {
 		try {
@@ -832,6 +925,103 @@ class RestServices {
 			};
 		}
 	}
+	// post telecel data data bundle
+	async postHubtelTelecelDataBundle(Destination, Amount, ClientReference) {
+		try {
+			const response = await axios.post(
+				`https://cs.hubtel.com/commissionservices/${process.env.HUBTEL_PREPAID_DEPOSTI_ACCOUNT}/${process.env.HUBTEL_TELECEL_DATA_SERVICE_ID}`,
+				{
+					Destination: Destination,
+					Amount: Amount,
+					CallbackURL: `${process.env.HUBTEL_CALLBACK_BASE_URL}/api/v1/hubtel-airtime-callback`,
+					ClientReference: ClientReference,
+				},
+				{
+					headers: {
+						Authorization: `Basic ${token()}`,
+						"Content-Type": "application/json",
+					},
+				}
+			);
+			return response.data;
+		} catch (error) {
+			Log.info(
+				`[HubtelController.js][postHubtelTelecelDataBundle] error validating account: ${error.message}`
+			);
+			if (error.response) {
+				Log.info(
+					`[HubtelController.js][postHubtelTelecelDataBundle] response status: ${error.response.status}`
+				);
+				Log.info(
+					`[HubtelController.js][postHubtelTelecelDataBundle] response data: ${JSON.stringify(
+						error.response.data
+					)}`
+				);
+			} else if (error.request) {
+				Log.info(
+					`[HubtelController.js][postHubtelTelecelDataBundle] request: ${error.request}`
+				);
+			} else {
+				Log.info(
+					`[HubtelController.js][postHubtelTelecelDataBundle] unknown error: ${error.message}`
+				);
+			}
+			return {
+				success: false,
+				code: 500,
+				message: error.message,
+			};
+		}
+	}
+	// post airtel tigo data bundle
+	async postHubtelAirtelTigoDataBundle(Destination, Amount, ClientReference) {
+		try {
+			const response = await axios.post(
+				`https://cs.hubtel.com/commissionservices/${process.env.HUBTEL_PREPAID_DEPOSTI_ACCOUNT}/${process.env.HUBTEL_AIRTEL_TIGO_DATA_SERVICE_ID}`,
+				{
+					Destination: Destination,
+					Amount: Amount,
+					CallbackURL: `${process.env.HUBTEL_CALLBACK_BASE_URL}/api/v1/hubtel-airtime-callback`,
+					ClientReference: ClientReference,
+				},
+				{
+					headers: {
+						Authorization: `Basic ${token()}`,
+						"Content-Type": "application/json",
+					},
+				}
+			);
+			return response.data;
+		} catch (error) {
+			Log.info(
+				`[HubtelController.js][postHubtelAirtelTigoDataBundle] error validating account: ${error.message}`
+			);
+			if (error.response) {
+				Log.info(
+					`[HubtelController.js][postHubtelAirtelTigoDataBundle] response status: ${error.response.status}`
+				);
+				Log.info(
+					`[HubtelController.js][postHubtelAirtelTigoDataBundle] response data: ${JSON.stringify(
+						error.response.data
+					)}`
+				);
+			} else if (error.request) {
+				Log.info(
+					`[HubtelController.js][postHubtelAirtelTigoDataBundle] request: ${error.request}`
+				);
+			} else {
+				Log.info(
+					`[HubtelController.js][postHubtelAirtelTigoDataBundle] unknown error: ${error.message}`
+				);
+			}
+			return {
+				success: false,
+				code: 500,
+				message: error.message,
+			};
+		}
+	}
+	/**PAY DATA BUNDLE */
 	// post transaction status check
 	async getTransactionStatusCheckService(clientReference) {
 		try {

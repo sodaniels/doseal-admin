@@ -71,6 +71,7 @@ const validateEcgSearch = [
 
 const validateUtilitySearch = [
 	body("accountNumber").exists().withMessage("The Account Number is required"),
+	body("network").exists().withMessage("The Network is required"),
 ];
 const validatePayEcg = [
 	body("phoneNumber").exists().withMessage("The Phone Number is required"),

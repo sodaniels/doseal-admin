@@ -1145,7 +1145,7 @@ async function getFeedback(req, res) {
 	}
 }
 // search mtn bundle
-async function postSearchMtnBundle(req, res) {
+async function postSearchDataBundleByNetwork(req, res) {
 	let hubtelResponse;
 	const validationError = handleValidationErrors(req, res);
 	if (validationError) {
@@ -1159,13 +1159,35 @@ async function postSearchMtnBundle(req, res) {
 	}
 	try {
 		Log.info(
-			`[ApiController.js][postSearchMtnBundle]\t incoming mtn bundle search request: ` +
+			`[ApiController.js][postSearchMtnBundle][${req.body.accountNumber}][${req.body.network}]\t incoming data bundle search request: ` +
 				req.ip
 		);
 
-		hubtelResponse = await restServices.postMtnDataSearchService(
-			req.body.accountNumber
-		);
+		switch (req.body.network) {
+			case "mtn-gh":
+				hubtelResponse = await restServices.postMtnDataSearchService(
+					req.body.accountNumber
+				);
+				break;
+			case "vodafone-gh":
+				hubtelResponse = await restServices.postTelecelDataSearchService(
+					req.body.accountNumber
+				);
+				break;
+			case "tigo-gh":
+				hubtelResponse = await restServices.postAirtelTigoDataSearchService(
+					req.body.accountNumber
+				);
+				break;
+			default:
+				return res.json({
+					success: false,
+					code: 400,
+					message: ServiceCode.FAILED,
+				});
+				break;
+		}
+
 		if (hubtelResponse) {
 			if (hubtelResponse.ResponseCode === "0000") {
 				hubtelResponse["success"] = true;
@@ -1249,6 +1271,6 @@ module.exports = {
 	getReportedIssues,
 	postFeedback,
 	getFeedback,
-	postSearchMtnBundle,
+	postSearchDataBundleByNetwork,
 	getTransactionStatusCheck,
 };
