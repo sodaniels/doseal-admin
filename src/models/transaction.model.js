@@ -82,6 +82,14 @@ const tranactionSchema = new Schema({
 		type: String,
 		required: false,
 	},
+	bundleName: {
+		type: String,
+		required: false,
+	},
+	bundleValue: {
+		type: String,
+		required: false,
+	},
 	cardNumber: {
 		type: String,
 		required: false,

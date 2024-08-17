@@ -459,6 +459,8 @@ async function postBuyCredit(req, res) {
 			accountNumber: req.body.accountNumber
 				? req.body.accountNumber
 				: undefined,
+			bundleName: req.body.bundleName ? req.body.bundleName : undefined,
+			bundleValue: req.body.bundleValue ? req.body.bundleValue : undefined,
 			sessionId: req.body.sessionId ? req.body.sessionId : undefined,
 		});
 		transaction = await debitDataObject.save();

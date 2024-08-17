@@ -710,6 +710,10 @@ async function commitCreditTransaction(transaction) {
 			accountNumber: transaction.accountNumber
 				? transaction.accountNumber
 				: undefined,
+			bundleName: transaction.bundleName ? transaction.bundleName : undefined,
+			bundleValue: transaction.bundleValue
+				? transaction.bundleValue
+				: undefined,
 		});
 		creditTransaction = await creditDataObject.save();
 		const creditUniqueId = `CR_${uniqueId}`;
@@ -892,7 +896,7 @@ async function commitCreditTransaction(transaction) {
 						);
 						break;
 					case "vodafone-gh":
-						hubtelResponse = await restServices.postHubtelTelecelTopup(
+						hubtelResponse = await restServices.postHubtelTelecelDataBundle(
 							transaction.phoneNumber,
 							transaction.amount,
 							creditUniqueId
@@ -904,7 +908,7 @@ async function commitCreditTransaction(transaction) {
 						);
 						break;
 					case "tigo-gh":
-						hubtelResponse = await restServices.postHubtelAirtelTigoTopup(
+						hubtelResponse = await restServices.postHubtelAirtelTigoDataBundle(
 							transaction.phoneNumber,
 							transaction.amount,
 							creditUniqueId
