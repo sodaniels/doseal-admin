@@ -4,6 +4,7 @@ const Wallet = require("../../models/wallet.model");
 const Transaction = require("../../models/transaction.model");
 const ReportIssue = require("../../models/report-issue.model");
 const Feedback = require("../../models/feedback.model");
+const BalanceTransfer = require("../../models/balance-transfer.model");
 const Meter = require("../../models/meter.model");
 const WalletTopup = require("../../models/wallet-topup.model");
 const { Log } = require("../../helpers/Log");
@@ -1250,6 +1251,114 @@ async function getTransactionStatusCheck(req, res) {
 		});
 	}
 }
+// get balance query
+async function getBalanceQuery(req, res) {
+	let hubtelResponse;
+	try {
+		Log.info(
+			`[ApiController.js][getBalanceQuery]\t incoming balance query request: ` +
+				req.ip
+		);
+
+		hubtelResponse = await restServices.getBalanceQueryService();
+		if (hubtelResponse) {
+			if (hubtelResponse.ResponseCode === "0000") {
+				hubtelResponse["success"] = true;
+				return res.json(hubtelResponse);
+			}
+			return res.json(hubtelResponse);
+		}
+		return res.json({
+			success: false,
+			message: ServiceCode.FAILED,
+		});
+	} catch (error) {
+		return res.json({
+			success: false,
+			error: error.message,
+			message: ServiceCode.ERROR_OCCURED,
+		});
+	}
+}
+// get prepaid balance query
+async function getPrepaidBalanceQuery(req, res) {
+	let hubtelResponse;
+	try {
+		Log.info(
+			`[ApiController.js][getPrepaidBalanceQuery]\t incoming prepaid balance query request: ` +
+				req.ip
+		);
+
+		hubtelResponse = await restServices.getPrepaidBalanceQueryService();
+		if (hubtelResponse) {
+			if (hubtelResponse.ResponseCode === "0000") {
+				hubtelResponse["success"] = true;
+				return res.json(hubtelResponse);
+			}
+			return res.json(hubtelResponse);
+		}
+		return res.json({
+			success: false,
+			message: ServiceCode.FAILED,
+		});
+	} catch (error) {
+		return res.json({
+			success: false,
+			error: error.message,
+			message: ServiceCode.ERROR_OCCURED,
+		});
+	}
+}
+// post transfer balance
+async function postTransferBalance(req, res) {
+	let hubtelResponse;
+	try {
+		Log.info(
+			`[ApiController.js][postTransferBalance]\t incoming balance transfer request: ` +
+				req.ip
+		);
+
+		let currentDate = new Date();
+		let formattedDate = currentDate
+			.toISOString()
+			.replace(/[-:TZ.]/g, "")
+			.slice(0, 14);
+		let uniqueId = `TR_${formattedDate}${
+			Math.floor(Math.random() * 900000) + 100000
+		}`;
+
+		// get amount and other information from balance query api
+
+		const Amount = 1;
+
+		const transferObject = new BalanceTransfer({
+			amount: Amount,
+			externalReference: uniqueId,
+		});
+		const storeTransfer = await transferObject.save();
+
+		if (storeTransfer) {
+			hubtelResponse = await restServices.postTransferBalance(Amount, uniqueId);
+			if (hubtelResponse) {
+				if (hubtelResponse.ResponseCode === "0000") {
+					hubtelResponse["success"] = true;
+					return res.json(hubtelResponse);
+				}
+				return res.json(hubtelResponse);
+			}
+			return res.json({
+				success: false,
+				message: ServiceCode.FAILED,
+			});
+		}
+	} catch (error) {
+		return res.json({
+			success: false,
+			error: error.message,
+			message: ServiceCode.ERROR_OCCURED,
+		});
+	}
+}
 
 module.exports = {
 	getPageCategory,
@@ -1275,4 +1384,7 @@ module.exports = {
 	getFeedback,
 	postSearchDataBundleByNetwork,
 	getTransactionStatusCheck,
+	getBalanceQuery,
+	getPrepaidBalanceQuery,
+	postTransferBalance,
 };

@@ -556,6 +556,71 @@ async function postHubtelPaymentCallback(req, res) {
 		);
 	}
 }
+// hubtel transfer balance callback
+async function postHubtelTransferBalanceCallback(req, res) {
+	let transactionId;
+	Log.info("[CallbackController.js][postHubtelTransferBalanceCallback]\tIP: " + req.ip);
+	Log.info(
+		"[CallbackController.js][postHubtelTransferBalanceCallback]\tCallback Transaction: " +
+			JSON.stringify(req.body)
+	);
+
+	try {
+		let Data = req.body.Data;
+
+		transactionId = Data.ClientReference;
+
+		let transaction = await getTransactionByTransactionId(transactionId);
+
+		if (transaction && transaction.statusCode === 411) {
+			transaction.PaymentResponseCode = req.body.ResponseCode;
+			transaction.PaymentStatus = req.body.Status;
+			transaction.CheckoutId = Data.CheckoutId;
+			transaction.SalesInvoiceId = Data.SalesInvoiceId;
+			transaction.CustomerPhoneNumber = Data.CustomerPhoneNumber;
+			transaction.PaymentAmount = Data.Amount;
+			transaction.PaymentDetails = Data.PaymentDetails;
+			transaction.PaymentDescription = Data.Description;
+
+			if (req.body.ResponseCode === "0000") {
+				transaction.status = "Successful";
+				transaction.statusCode = 200;
+				transaction.statusMessage = "Transaction was successful";
+				transaction.cr_created = true;
+			} else {
+				transaction.status = "Failed";
+				transaction.statusCode = 400;
+				transaction.statusMessage = "Payment Failed";
+			}
+			try {
+				if (transaction.isModified) {
+					Log.info(
+						`[CallbackController.js][postHubtelPaymentCallback][${transactionId}]\t payment callback saved`
+					);
+					await transaction.save();
+
+					if (req.body.ResponseCode === "0000") {
+						commitCreditTransaction(transaction);
+					}
+				}
+			} catch (error) {
+				Log.info(
+					`[CallbackController.js][postHubtelPaymentCallback][${transactionId}]\t error saving callback data: ${error}`
+				);
+			}
+		}
+
+		res.status(200).json({
+			code: 200,
+			message: "Callback processed successfully.",
+		});
+	} catch (error) {
+		Log.info(
+			`[CallbackController.js][postHubtelPaymentCallback][${transactionId}]\t error processing payment callback: ${error}`
+		);
+	}
+}
+
 
 async function postTransactionCallback(req, res) {
 	let saveTransaction, transactionId;
@@ -1018,6 +1083,7 @@ async function updateDrTransactionStatus(transaction, Description) {
 		);
 	}
 }
+// 
 
 //helper functions
 async function getTransactionByTransactionId(transactionId) {
@@ -1053,7 +1119,6 @@ async function getTransactionByType(transactionId, _type) {
 		return null;
 	}
 }
-
 async function getRequestByRequestId(requestId) {
 	try {
 		const request = await WalletTopup.findOne({
@@ -1077,4 +1142,5 @@ module.exports = {
 	postHubtelAirtimeTopup,
 	postHubtelPaymentCallback,
 	postHubtelUtilityCallbackServices,
+	postHubtelTransferBalanceCallback,
 };

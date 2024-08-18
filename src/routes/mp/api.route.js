@@ -106,10 +106,16 @@ router.post(
 	validator.validateDataBundleSearch,
 	apiController.postSearchDataBundleByNetwork
 );
+// get transaction status check
 router.get(
 	"/transaction-status-check",
 	apiController.getTransactionStatusCheck
 );
-
+// get balance query
+router.get("/balance-query", apiController.getBalanceQuery);
+// get prepaid balance query
+router.get("/prepaid-balance-query", apiController.getPrepaidBalanceQuery);
+// post balance transfer
+router.post("/transfer-balance", apiController.postTransferBalance);
 
 module.exports = router;

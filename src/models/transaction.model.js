@@ -113,6 +113,10 @@ const tranactionSchema = new Schema({
 		required: false,
 		default: 411,
 	},
+	retried: {
+		type: Boolean,
+		required: false,
+	},
 	statusMessage: {
 		type: String,
 		required: false,
@@ -143,6 +147,10 @@ const tranactionSchema = new Schema({
 		required: false,
 	},
 	Charges: {
+		type: Number,
+		required: false,
+	},
+	amountAfterCharges: {
 		type: Number,
 		required: false,
 	},

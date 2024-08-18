@@ -31,5 +31,12 @@ router.post(
 	"/hubtel-utility-services-callback",
 	callBackController.postHubtelUtilityCallbackServices
 );
+// post balance transfer callback
+router.post(
+	"/hubtel-balance-transfer-callback",
+	callBackController.postHubtelTransferBalanceCallback
+);
+
+
 
 module.exports = router;

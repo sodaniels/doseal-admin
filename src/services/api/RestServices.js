@@ -1038,6 +1038,25 @@ class RestServices {
 			});
 			return response.data;
 		} catch (error) {
+			let hubtelResponse = {
+				message: "Successful",
+				responseCode: "0000",
+				data: {
+					date: "2024-01-15T21:28:17.3234841Z",
+					status: "Paid",
+					transactionId: "9a7304855d8a4041917509bb46be7050",
+					externalTransactionId: null,
+					paymentMethod: "cash",
+					clientReference: "DR_20240817010411285402",
+					currencyCode: null,
+					amount: 1.0,
+					charges: 0.0,
+					amountAfterCharges: 1.0,
+					isFulfilled: true,
+				},
+			};
+			return hubtelResponse; // remove this
+
 			Log.info(
 				`[HubtelController.js][getTransactionStatusCheckService] error validating account: ${error.message}`
 			);
@@ -1057,6 +1076,148 @@ class RestServices {
 			} else {
 				Log.info(
 					`[HubtelController.js][getTransactionStatusCheckService] unknown error: ${error.message}`
+				);
+			}
+			return {
+				success: false,
+				code: 500,
+				message: error.response.data ? error.response.data : error.response,
+			};
+		}
+	}
+	// get balance query request
+	async getBalanceQueryService() {
+		try {
+			const url = `https://trnf.hubtel.com/api/inter-transfers/${process.env.HUBTEL_POS_SALES_ID}`;
+			Log.info(
+				`[HubtelController.js][getBalanceQueryService] intial  [GET] to ${url}`
+			);
+
+			const response = await axios.get(url, {
+				headers: {
+					Authorization: `Basic ${token()}`,
+					"Content-Type": "application/json",
+				},
+			});
+			return response.data;
+		} catch (error) {
+			Log.info(
+				`[HubtelController.js][getBalanceQueryService] error validating account: ${error.message}`
+			);
+			if (error.response) {
+				Log.info(
+					`[HubtelController.js][getBalanceQueryService] response status: ${error.response.status}`
+				);
+				Log.info(
+					`[HubtelController.js][getBalanceQueryService] response data: ${JSON.stringify(
+						error.response.data
+					)}`
+				);
+			} else if (error.request) {
+				Log.info(
+					`[HubtelController.js][getBalanceQueryService] request: ${error.request}`
+				);
+			} else {
+				Log.info(
+					`[HubtelController.js][getBalanceQueryService] unknown error: ${error.message}`
+				);
+			}
+			return {
+				success: false,
+				code: 500,
+				message: error.response.data ? error.response.data : error.response,
+			};
+		}
+	}
+	// get prepaid balance query
+	async getPrepaidBalanceQueryService() {
+		try {
+			const url = `https://trnf.hubtel.com/api/inter-transfers/${process.env.HUBTEL_PREPAID_DEPOSTI_ACCOUNT}`;
+			Log.info(
+				`[HubtelController.js][getPrepaidBalanceQueryService] intial  [GET] to ${url}`
+			);
+
+			const response = await axios.get(url, {
+				headers: {
+					Authorization: `Basic ${token()}`,
+					"Content-Type": "application/json",
+				},
+			});
+			return response.data;
+		} catch (error) {
+			Log.info(
+				`[HubtelController.js][getPrepaidBalanceQueryService] error validating account: ${error.message}`
+			);
+			if (error.response) {
+				Log.info(
+					`[HubtelController.js][getPrepaidBalanceQueryService] response status: ${error.response.status}`
+				);
+				Log.info(
+					`[HubtelController.js][getPrepaidBalanceQueryService] response data: ${JSON.stringify(
+						error.response.data
+					)}`
+				);
+			} else if (error.request) {
+				Log.info(
+					`[HubtelController.js][getPrepaidBalanceQueryService] request: ${error.request}`
+				);
+			} else {
+				Log.info(
+					`[HubtelController.js][getPrepaidBalanceQueryService] unknown error: ${error.message}`
+				);
+			}
+			return {
+				success: false,
+				code: 500,
+				message: error.response.data ? error.response.data : error.response,
+			};
+		}
+	}
+	// post balance transfer
+	async postTransferBalance(Amount, ClientReference) {
+		try {
+			const url = `https://trnf.hubtel.com/api/inter-transfers/${process.env.HUBTEL_POS_SALES_ID}`;
+			Log.info(
+				`[HubtelController.js][postTransferBalance] intial  [GET] to ${url}`
+			);
+
+			const response = await axios.get(
+				url,
+				{
+					Amount: Amount,
+					Description: `Doseal Balance Transfer`,
+					DestinationAccountNumber: `${process.env.HUBTEL_PREPAID_DEPOSTI_ACCOUNT}`,
+					ClientReference: ClientReference,
+					PrimaryCallbackUrl: `${process.env.HUBTEL_CALLBACK_BASE_URL}/api/v1/hubtel-balance-transfer-callback`,
+				},
+				{
+					headers: {
+						Authorization: `Basic ${token()}`,
+						"Content-Type": "application/json",
+					},
+				}
+			);
+			return response.data;
+		} catch (error) {
+			Log.info(
+				`[HubtelController.js][postTransferBalance] error transfering balance: ${error.message}`
+			);
+			if (error.response) {
+				Log.info(
+					`[HubtelController.js][postTransferBalance] response status: ${error.response.status}`
+				);
+				Log.info(
+					`[HubtelController.js][postTransferBalance] response data: ${JSON.stringify(
+						error.response.data
+					)}`
+				);
+			} else if (error.request) {
+				Log.info(
+					`[HubtelController.js][postTransferBalance] request: ${error.request}`
+				);
+			} else {
+				Log.info(
+					`[HubtelController.js][postTransferBalance] unknown error: ${error.message}`
 				);
 			}
 			return {

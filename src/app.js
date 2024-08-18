@@ -25,6 +25,9 @@ const expensesRoutes = require("./routes/dashboard/expense.route");
 const vendorRoutes = require("./routes/dashboard/vendor.route");
 const authApiRoutes = require("./routes/mp/authApi.route");
 
+const { connectAndStartCron } = require("./CRONS/cronJobs.crons");
+// connectAndStartCron();
+
 const apiRoutes = require("./routes/mp/api.route");
 const callbackRoutes = require("./routes/mp/callback.route");
 
