@@ -24,6 +24,7 @@ const divisionRoutes = require("./routes/dashboard/division.route");
 const expensesRoutes = require("./routes/dashboard/expense.route");
 const vendorRoutes = require("./routes/dashboard/vendor.route");
 const authApiRoutes = require("./routes/mp/authApi.route");
+const deskDeskRoutes = require("./routes/dashboard/help-desk.route");
 
 const { connectAndStartCron } = require("./CRONS/cronJobs.crons");
 // connectAndStartCron();
@@ -140,6 +141,8 @@ app.use("/", divisionRoutes);
 app.use("/", expensesRoutes);
 
 app.use("/", vendorRoutes);
+
+app.use("/", deskDeskRoutes);
 
 // error handling middleware
 app.use(errorHandler);
