@@ -13,6 +13,9 @@ const io = require("../../socket");
 async function connectAndStartCron() {
 	cron.schedule("*/60 * * * *", async () => {
 		// Check transactions every one hour and check the status after  1 hour
+		Log.info(
+			`[cronJobs.crons.js][connectAndStartCron]\t checking for pending transactions and balance transfer`
+		);
 		try {
 			await getPendingTransactions();
 		} catch (error) {

@@ -1408,7 +1408,7 @@ async function postTransferBalance() {
 		);
 	}
 }
-
+// get balance transfer by transaction id
 async function getBalanceTransferByTransferId(transferId) {
 	try {
 		const transfer = await BalanceTransfer.findOne({

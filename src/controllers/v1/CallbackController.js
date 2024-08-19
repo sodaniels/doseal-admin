@@ -606,7 +606,7 @@ async function postHubtelTransferBalanceCallback(req, res) {
 		);
 	}
 }
-
+// post transaction callback
 async function postTransactionCallback(req, res) {
 	let saveTransaction, transactionId;
 	Log.info("[CallbackController.js][postTransactionCallback]\tIP: " + req.ip);
@@ -723,7 +723,7 @@ async function postTransactionCallback(req, res) {
 		message: "Callback processed successfully.",
 	});
 }
-
+// commit credit transaction
 async function commitCreditTransaction(transaction) {
 	let hubtelResponse, creditTransaction;
 	const transactionId = transaction.internalReference;
@@ -1016,7 +1016,7 @@ async function commitCreditTransaction(transaction) {
 		);
 	}
 }
-
+// update DR transaction
 async function updateDrTransactionStatus(transaction, Description) {
 	Log.info(
 		`[CallbackController][updateDrTransactionStatus][${transaction.internalReference}] \t updating DR request`
@@ -1068,9 +1068,8 @@ async function updateDrTransactionStatus(transaction, Description) {
 		);
 	}
 }
-//
 
-//helper functions
+/**helper functions*/
 async function getTransactionByTransactionId(transactionId) {
 	try {
 		const transaction = await Transaction.findOne({
@@ -1133,6 +1132,7 @@ async function getBalanceTransferByTransferId(transferId) {
 		return null;
 	}
 }
+/**helper functions*/
 
 module.exports = {
 	postWalletTopupCallback,
