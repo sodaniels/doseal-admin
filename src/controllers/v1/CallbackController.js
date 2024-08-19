@@ -4,6 +4,7 @@ const User = require("../../models/user");
 const io = require("../../../socket");
 const { Log } = require("../../helpers/Log");
 const WalletTopup = require("../../models/wallet-topup.model");
+const BalanceTransfer = require("../../models/balance-transfer.model");
 const Transaction = require("../../models/transaction.model");
 const Meter = require("../../models/meter.model");
 const { sendText } = require("../../helpers/sendText");
@@ -558,8 +559,10 @@ async function postHubtelPaymentCallback(req, res) {
 }
 // hubtel transfer balance callback
 async function postHubtelTransferBalanceCallback(req, res) {
-	let transactionId;
-	Log.info("[CallbackController.js][postHubtelTransferBalanceCallback]\tIP: " + req.ip);
+	let transferId;
+	Log.info(
+		"[CallbackController.js][postHubtelTransferBalanceCallback]\tIP: " + req.ip
+	);
 	Log.info(
 		"[CallbackController.js][postHubtelTransferBalanceCallback]\tCallback Transaction: " +
 			JSON.stringify(req.body)
@@ -568,59 +571,41 @@ async function postHubtelTransferBalanceCallback(req, res) {
 	try {
 		let Data = req.body.Data;
 
-		transactionId = Data.ClientReference;
+		transferId = Data.ClientReference;
 
-		let transaction = await getTransactionByTransactionId(transactionId);
+		let transfer = await getBalanceTransferByTransferId(transferId);
 
-		if (transaction && transaction.statusCode === 411) {
-			transaction.PaymentResponseCode = req.body.ResponseCode;
-			transaction.PaymentStatus = req.body.Status;
-			transaction.CheckoutId = Data.CheckoutId;
-			transaction.SalesInvoiceId = Data.SalesInvoiceId;
-			transaction.CustomerPhoneNumber = Data.CustomerPhoneNumber;
-			transaction.PaymentAmount = Data.Amount;
-			transaction.PaymentDetails = Data.PaymentDetails;
-			transaction.PaymentDescription = Data.Description;
+		if (transfer && transfer.statusCode === 411) {
+			transfer.ResponseCode = req.body.ResponseCode;
+			transfer.Description = Data.Description;
+			transfer.TransAmount = Data.Amount;
+			transfer.Charges = Data.Charges;
+			transfer.RecipientName = Data.RecipientName;
 
 			if (req.body.ResponseCode === "0000") {
-				transaction.status = "Successful";
-				transaction.statusCode = 200;
-				transaction.statusMessage = "Transaction was successful";
-				transaction.cr_created = true;
+				transfer.status = "Successful";
+				transfer.statusCode = 200;
+				transfer.statusMessage = "Transaction was successful";
 			} else {
-				transaction.status = "Failed";
-				transaction.statusCode = 400;
-				transaction.statusMessage = "Payment Failed";
+				transfer.status = "Failed";
+				transfer.statusCode = 400;
+				transfer.statusMessage = "Payment Failed";
 			}
-			try {
-				if (transaction.isModified) {
-					Log.info(
-						`[CallbackController.js][postHubtelPaymentCallback][${transactionId}]\t payment callback saved`
-					);
-					await transaction.save();
-
-					if (req.body.ResponseCode === "0000") {
-						commitCreditTransaction(transaction);
-					}
-				}
-			} catch (error) {
-				Log.info(
-					`[CallbackController.js][postHubtelPaymentCallback][${transactionId}]\t error saving callback data: ${error}`
-				);
+			if (transfer.isModified) {
+				await transfer.save();
 			}
 		}
 
 		res.status(200).json({
 			code: 200,
-			message: "Callback processed successfully.",
+			message: "Transfer Callback processed successfully.",
 		});
 	} catch (error) {
 		Log.info(
-			`[CallbackController.js][postHubtelPaymentCallback][${transactionId}]\t error processing payment callback: ${error}`
+			`[CallbackController.js][postHubtelTransferBalanceCallback][${transferId}]\t error processing payment callback: ${error}`
 		);
 	}
 }
-
 
 async function postTransactionCallback(req, res) {
 	let saveTransaction, transactionId;
@@ -1083,7 +1068,7 @@ async function updateDrTransactionStatus(transaction, Description) {
 		);
 	}
 }
-// 
+//
 
 //helper functions
 async function getTransactionByTransactionId(transactionId) {
@@ -1131,6 +1116,19 @@ async function getRequestByRequestId(requestId) {
 	} catch (error) {
 		Log.info(
 			`[CallbackController.js][getRequestByRequestId][${requestId}]\t error : ${error}`
+		);
+		return null;
+	}
+}
+async function getBalanceTransferByTransferId(transferId) {
+	try {
+		const transfer = await BalanceTransfer.findOne({
+			externalReference: transferId,
+		});
+		return transfer;
+	} catch (error) {
+		Log.info(
+			`[CallbackController.js][getBalanceTransferByTransferId][${transferId}]\t error : ${error}`
 		);
 		return null;
 	}

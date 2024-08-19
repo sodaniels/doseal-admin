@@ -5,16 +5,29 @@ const { Log } = require("../helpers/Log");
 const RestServices = require("../services/api/RestServices");
 const restServices = new RestServices();
 const callbackController = require("../controllers/v1/CallbackController");
+const apiController = require("../controllers/v1/ApiController");
 const ServiceCode = require("../constants/serviceCode");
 const { rand10Id } = require("../helpers/randId");
 const io = require("../../socket");
 
 async function connectAndStartCron() {
-	cron.schedule("*/1 * * * *", async () => {
+	cron.schedule("*/60 * * * *", async () => {
 		// Check transactions every one hour and check the status after  1 hour
 		try {
 			await getPendingTransactions();
-		} catch (error) {}
+		} catch (error) {
+			Log.info(
+				`[cronJobs.crons.js][connectAndStartCron]\t error getting pending transactions`
+			);
+		}
+
+		try {
+			await apiController.postTransferBalance();
+		} catch (error) {
+			Log.info(
+				`[cronJobs.crons.js][connectAndStartCron]\t error getting calling postTransferBalance`
+			);
+		}
 	});
 }
 

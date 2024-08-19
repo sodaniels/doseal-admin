@@ -1067,7 +1067,7 @@ class RestServices {
 		}
 	}
 	// get balance query request
-	async getBalanceQueryService() {
+	async getPosBalanceQueryService() {
 		try {
 			const url = `https://trnf.hubtel.com/api/inter-transfers/${process.env.HUBTEL_POS_SALES_ID}`;
 			Log.info(
@@ -1083,7 +1083,7 @@ class RestServices {
 			return response.data;
 		} catch (error) {
 			Log.info(
-				`[HubtelController.js][getBalanceQueryService] error validating account: ${error.message}`
+				`[HubtelController.js][getBalanceQueryService] error getting balance query: ${error.message}`
 			);
 			if (error.response) {
 				Log.info(
@@ -1159,10 +1159,10 @@ class RestServices {
 		try {
 			const url = `https://trnf.hubtel.com/api/inter-transfers/${process.env.HUBTEL_POS_SALES_ID}`;
 			Log.info(
-				`[HubtelController.js][postTransferBalance] intial  [GET] to ${url}`
+				`[HubtelController.js][postTransferBalance] intial  [POST] to ${url}`
 			);
 
-			const response = await axios.get(
+			const response = await axios.post(
 				url,
 				{
 					Amount: Amount,

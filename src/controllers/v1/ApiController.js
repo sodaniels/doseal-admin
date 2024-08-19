@@ -1252,7 +1252,7 @@ async function getTransactionStatusCheck(req, res) {
 	}
 }
 // get balance query
-async function getBalanceQuery(req, res) {
+async function getPOSBalanceQuery(req, res) {
 	let hubtelResponse;
 	try {
 		Log.info(
@@ -1260,7 +1260,7 @@ async function getBalanceQuery(req, res) {
 				req.ip
 		);
 
-		hubtelResponse = await restServices.getBalanceQueryService();
+		hubtelResponse = await restServices.getPosBalanceQueryService();
 		if (hubtelResponse) {
 			if (hubtelResponse.ResponseCode === "0000") {
 				hubtelResponse["success"] = true;
@@ -1310,14 +1310,9 @@ async function getPrepaidBalanceQuery(req, res) {
 	}
 }
 // post transfer balance
-async function postTransferBalance(req, res) {
-	let hubtelResponse;
+async function postTransferBalance() {
+	let hubtelResponse, balanceResponse, storeTransfer, Amount;
 	try {
-		Log.info(
-			`[ApiController.js][postTransferBalance]\t incoming balance transfer request: ` +
-				req.ip
-		);
-
 		let currentDate = new Date();
 		let formattedDate = currentDate
 			.toISOString()
@@ -1328,35 +1323,103 @@ async function postTransferBalance(req, res) {
 		}`;
 
 		// get amount and other information from balance query api
+		balanceResponse = await restServices.getPosBalanceQueryService();
 
-		const Amount = 1;
+		if (balanceResponse && balanceResponse.responseCode === "0000") {
+			const totalAmount = balanceResponse.data.amount;
+			Amount = parseInt(totalAmount);
 
-		const transferObject = new BalanceTransfer({
-			amount: Amount,
-			externalReference: uniqueId,
-		});
-		const storeTransfer = await transferObject.save();
+			if (Amount > 0) {
+				const transferObject = new BalanceTransfer({
+					amount: Amount,
+					externalReference: uniqueId,
+				});
 
-		if (storeTransfer) {
-			hubtelResponse = await restServices.postTransferBalance(Amount, uniqueId);
-			if (hubtelResponse) {
-				if (hubtelResponse.ResponseCode === "0000") {
-					hubtelResponse["success"] = true;
-					return res.json(hubtelResponse);
+				try {
+					storeTransfer = await transferObject.save();
+				} catch (error) {
+					Log.info(
+						`[ApiController.js][postTransferBalance] \t error saving transfer object: ${error}`
+					);
 				}
-				return res.json(hubtelResponse);
+
+				try {
+					hubtelResponse = await restServices.postTransferBalance(
+						Amount,
+						uniqueId
+					);
+				} catch (error) {
+					Log.info(
+						`[ApiController.js][postTransferBalance] \t error retrieving balance: ${error}`
+					);
+				}
+
+				if (
+					storeTransfer &&
+					hubtelResponse &&
+					hubtelResponse.responseCode === "0001"
+				) {
+					try {
+						let Data = hubtelResponse.data;
+						let transfer = await getBalanceTransferByTransferId(uniqueId);
+
+						transfer.Description = Data.description;
+						transfer.Charges = Data.charges;
+						transfer.TransAmount = Data.amount;
+						transfer.recipientName = Data.recipientName;
+
+						if (transfer.isModified) {
+							await transfer.save();
+						}
+
+						hubtelResponse["success"] = true;
+						Log.info(
+							`[ApiController.js][postTransferBalance] \t hubtelResponse": ${JSON.stringify(
+								hubtelResponse
+							)}`
+						);
+					} catch (error) {
+						Log.info(
+							`[ApiController.js][postTransferBalance] \t error upating transfer callack: ${error}`
+						);
+					}
+				} else {
+					Log.info(
+						`[ApiController.js][postTransferBalance] \t error upating transfer callack: ${JSON.stringify(
+							{
+								success: false,
+								message: ServiceCode.FAILED,
+							}
+						)}`
+					);
+				}
 			}
-			return res.json({
-				success: false,
-				message: ServiceCode.FAILED,
-			});
 		}
 	} catch (error) {
-		return res.json({
-			success: false,
-			error: error.message,
-			message: ServiceCode.ERROR_OCCURED,
+		Log.info(`[ApiController.js][postTransferBalance] \t error: ${error}`);
+		Log.info(
+			`[ApiController.js][postTransferBalance] \t error upating transfer callack: ${JSON.stringify(
+				{
+					success: false,
+					error: error.message,
+					message: ServiceCode.ERROR_OCCURED,
+				}
+			)}`
+		);
+	}
+}
+
+async function getBalanceTransferByTransferId(transferId) {
+	try {
+		const transfer = await BalanceTransfer.findOne({
+			externalReference: transferId,
 		});
+		return transfer;
+	} catch (error) {
+		Log.info(
+			`[ApiController.js][getBalanceTransferByTransferId][${transferId}]\t error : ${error}`
+		);
+		return null;
 	}
 }
 
@@ -1384,7 +1447,7 @@ module.exports = {
 	getFeedback,
 	postSearchDataBundleByNetwork,
 	getTransactionStatusCheck,
-	getBalanceQuery,
+	getPOSBalanceQuery,
 	getPrepaidBalanceQuery,
 	postTransferBalance,
 };

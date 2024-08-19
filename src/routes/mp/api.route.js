@@ -112,7 +112,7 @@ router.get(
 	apiController.getTransactionStatusCheck
 );
 // get balance query
-router.get("/balance-query", apiController.getBalanceQuery);
+router.get("/pos-balance-query", apiController.getPOSBalanceQuery);
 // get prepaid balance query
 router.get("/prepaid-balance-query", apiController.getPrepaidBalanceQuery);
 // post balance transfer

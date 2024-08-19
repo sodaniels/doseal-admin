@@ -32,6 +32,22 @@ const balanceTransferSchema = new Schema({
 		type: String,
 		required: false,
 	},
+	Description: {
+		type: String,
+		required: false,
+	},
+	TransAmount: {
+		type: Number,
+		required: false,
+	},
+	Charges: {
+		type: Number,
+		required: false,
+	},
+	RecipientName: {
+		type: String,
+		required: false,
+	},
     updatedBy: { type: String, required: false },
     createdAt: { type: Date, default: Date.now },
     updatedAt: { type: Date, default: Date.now },
