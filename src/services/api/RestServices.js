@@ -1038,25 +1038,6 @@ class RestServices {
 			});
 			return response.data;
 		} catch (error) {
-			let hubtelResponse = {
-				message: "Successful",
-				responseCode: "0000",
-				data: {
-					date: "2024-01-15T21:28:17.3234841Z",
-					status: "Paid",
-					transactionId: "9a7304855d8a4041917509bb46be7050",
-					externalTransactionId: null,
-					paymentMethod: "cash",
-					clientReference: "DR_20240817010411285402",
-					currencyCode: null,
-					amount: 1.0,
-					charges: 0.0,
-					amountAfterCharges: 1.0,
-					isFulfilled: true,
-				},
-			};
-			return hubtelResponse; // remove this
-
 			Log.info(
 				`[HubtelController.js][getTransactionStatusCheckService] error validating account: ${error.message}`
 			);

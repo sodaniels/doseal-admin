@@ -27,7 +27,7 @@ const authApiRoutes = require("./routes/mp/authApi.route");
 const deskDeskRoutes = require("./routes/dashboard/help-desk.route");
 
 const { connectAndStartCron } = require("./CRONS/cronJobs.crons");
-// connectAndStartCron();
+connectAndStartCron();
 
 const apiRoutes = require("./routes/mp/api.route");
 const callbackRoutes = require("./routes/mp/callback.route");
