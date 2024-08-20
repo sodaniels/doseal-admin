@@ -3,7 +3,9 @@ const User = require("../../models/user");
 const Wallet = require("../../models/wallet.model");
 const Transaction = require("../../models/transaction.model");
 const ReportIssue = require("../../models/report-issue.model");
+const Help = require("../../models/help.model");
 const Feedback = require("../../models/feedback.model");
+const FaultReport = require("../../models/fault-report.model");
 const BalanceTransfer = require("../../models/balance-transfer.model");
 const Meter = require("../../models/meter.model");
 const WalletTopup = require("../../models/wallet-topup.model");
@@ -1422,6 +1424,114 @@ async function getBalanceTransferByTransferId(transferId) {
 		return null;
 	}
 }
+// get help desk
+async function getHelpDesk(req, res) {
+	try {
+		Log.info(
+			`[ApiController.js][getHelpDesk]\t retrieving help desk by ${req.user._id} ` +
+				req.ip
+		);
+
+		const helps = await Help.find({}).select("title category content");
+		if (helps.length > 0) {
+			return res.json({
+				success: true,
+				code: 200,
+				status: ServiceCode.SUCCESS,
+				data: helps,
+			});
+		} else {
+			return res.json({
+				success: false,
+				code: 200,
+				status: ServiceCode.NO_DATA_FOUND,
+				data: [],
+			});
+		}
+	} catch (error) {
+		Log.info(`[ApiController.js][getHelpDesk]\t error:  ${error} `);
+		return res.json({
+			success: false,
+			error: error.message,
+			code: 500,
+			message: ServiceCode.ERROR_OCCURED,
+		});
+	}
+}
+// post report fault
+async function postReportFault(req, res) {
+	const validationError = handleValidationErrors(req, res);
+	if (validationError) {
+		const errorRes = await apiErrors.create(
+			errorMessages.errors.API_MESSAGE_REPORT_FAULT_VALIDATION_FAILED,
+			"POST",
+			validationError,
+			undefined
+		);
+		return res.json(errorRes);
+	}
+
+	try {
+		Log.info(
+			`[ApiController.js][postReportFault]\t storing fault report for ${req.user._id} `
+		);
+		const faultReportObject = new FaultReport({
+			createdBy: req.user._id,
+			category: req.body.category,
+			message: req.body.message,
+		});
+
+		const storeFaultReport = await faultReportObject.save();
+		if (storeFaultReport) {
+			const faultReport = await FaultReport.find({
+				createdBy: req.user._id,
+			}).sort({
+				_id: -1,
+			});
+			try {
+				io.getIO().emit("postFaultReportpdate", faultReport);
+				Log.info(
+					"[ApiController.js][postReportFault]\t Emitted fault report update: "
+				);
+			} catch (error) {
+				Log.info(
+					`[ApiController.js][postReportFault]\t error emitting fault report update: `,
+					error
+				);
+			}
+			Log.info(
+				`[ApiController.js][postReportFault]\t stored reported issue for ${req.user._id} `
+			);
+			return res.json({
+				success: true,
+				code: 200,
+				status: ServiceCode.SUCCESS,
+				message:
+					"We have received your report successfully. You will hear from us within 2 buisness days",
+			});
+		} else {
+			Log.info(
+				`[ApiController.js][postReportFault]\t error sending report for ${req.user._id} `
+			);
+			return res.json({
+				success: false,
+				code: 400,
+				status: ServiceCode.FAILED,
+				message: "Something wrong happened while sending your report.",
+			});
+		}
+	} catch (error) {
+		Log.info(
+			`[ApiController.js][postReportFault]\t an error occurred  ${error} `
+		);
+		return res.json({
+			success: false,
+			code: 500,
+			status: ServiceCode.ERROR_OCCURED,
+			message: "An error occcured while submitting the message.",
+		});
+	}
+}
 
 module.exports = {
 	getPageCategory,
@@ -1450,4 +1560,6 @@ module.exports = {
 	getPOSBalanceQuery,
 	getPrepaidBalanceQuery,
 	postTransferBalance,
+	getHelpDesk,
+	postReportFault,
 };

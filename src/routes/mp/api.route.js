@@ -95,7 +95,7 @@ router.get("/report-issues", apiController.getReportedIssues);
 //post feedback
 router.post(
 	"/feedbacks",
-	// validator.validateFeedback,
+	validator.validateFeedback,
 	apiController.postFeedback
 );
 // get feedbacks
@@ -117,5 +117,13 @@ router.get("/pos-balance-query", apiController.getPOSBalanceQuery);
 router.get("/prepaid-balance-query", apiController.getPrepaidBalanceQuery);
 // post balance transfer
 router.post("/transfer-balance", apiController.postTransferBalance);
+// get help desk
+router.get("/help-desk", apiController.getHelpDesk);
+// post report a fault
+router.post(
+	"/report-fault",
+	validator.validateReportFault,
+	apiController.postReportFault
+);
 
 module.exports = router;

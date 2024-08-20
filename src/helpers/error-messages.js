@@ -16,6 +16,7 @@ exports.errors = {
     API_MESSAGE_ISSUE_REPORT_VALIDATION_FAILED: "Issue Report Request Failed",
     API_MESSAGE_FEEDBACK_VALIDATION_FAILED: "Feedback Request Failed",
     API_MESSAGE_DATA_BUNDLE_FAILED: "Data Bundle Request Failed",
+    API_MESSAGE_REPORT_FAULT_VALIDATION_FAILED: "Report Fault Request Failed",
 
 
 

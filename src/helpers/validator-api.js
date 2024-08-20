@@ -99,6 +99,10 @@ const validateTransactionStatus = [
 const validateFeedback = [
 	body("rating").exists().withMessage("The rating is required"),
 ];
+const validateReportFault = [
+	body("category").exists().withMessage("The category is required"),
+	body("message").exists().withMessage("The message is required"),
+];
 
 module.exports = {
 	validateProfile,
@@ -113,4 +117,5 @@ module.exports = {
 	validateFeedback,
 	validateTransactionStatus,
 	validateDataBundleSearch,
+	validateReportFault,
 };
