@@ -58,6 +58,10 @@ const tranactionSchema = new Schema({
 		type: Number,
 		required: true,
 	},
+	commission: {
+		type: Number,
+		required: false,
+	},
 	meterId: {
 		type: String,
 		required: false,

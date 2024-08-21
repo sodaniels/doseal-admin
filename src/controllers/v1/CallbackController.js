@@ -746,6 +746,7 @@ async function commitCreditTransaction(transaction) {
 			amount: transaction.amount,
 			totalAmount: transaction.totalAmount,
 			fee: transaction.fee,
+			commission: transaction.commission,
 			cardNumber: transaction.cardNumber ? transaction.cardNumber : undefined,
 			meterId: transaction.meterId ? transaction.meterId : undefined,
 			meterName: transaction.meterName ? transaction.meterName : undefined,

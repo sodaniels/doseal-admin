@@ -39,7 +39,7 @@ async function getPendingTransactions() {
 	const currentDate = new Date();
 	currentDate.setHours(0, 0, 0, 0);
 
-	const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000);
+	const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000);
 
 	try {
 		// Fetch transactions for today
@@ -49,6 +49,7 @@ async function getPendingTransactions() {
 					statusCode: 411,
 					createdAt: {
 						$gte: currentDate, // Transaction created today
+						$lte: fiveMinutesAgo,
 					},
 				},
 			},
@@ -62,17 +63,21 @@ async function getPendingTransactions() {
 				hubtelResponse = await restServices.getTransactionStatusCheckService(
 					item.internalReference
 				);
+				console.log("hubtelResponse:" + JSON.stringify(hubtelResponse));
 				if (hubtelResponse) {
 					Log.info(
-						`[cronJobs.crons.js][getPendingTransactions] status check results:`
+						`[cronJobs.crons.js][getPendingTransactions] status check results:` +
+							JSON.stringify(hubtelResponse)
 					);
 					transactionId = item.internalReference;
 					let Data = hubtelResponse.data;
 
-					let transaction = await getTransactionByTransactionId(transactionId);
-					console.log("transaction:" + JSON.stringify(transaction));
-
-					if (transaction && transaction.statusCode === 411) {
+					transaction = await getTransactionByTransactionId(transactionId);
+					if (
+						hubtelResponse.responseCode === "0000" &&
+						transaction &&
+						transaction.statusCode === 411
+					) {
 						switch (Data.status) {
 							case "Paid":
 								/** hubtel */
@@ -113,6 +118,10 @@ async function getPendingTransactions() {
 								);
 								await transaction.save();
 
+								try {
+									io.getIO().emit("singleTransactionUpdate", transaction);
+								} catch (error) {}
+
 								if (Data.status === "Paid") {
 									commitCreditTransaction(transaction);
 								}
@@ -121,6 +130,20 @@ async function getPendingTransactions() {
 							Log.info(
 								`[cronJobs.crons.js][getPendingTransactions][${transactionId}]\t error saving callback data: ${error}`
 							);
+						}
+					} else {
+						transaction.status = "Failed";
+						transaction.statusCode = 400;
+						transaction.statusMessage = "Payment Failed";
+						if (transaction.isModified) {
+							await transaction.save();
+							try {
+								io.getIO().emit("singleTransactionUpdate", transaction);
+							} catch (error) {
+								Log.info(
+									`[cronJobs.crons.js][getPendingTransactions][${transactionId}]\t error emitting status check transaction: ${error}`
+								);
+							}
 						}
 					}
 				}
@@ -175,6 +198,9 @@ async function commitCreditTransaction(transaction) {
 			category: "CR",
 			type: transaction.type,
 			amount: transaction.amount,
+			totalAmount: transaction.totalAmount,
+			fee: transaction.fee,
+			commission: transaction.commission,
 			cardNumber: transaction.cardNumber ? transaction.cardNumber : undefined,
 			meterId: transaction.meterId ? transaction.meterId : undefined,
 			meterName: transaction.meterName ? transaction.meterName : undefined,

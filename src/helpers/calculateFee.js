@@ -15,32 +15,45 @@ function verifyTransaction(request, originalHash) {
 	return newHash.toUpperCase() === originalHash;
 }
 
-async function calculateCompositeFee(type, _amount) {
+async function calculateCompositeFee(_amount, type) {
 	try {
 		const amount = Number(_amount);
-		switch (type.toUpperCase()) {
-			case "mtn-gh":
-				return processMtnTransactionHubtelFee(amount);
-				break;
-			case "vodafone-gh":
-				return processVodafoneTransactionHubtelFee(amount);
-				break;
-			case "tigo-gh":
-				return processAirtelTigoTransactionHubtelFee(amount);
-				break;
-			case "bank-card":
-				return processSendToBankTransactionHubtelFee(amount);
-				break;
-			default:
-				return processDefaultFee(amount);
-				break;
-		}
+		return processDefaultFee(amount);
 	} catch (error) {
 		Log.info(`[calculateFee.js][calculateCompositeFee] \t error: ${error}`);
 	}
 }
 
-async function processDosealFee(amount) {
+async function processDosealFee(amount, type) {
+	switch (type) {
+		case "ECG":
+		case "DSTV":
+		case "GOtv":
+			if (amount <= 0) {
+			} else if (amount >= 0.01 && amount <= 1) {
+				return 0.01;
+			} else if (amount >= 1.01 && amount <= 10) {
+				return 0.1;
+			} else if (amount >= 10.01 && amount <= 50) {
+				return 0.5;
+			} else if (amount >= 50.01 && amount <= 500) {
+				return 0.01 * amount;
+			} else if (amount >= 500.01 && amount <= 1000) {
+				return 5;
+			} else if (amount >= 1000.01 && amount <= 2000) {
+				return 10;
+			} else if (amount > 2000.01) {
+				return 0.01 * amount;
+			}
+			break;
+
+		default:
+			return 0;
+			break;
+	}
+}
+
+function processGOtvDstvEcgFee(amount) {
 	if (amount <= 0) {
 		return 0;
 	} else if (amount >= 0.01 && amount <= 1) {
@@ -60,87 +73,7 @@ async function processDosealFee(amount) {
 	}
 }
 
-function processMtnTransactionHubtelFee(amount) {
-	if (amount <= 0) {
-		return 0;
-	} else if (amount >= 0.01 && amount <= 1) {
-		return 0.01;
-	} else if (amount >= 1.01 && amount <= 10) {
-		return 0.1;
-	} else if (amount >= 10.01 && amount <= 50) {
-		return 0.5;
-	} else if (amount >= 50.01 && amount <= 500) {
-		return 0.01 * amount;
-	} else if (amount >= 500.01 && amount <= 1000) {
-		return 5;
-	} else if (amount >= 1000.01 && amount <= 2000) {
-		return 10;
-	} else if (amount > 2000.01) {
-		return 0.01 * amount;
-	}
-}
-
-function processVodafoneTransactionHubtelFee(amount) {
-	if (amount <= 0) {
-		return 0;
-	} else if (amount >= 0.01 && amount <= 1) {
-		return 0.01;
-	} else if (amount >= 1.01 && amount <= 10) {
-		return 0.1;
-	} else if (amount >= 10.01 && amount <= 50) {
-		return 0.5;
-	} else if (amount >= 50.01 && amount <= 500) {
-		return 0.01 * amount;
-	} else if (amount >= 500.01 && amount <= 1000) {
-		return 5;
-	} else if (amount >= 1000.01 && amount <= 2000) {
-		return 10;
-	} else if (amount > 2000.01) {
-		return 0.01 * amount;
-	}
-}
-
-function processAirtelTigoTransactionHubtelFee(amount) {
-	if (amount <= 0) {
-		return 0;
-	} else if (amount >= 0.01 && amount <= 1) {
-		return 0.01;
-	} else if (amount >= 1.01 && amount <= 10) {
-		return 0.1;
-	} else if (amount >= 10.01 && amount <= 50) {
-		return 0.5;
-	} else if (amount >= 50.01 && amount <= 500) {
-		return 0.01 * amount;
-	} else if (amount >= 500.01 && amount <= 1000) {
-		return 5;
-	} else if (amount >= 1000.01 && amount <= 2000) {
-		return 10;
-	} else if (amount > 2000.01) {
-		return 0.01 * amount;
-	}
-}
-
-function processSendToBankTransactionHubtelFee(amount) {
-	if (amount <= 0) {
-		return 0;
-	} else if (amount >= 0.01 && amount <= 1) {
-		return 0.01;
-	} else if (amount >= 1.01 && amount <= 10) {
-		return 0.1;
-	} else if (amount >= 10.01 && amount <= 50) {
-		return 0.5;
-	} else if (amount >= 50.01 && amount <= 500) {
-		return 0.01 * amount;
-	} else if (amount >= 500.01 && amount <= 1000) {
-		return 5;
-	} else if (amount >= 1000.01 && amount <= 2000) {
-		return 10;
-	} else if (amount > 2000.01) {
-		return 0.01 * amount;
-	}
-}
-
-function processDefaultFee(amount) {
+function processDefaultFee(amount, type) {
 	if (amount <= 0) {
 		return 0;
 	} else if (amount >= 0.01 && amount <= 1) {
@@ -171,16 +104,16 @@ function orderTransactionResults(results) {
 				orderedResults.meterId = results.meterId;
 				orderedResults.type = results.type;
 				orderedResults.fee = results.fee;
+				orderedResults.totalAmount = results.totalAmount;
 				return orderedResults;
 				break;
 			case "Airtime":
 				orderedResults.phoneNumber = results.phoneNumber;
 				orderedResults.amount = results.amount;
 				orderedResults.network = results.network;
-				orderedResults.meterName = results.meterName;
-				orderedResults.meterId = results.meterId;
 				orderedResults.type = results.type;
 				orderedResults.fee = results.fee;
+				orderedResults.totalAmount = results.totalAmount;
 				return orderedResults;
 				break;
 			case "DATA":
@@ -193,6 +126,7 @@ function orderTransactionResults(results) {
 				orderedResults.amount = results.amount;
 				orderedResults.type = results.type;
 				orderedResults.fee = results.fee;
+				orderedResults.totalAmount = results.totalAmount;
 				return orderedResults;
 				break;
 			case "DSTV":
@@ -203,6 +137,7 @@ function orderTransactionResults(results) {
 				orderedResults.accountNumber = results.accountNumber;
 				orderedResults.type = results.type;
 				orderedResults.fee = results.fee;
+				orderedResults.totalAmount = results.totalAmount;
 				return orderedResults;
 				break;
 			case "GhanaWater":
@@ -213,6 +148,7 @@ function orderTransactionResults(results) {
 				orderedResults.sessionId = results.sessionId;
 				orderedResults.type = results.type;
 				orderedResults.fee = results.fee;
+				orderedResults.totalAmount = results.totalAmount;
 				return orderedResults;
 				break;
 			default:
@@ -225,10 +161,51 @@ function orderTransactionResults(results) {
 	}
 }
 
+async function processDosealCommission(amount, type, network = null) {
+	try {
+		switch (type) {
+			case "ECG":
+			case "DSTV":
+			case "GOtv":
+				return 0.01 * amount;
+				break;
+			case "Airtime":
+				if (network === "mtn-gh") {
+					return 0.06 * amount;
+				}
+				if (network === "vodafone-gh") {
+					return 0.08 * amount;
+				}
+				if (network === "tigo-gh") {
+					return 0.08 * amount;
+				}
+				break;
+			case "DATA":
+				if (network === "mtn-gh") {
+					return 0.06 * amount;
+				}
+				if (network === "vodafone-gh") {
+					return 0.04 * amount;
+				}
+				if (network === "tigo-gh") {
+					return 0.05 * amount;
+				}
+				break;
+
+			default:
+				return 0;
+				break;
+		}
+	} catch (error) {
+		Log.info(`[calculateFee.js][orderTransactionResults] error : ${error}`);
+	}
+}
+
 module.exports = {
 	hashTransaction,
 	verifyTransaction,
 	calculateCompositeFee,
 	processDosealFee,
 	orderTransactionResults,
+	processDosealCommission,
 };

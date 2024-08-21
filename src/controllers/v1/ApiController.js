@@ -18,6 +18,7 @@ const {
 	hashTransaction,
 	orderTransactionResults,
 	verifyTransaction,
+	processDosealCommission,
 } = require("../../helpers/calculateFee");
 const io = require("../../../socket");
 
@@ -394,7 +395,7 @@ async function getWallets(req, res) {
 }
 // post transaction init
 async function postTransactionInitiate(req, res) {
-	let fee;
+	let fee, totalAmount;
 	const validationError = handleValidationErrors(req, res);
 	if (validationError) {
 		const errorRes = await apiErrors.create(
@@ -412,13 +413,21 @@ async function postTransactionInitiate(req, res) {
 
 	try {
 		const hubtelFee = await calculateCompositeFee(
-			req.body.type,
-			req.body.amount
+			req.body.amount,
+			req.body.type
 		);
-		const dosealFee = await processDosealFee(req.body.amount);
+
+		const dosealFee = await processDosealFee(req.body.amount, req.body.type);
+
 		fee = dosealFee + hubtelFee;
 
+		console.log("hubtelFee: " + hubtelFee);
+		console.log("dosealFee: " + dosealFee);
+
 		req.body.fee = fee;
+
+		totalAmount = Number(req.body.amount) + Number(fee);
+		req.body.totalAmount = totalAmount;
 
 		console.log("Before encryption: " + JSON.stringify(req.body));
 
@@ -445,7 +454,7 @@ async function postTransactionInitiate(req, res) {
 }
 // post transacion execute
 async function postTransactionExecute(req, res) {
-	let transaction, hubtelPaymentResponse, description, totalAmount;
+	let transaction, hubtelPaymentResponse, description;
 	const validationError = handleValidationErrors(req, res);
 	if (validationError) {
 		const errorRes = await apiErrors.create(
@@ -465,7 +474,7 @@ async function postTransactionExecute(req, res) {
 		const checksum = req.body.checksum;
 
 		const orderedResults = orderTransactionResults(req.body);
-		console.log('after encrytion: ', orderedResults);
+		console.log("after encrytion: ", orderedResults);
 
 		const isValid = verifyTransaction(orderedResults, checksum);
 
@@ -486,18 +495,21 @@ async function postTransactionExecute(req, res) {
 			};
 		}
 
-		const dosealFee = await processDosealFee(req.body.amount);
+		// give hubtel fee
 		const hubtelFee = await calculateCompositeFee(
-			req.body.type,
-			req.body.amount
+			req.body.amount,
+			req.body.type
 		);
-		const fee = dosealFee + hubtelFee;
+		// give fee
+		const dosealFee = await processDosealFee(req.body.amount, req.body.type);
+		//give commission
+		const commission = await processDosealCommission(
+			req.body.amount,
+			req.body.type,
+			req.body.network ? req.body.network : undefined
+		);
 
-		const total_amount = Number(req.body.amount) + Number(fee);
-		totalAmount = total_amount.toFixed(2);
-
-		const amountSentToHubel_ = Number(dosealFee) + Number(req.body.amount);
-		const amountSentToHubel = amountSentToHubel_.toFixed(2);
+		fee = dosealFee + hubtelFee;
 
 		let currentDate = new Date();
 		let formattedDate = currentDate
@@ -542,6 +554,7 @@ async function postTransactionExecute(req, res) {
 			type: req.body.type,
 			amount: req.body.amount,
 			fee: req.body.fee,
+			commission: commission,
 			totalAmount: req.body.totalAmount,
 			cardNumber: req.body.cardNumber
 				? `${req.body.cardNumber
@@ -593,7 +606,7 @@ async function postTransactionExecute(req, res) {
 
 			try {
 				hubtelPaymentResponse = await restServices.postHubtelPaymentService(
-					totalAmount,
+					req.body.totalAmount,
 					description,
 					uniqueId
 				);
