@@ -195,6 +195,14 @@ function orderTransactionResults(results) {
 				orderedResults.fee = results.fee;
 				return orderedResults;
 				break;
+			case "DSTV":
+				orderedResults.accountName = results.accountName;
+				orderedResults.amount = results.amount;
+				orderedResults.accountNumber = results.accountNumber;
+				orderedResults.type = results.type;
+				orderedResults.fee = results.fee;
+				return orderedResults;
+				break;
 			default:
 				break;
 		}
