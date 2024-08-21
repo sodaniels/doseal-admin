@@ -196,9 +196,21 @@ function orderTransactionResults(results) {
 				return orderedResults;
 				break;
 			case "DSTV":
+			case "GOtv":
+			case "StarTimesTv":
 				orderedResults.accountName = results.accountName;
 				orderedResults.amount = results.amount;
 				orderedResults.accountNumber = results.accountNumber;
+				orderedResults.type = results.type;
+				orderedResults.fee = results.fee;
+				return orderedResults;
+				break;
+			case "GhanaWater":
+				orderedResults.accountName = results.accountName;
+				orderedResults.amount = results.amount;
+				orderedResults.accountNumber = results.accountNumber;
+				orderedResults.phoneNumber = results.phoneNumber;
+				orderedResults.sessionId = results.sessionId;
 				orderedResults.type = results.type;
 				orderedResults.fee = results.fee;
 				return orderedResults;
