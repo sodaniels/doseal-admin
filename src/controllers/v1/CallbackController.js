@@ -535,7 +535,6 @@ async function postHubtelPaymentCallback(req, res) {
 						`[CallbackController.js][postHubtelPaymentCallback][${transactionId}]\t payment callback saved`
 					);
 					await transaction.save();
-
 					if (req.body.ResponseCode === "0000") {
 						commitCreditTransaction(transaction);
 					}
@@ -745,6 +744,8 @@ async function commitCreditTransaction(transaction) {
 			category: "CR",
 			type: transaction.type,
 			amount: transaction.amount,
+			totalAmount: transaction.totalAmount,
+			fee: transaction.fee,
 			cardNumber: transaction.cardNumber ? transaction.cardNumber : undefined,
 			meterId: transaction.meterId ? transaction.meterId : undefined,
 			meterName: transaction.meterName ? transaction.meterName : undefined,

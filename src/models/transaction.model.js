@@ -50,6 +50,14 @@ const tranactionSchema = new Schema({
 		type: Number,
 		required: true,
 	},
+	totalAmount: {
+		type: Number,
+		required: true,
+	},
+	fee: {
+		type: Number,
+		required: true,
+	},
 	meterId: {
 		type: String,
 		required: false,

@@ -12,6 +12,13 @@ const WalletTopup = require("../../models/wallet-topup.model");
 const { Log } = require("../../helpers/Log");
 const ServiceCode = require("../../constants/serviceCode");
 const { rand10Id } = require("../../helpers/randId");
+const {
+	calculateCompositeFee,
+	processDosealFee,
+	hashTransaction,
+	orderTransactionResults,
+	verifyTransaction,
+} = require("../../helpers/calculateFee");
 const io = require("../../../socket");
 
 const { handleValidationErrors } = require("../../helpers/validationHelper");
@@ -20,6 +27,7 @@ const errorMessages = require("../../helpers/error-messages");
 const RestServices = require("../../services/api/RestServices");
 const restServices = new RestServices();
 const callbackController = require("../v1/CallbackController");
+const { result } = require("lodash");
 
 //get page
 async function getPageCategory(req, res) {
@@ -384,13 +392,64 @@ async function getWallets(req, res) {
 		});
 	}
 }
-// post buy credit
-async function postBuyCredit(req, res) {
-	let transaction, hubtelPaymentResponse, description;
+// post transaction init
+async function postTransactionInitiate(req, res) {
+	let fee;
 	const validationError = handleValidationErrors(req, res);
 	if (validationError) {
 		const errorRes = await apiErrors.create(
-			errorMessages.errors.API_MESSAGE_CREDIT_PURCHASE_FAILED,
+			errorMessages.errors.API_MESSAGE_TRANSACTION_FAILED,
+			"POST",
+			validationError,
+			undefined
+		);
+		return res.json(errorRes);
+	}
+	Log.info(
+		`[ApiController.js][postTransactionInitiate]\t incoming initiate transaction: ` +
+			req.ip
+	);
+
+	try {
+		const hubtelFee = await calculateCompositeFee(
+			req.body.type,
+			req.body.amount
+		);
+		const dosealFee = await processDosealFee(req.body.amount);
+		fee = dosealFee + hubtelFee;
+
+		req.body.fee = fee;
+
+		console.log("Before encryption: " + JSON.stringify(req.body));
+
+		const transactionHash = hashTransaction(req.body);
+
+		const checksum = transactionHash.toUpperCase();
+
+		return res.json({
+			success: true,
+			code: 200,
+			result: req.body,
+			checksum: checksum,
+		});
+	} catch (error) {
+		Log.info(
+			`[ApiController.js][postTransactionInitiate]\t error initiating transaction: ` +
+				error
+		);
+		return res.json({
+			success: false,
+			code: 500,
+		});
+	}
+}
+// post transacion execute
+async function postTransactionExecute(req, res) {
+	let transaction, hubtelPaymentResponse, description, totalAmount;
+	const validationError = handleValidationErrors(req, res);
+	if (validationError) {
+		const errorRes = await apiErrors.create(
+			errorMessages.errors.API_MESSAGE_TRANSACTION_FAILED,
 			"POST",
 			validationError,
 			undefined
@@ -398,8 +457,47 @@ async function postBuyCredit(req, res) {
 		return res.json(errorRes);
 	}
 	try {
-		Log.info(`[ApiController.js][postBuyCredit]\t incoming request: ` + req.ip);
+		Log.info(
+			`[ApiController.js][postTransactionExecute]\t incoming transaction execute request: ` +
+				req.ip
+		);
 		const transactionId = rand10Id().toString();
+		const checksum = req.body.checksum;
+
+		const orderedResults = orderTransactionResults(req.body);
+		console.log('after encrytion: ', orderedResults);
+
+		const isValid = verifyTransaction(orderedResults, checksum);
+
+		if (!isValid) {
+			Log.info(
+				`[ApiController.js][postTransactionExecute]\t... transaction validation failed`
+			);
+			const errorRes = await apiErrors.create(
+				errorMessages.errors.API_MESSAGE_TRANSACTION_FAILED,
+				"POST",
+				"Transaction detail has changed after validation. Please call the 'transactions/initiate' endpoint again to revalidate transaction",
+				undefined
+			);
+			return {
+				success: false,
+				code: 400,
+				error: errorRes,
+			};
+		}
+
+		const dosealFee = await processDosealFee(req.body.amount);
+		const hubtelFee = await calculateCompositeFee(
+			req.body.type,
+			req.body.amount
+		);
+		const fee = dosealFee + hubtelFee;
+
+		const total_amount = Number(req.body.amount) + Number(fee);
+		totalAmount = total_amount.toFixed(2);
+
+		const amountSentToHubel_ = Number(dosealFee) + Number(req.body.amount);
+		const amountSentToHubel = amountSentToHubel_.toFixed(2);
 
 		let currentDate = new Date();
 		let formattedDate = currentDate
@@ -443,6 +541,8 @@ async function postBuyCredit(req, res) {
 			category: "DR",
 			type: req.body.type,
 			amount: req.body.amount,
+			fee: req.body.fee,
+			totalAmount: req.body.totalAmount,
 			cardNumber: req.body.cardNumber
 				? `${req.body.cardNumber
 						.trim()
@@ -469,7 +569,7 @@ async function postBuyCredit(req, res) {
 		transaction = await debitDataObject.save();
 		if (transaction) {
 			Log.info(
-				`[ApiController.js][postBuyCredit][${uniqueId}]\t initiating payment request to hubtel`
+				`[ApiController.js][postTransactionExecute][${uniqueId}]\t initiating payment request to hubtel`
 			);
 			try {
 				const excerptTrans = await Transaction.find({
@@ -480,37 +580,27 @@ async function postBuyCredit(req, res) {
 						_id: -1,
 					})
 					.limit(4);
-				// console.log("excerptTrans: ", excerptTrans)
 				io.getIO().emit("excerptTransactionUpdate", excerptTrans);
 				Log.info(
-					"[CallbackController.js][postBuyCredit]\t Emitted excerpt update: "
+					"[CallbackController.js][postTransactionExecute]\t Emitted excerpt update: "
 				);
 			} catch (error) {
 				Log.info(
-					`[CallbackController.js][postBuyCredit]\t error emitting excerpt update: `,
+					`[CallbackController.js][postTransactionExecute]\t error emitting excerpt update: `,
 					error
 				);
 			}
 
 			try {
-				if (req.body.paymentOption === "Wallet") {
-					hubtelPaymentResponse = await processAccountWalletPayment(
-						req,
-						uniqueId,
-						res
-					);
-					return res.json(hubtelPaymentResponse);
-				} else {
-					hubtelPaymentResponse = await restServices.postHubtelPaymentService(
-						req.body.amount,
-						description,
-						uniqueId
-					);
-				}
+				hubtelPaymentResponse = await restServices.postHubtelPaymentService(
+					totalAmount,
+					description,
+					uniqueId
+				);
 
 				if (hubtelPaymentResponse) {
 					Log.info(
-						`[ApiController.js][postBuyCredit][${uniqueId}]\t hubtel payment response : ` +
+						`[ApiController.js][postTransactionExecute][${uniqueId}]\t hubtel payment response : ` +
 							JSON.stringify(hubtelPaymentResponse)
 					);
 					return res.json(hubtelPaymentResponse);
@@ -523,7 +613,7 @@ async function postBuyCredit(req, res) {
 				});
 			} catch (error) {
 				Log.info(
-					`[ApiController.js][postBuyCredit][${uniqueId}]\t hubtel payment error : ${error}`
+					`[ApiController.js][postTransactionExecute][${uniqueId}]\t hubtel payment error : ${error}`
 				);
 				return res.json({
 					success: false,
@@ -862,7 +952,7 @@ async function getStoredECGMeters(req, res) {
 async function processAccountWalletPayment(req, uniqueId, res) {
 	try {
 		Log.info(
-			`[ApiController.js][postBuyCredit][processAccountWalletPayment][${uniqueId}]\t processing account wallet payment`
+			`[ApiController.js][postTransactionExecute][processAccountWalletPayment][${uniqueId}]\t processing account wallet payment`
 		);
 		let user = await User.findOne({ _id: req.user._id });
 		if (Number(user.balance) < Number(req.body.amount)) {
@@ -918,7 +1008,7 @@ async function processAccountWalletPayment(req, uniqueId, res) {
 		req.body["Status"] = "Success";
 		req.body["Data"] = Data;
 		Log.info(
-			`[ApiController.js][postBuyCredit][processAccountWalletPayment][${uniqueId}]\t account wallet payment response: ${JSON.stringify(
+			`[ApiController.js][postTransactionExecute][processAccountWalletPayment][${uniqueId}]\t account wallet payment response: ${JSON.stringify(
 				req.body
 			)}`
 		);
@@ -927,7 +1017,7 @@ async function processAccountWalletPayment(req, uniqueId, res) {
 			await callbackController.postHubtelPaymentCallback(req);
 		} catch (error) {
 			Log.info(
-				`[ApiController.js][postBuyCredit][processAccountWalletPayment][${uniqueId}]\t error processing account wallet callback: ${error}`
+				`[ApiController.js][postTransactionExecute][processAccountWalletPayment][${uniqueId}]\t error processing account wallet callback: ${error}`
 			);
 		}
 
@@ -939,7 +1029,7 @@ async function processAccountWalletPayment(req, uniqueId, res) {
 		return callbackResponse;
 	} catch (error) {
 		Log.info(
-			`[ApiController.js][postBuyCredit]processAccountWalletPayment\t error processing account wallet payment ${error}`
+			`[ApiController.js][postTransactionExecute]processAccountWalletPayment\t error processing account wallet payment ${error}`
 		);
 	}
 }
@@ -1541,7 +1631,8 @@ module.exports = {
 	putUpdateProfile,
 	postWallet,
 	getWallets,
-	postBuyCredit,
+	postTransactionInitiate,
+	postTransactionExecute,
 	getExcerptTransactions,
 	getTransactions,
 	postHubtelEcgMeterSearch,

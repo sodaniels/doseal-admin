@@ -28,11 +28,16 @@ router.put(
 router.post("/wallet", validator.validateWallet, apiController.postWallet);
 // get wallets
 router.get("/wallet", apiController.getWallets);
-// post buy credit
+// post transaction execute
 router.post(
-	"/buy-credit",
-	validator.validateBuyCredit,
-	apiController.postBuyCredit
+	"/transaction/initiate",
+	validator.validateTransaction,
+	apiController.postTransactionInitiate
+);
+router.post(
+	"/transaction/execute",
+	validator.validateTransaction,
+	apiController.postTransactionExecute
 );
 
 router.get("/transactions-excerpt", apiController.getExcerptTransactions);

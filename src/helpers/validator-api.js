@@ -20,7 +20,7 @@ const validateWallet = [
 	body("phoneNumber").exists().withMessage("The Phone Number is required"),
 	body("mno").exists().withMessage("The Network is required"),
 ];
-const validateBuyCredit = [
+const validateTransaction = [
 	body("amount").notEmpty().trim().withMessage("The Amount is required"),
 	body("meterId")
 		.if(body("type").equals("ECG"))
@@ -107,7 +107,7 @@ const validateReportFault = [
 module.exports = {
 	validateProfile,
 	validateWallet,
-	validateBuyCredit,
+	validateTransaction,
 	validateAccount,
 	validateEcgSearch,
 	validateUtilitySearch,

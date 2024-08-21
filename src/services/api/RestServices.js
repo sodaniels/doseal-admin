@@ -24,24 +24,24 @@ class RestServices {
 			return response.data;
 		} catch (error) {
 			Log.info(
-				`[HubtelController.js][AccountValidation] error validating account: ${error.message}`
+				`[RestServices.js][AccountValidation] error validating account: ${error.message}`
 			);
 			if (error.response) {
 				Log.info(
-					`[HubtelController.js][AccountValidation] response status: ${error.response.status}`
+					`[RestServices.js][AccountValidation] response status: ${error.response.status}`
 				);
 				Log.info(
-					`[HubtelController.js][AccountValidation] response data: ${JSON.stringify(
+					`[RestServices.js][AccountValidation] response data: ${JSON.stringify(
 						error.response.data
 					)}`
 				);
 			} else if (error.request) {
 				Log.info(
-					`[HubtelController.js][AccountValidation] request: ${error.request}`
+					`[RestServices.js][AccountValidation] request: ${error.request}`
 				);
 			} else {
 				Log.info(
-					`[HubtelController.js][AccountValidation] unknown error: ${error.message}`
+					`[RestServices.js][AccountValidation] unknown error: ${error.message}`
 				);
 			}
 			return {
@@ -72,24 +72,24 @@ class RestServices {
 			return response.data;
 		} catch (error) {
 			Log.info(
-				`[HubtelController.js][postHubtelMtnTopup] error validating account: ${error.message}`
+				`[RestServices.js][postHubtelMtnTopup] error validating account: ${error.message}`
 			);
 			if (error.response) {
 				Log.info(
-					`[HubtelController.js][postHubtelMtnTopup] response status: ${error.response.status}`
+					`[RestServices.js][postHubtelMtnTopup] response status: ${error.response.status}`
 				);
 				Log.info(
-					`[HubtelController.js][postHubtelMtnTopup] response data: ${JSON.stringify(
+					`[RestServices.js][postHubtelMtnTopup] response data: ${JSON.stringify(
 						error.response.data
 					)}`
 				);
 			} else if (error.request) {
 				Log.info(
-					`[HubtelController.js][postHubtelMtnTopup] request: ${error.request}`
+					`[RestServices.js][postHubtelMtnTopup] request: ${error.request}`
 				);
 			} else {
 				Log.info(
-					`[HubtelController.js][postHubtelMtnTopup] unknown error: ${error.message}`
+					`[RestServices.js][postHubtelMtnTopup] unknown error: ${error.message}`
 				);
 			}
 			return {
@@ -120,24 +120,24 @@ class RestServices {
 			return response.data;
 		} catch (error) {
 			Log.info(
-				`[HubtelController.js][postHubtelTelecelTopup] error validating account: ${error.message}`
+				`[RestServices.js][postHubtelTelecelTopup] error validating account: ${error.message}`
 			);
 			if (error.response) {
 				Log.info(
-					`[HubtelController.js][postHubtelTelecelTopup] response status: ${error.response.status}`
+					`[RestServices.js][postHubtelTelecelTopup] response status: ${error.response.status}`
 				);
 				Log.info(
-					`[HubtelController.js][postHubtelTelecelTopup] response data: ${JSON.stringify(
+					`[RestServices.js][postHubtelTelecelTopup] response data: ${JSON.stringify(
 						error.response.data
 					)}`
 				);
 			} else if (error.request) {
 				Log.info(
-					`[HubtelController.js][postHubtelTelecelTopup] request: ${error.request}`
+					`[RestServices.js][postHubtelTelecelTopup] request: ${error.request}`
 				);
 			} else {
 				Log.info(
-					`[HubtelController.js][postHubtelTelecelTopup] unknown error: ${error.message}`
+					`[RestServices.js][postHubtelTelecelTopup] unknown error: ${error.message}`
 				);
 			}
 			return {
@@ -168,24 +168,24 @@ class RestServices {
 			return response.data;
 		} catch (error) {
 			Log.info(
-				`[HubtelController.js][postHubtelAirtelTigoTopup] error validating account: ${error.message}`
+				`[RestServices.js][postHubtelAirtelTigoTopup] error validating account: ${error.message}`
 			);
 			if (error.response) {
 				Log.info(
-					`[HubtelController.js][postHubtelAirtelTigoTopup] response status: ${error.response.status}`
+					`[RestServices.js][postHubtelAirtelTigoTopup] response status: ${error.response.status}`
 				);
 				Log.info(
-					`[HubtelController.js][postHubtelAirtelTigoTopup] response data: ${JSON.stringify(
+					`[RestServices.js][postHubtelAirtelTigoTopup] response data: ${JSON.stringify(
 						error.response.data
 					)}`
 				);
 			} else if (error.request) {
 				Log.info(
-					`[HubtelController.js][postHubtelAirtelTigoTopup] request: ${error.request}`
+					`[RestServices.js][postHubtelAirtelTigoTopup] request: ${error.request}`
 				);
 			} else {
 				Log.info(
-					`[HubtelController.js][postHubtelAirtelTigoTopup] unknown error: ${error.message}`
+					`[RestServices.js][postHubtelAirtelTigoTopup] unknown error: ${error.message}`
 				);
 			}
 			return {
@@ -210,24 +210,24 @@ class RestServices {
 			return response.data;
 		} catch (error) {
 			Log.info(
-				`[HubtelController.js][postHubtelEcgMeterSearch] error validating account: ${error.message}`
+				`[RestServices.js][postHubtelEcgMeterSearch] error validating account: ${error.message}`
 			);
 			if (error.response) {
 				Log.info(
-					`[HubtelController.js][postHubtelEcgMeterSearch] response status: ${error.response.status}`
+					`[RestServices.js][postHubtelEcgMeterSearch] response status: ${error.response.status}`
 				);
 				Log.info(
-					`[HubtelController.js][postHubtelEcgMeterSearch] response data: ${JSON.stringify(
+					`[RestServices.js][postHubtelEcgMeterSearch] response data: ${JSON.stringify(
 						error.response.data
 					)}`
 				);
 			} else if (error.request) {
 				Log.info(
-					`[HubtelController.js][postHubtelEcgMeterSearch] request: ${error.request}`
+					`[RestServices.js][postHubtelEcgMeterSearch] request: ${error.request}`
 				);
 			} else {
 				Log.info(
-					`[HubtelController.js][postHubtelEcgMeterSearch] unknown error: ${error.message}`
+					`[RestServices.js][postHubtelEcgMeterSearch] unknown error: ${error.message}`
 				);
 			}
 			return {
@@ -261,24 +261,24 @@ class RestServices {
 			return response.data;
 		} catch (error) {
 			Log.info(
-				`[HubtelController.js][postHubtelECGTopup] error validating account: ${error.message}`
+				`[RestServices.js][postHubtelECGTopup] error validating account: ${error.message}`
 			);
 			if (error.response) {
 				Log.info(
-					`[HubtelController.js][postHubtelECGTopup] response status: ${error.response.status}`
+					`[RestServices.js][postHubtelECGTopup] response status: ${error.response.status}`
 				);
 				Log.info(
-					`[HubtelController.js][postHubtelECGTopup] response data: ${JSON.stringify(
+					`[RestServices.js][postHubtelECGTopup] response data: ${JSON.stringify(
 						error.response.data
 					)}`
 				);
 			} else if (error.request) {
 				Log.info(
-					`[HubtelController.js][postHubtelECGTopup] request: ${error.request}`
+					`[RestServices.js][postHubtelECGTopup] request: ${error.request}`
 				);
 			} else {
 				Log.info(
-					`[HubtelController.js][postHubtelECGTopup] unknown error: ${error.message}`
+					`[RestServices.js][postHubtelECGTopup] unknown error: ${error.message}`
 				);
 			}
 			return {
@@ -293,7 +293,7 @@ class RestServices {
 		try {
 			const url = `${process.env.HUBTEL_CHECKOUT_BASE_URL}`;
 			Log.info(
-				`[HubtelController.js][postHubtelPaymentService][${amount}][${description}][${clientReference}] initiate [POST] request to : ${url}`
+				`[RestServices.js][postHubtelPaymentService][${amount}][${description}][${clientReference}] initiate [POST] request to : ${url}`
 			);
 			const response = await axios.post(
 				url,
@@ -316,28 +316,28 @@ class RestServices {
 			return response.data;
 		} catch (error) {
 			Log.info(
-				`[HubtelController.js][postHubtelPaymentService] error validating account: ${error.message}`
+				`[RestServices.js][postHubtelPaymentService] error validating account: ${error.message}`
 			);
 			if (error.response) {
 				Log.info(
-					`[HubtelController.js][postHubtelPaymentService] response status: ${error.response.status}`
+					`[RestServices.js][postHubtelPaymentService] response status: ${error.response.status}`
 				);
 				Log.info(
-					`[HubtelController.js][postHubtelPaymentService] response data: ${JSON.stringify(
+					`[RestServices.js][postHubtelPaymentService] response data: ${JSON.stringify(
 						error.response.data
 					)}`
 				);
 				Log.info(
-					`[HubtelController.js][postHubtelPaymentService] error: `,
+					`[RestServices.js][postHubtelPaymentService] error: `,
 					error
 				);
 			} else if (error.request) {
 				Log.info(
-					`[HubtelController.js][postHubtelPaymentService] request: ${error.request}`
+					`[RestServices.js][postHubtelPaymentService] request: ${error.request}`
 				);
 			} else {
 				Log.info(
-					`[HubtelController.js][postHubtelPaymentService] unknown error: ${error.message}`
+					`[RestServices.js][postHubtelPaymentService] unknown error: ${error.message}`
 				);
 			}
 			return {
@@ -362,24 +362,24 @@ class RestServices {
 			return response.data;
 		} catch (error) {
 			Log.info(
-				`[HubtelController.js][postHubtelDstvAccountSearchService] error validating account: ${error.message}`
+				`[RestServices.js][postHubtelDstvAccountSearchService] error validating account: ${error.message}`
 			);
 			if (error.response) {
 				Log.info(
-					`[HubtelController.js][postHubtelDstvAccountSearchService] response status: ${error.response.status}`
+					`[RestServices.js][postHubtelDstvAccountSearchService] response status: ${error.response.status}`
 				);
 				Log.info(
-					`[HubtelController.js][postHubtelDstvAccountSearchService] response data: ${JSON.stringify(
+					`[RestServices.js][postHubtelDstvAccountSearchService] response data: ${JSON.stringify(
 						error.response.data
 					)}`
 				);
 			} else if (error.request) {
 				Log.info(
-					`[HubtelController.js][postHubtelDstvAccountSearchService] request: ${error.request}`
+					`[RestServices.js][postHubtelDstvAccountSearchService] request: ${error.request}`
 				);
 			} else {
 				Log.info(
-					`[HubtelController.js][postHubtelDstvAccountSearchService] unknown error: ${error.message}`
+					`[RestServices.js][postHubtelDstvAccountSearchService] unknown error: ${error.message}`
 				);
 			}
 			return {
@@ -393,7 +393,7 @@ class RestServices {
 	async postHubtelPayDstv(accountNumber, Amount, ClientReference) {
 		try {
 			Log.info(
-				`[HubtelController.js][postHubtelPayDstv][${accountNumber}][${Amount}][${ClientReference}] intial  [POST] to purchase DSTV `
+				`[RestServices.js][postHubtelPayDstv][${accountNumber}][${Amount}][${ClientReference}] intial  [POST] to purchase DSTV `
 			);
 			const response = await axios.post(
 				`https://cs.hubtel.com/commissionservices/${process.env.HUBTEL_PREPAID_DEPOSTI_ACCOUNT}/${process.env.HUBTEL_DSTV_SERVICE_ID}`,
@@ -413,24 +413,24 @@ class RestServices {
 			return response.data;
 		} catch (error) {
 			Log.info(
-				`[HubtelController.js][postHubtelPayDstv] error validating account: ${error.message}`
+				`[RestServices.js][postHubtelPayDstv] error validating account: ${error.message}`
 			);
 			if (error.response) {
 				Log.info(
-					`[HubtelController.js][postHubtelPayDstv] response status: ${error.response.status}`
+					`[RestServices.js][postHubtelPayDstv] response status: ${error.response.status}`
 				);
 				Log.info(
-					`[HubtelController.js][postHubtelPayDstv] response data: ${JSON.stringify(
+					`[RestServices.js][postHubtelPayDstv] response data: ${JSON.stringify(
 						error.response.data
 					)}`
 				);
 			} else if (error.request) {
 				Log.info(
-					`[HubtelController.js][postHubtelPayDstv] request: ${error.request}`
+					`[RestServices.js][postHubtelPayDstv] request: ${error.request}`
 				);
 			} else {
 				Log.info(
-					`[HubtelController.js][postHubtelPayDstv] unknown error: ${error.message}`
+					`[RestServices.js][postHubtelPayDstv] unknown error: ${error.message}`
 				);
 			}
 			return {
@@ -444,7 +444,7 @@ class RestServices {
 	async postHubtelGoTVAccountSearchService(accountNumber) {
 		try {
 			Log.info(
-				`[HubtelController.js][postHubtelGoTVAccountSearchService][${accountNumber}] intial  [POST] to search goTv account `
+				`[RestServices.js][postHubtelGoTVAccountSearchService][${accountNumber}] intial  [POST] to search goTv account `
 			);
 			const response = await axios.get(
 				`https://cs.hubtel.com/commissionservices/${process.env.HUBTEL_PREPAID_DEPOSTI_ACCOUNT}/${process.env.HUBTEL_GOTV_SERVICE_ID}?destination=${accountNumber}`,
@@ -458,24 +458,24 @@ class RestServices {
 			return response.data;
 		} catch (error) {
 			Log.info(
-				`[HubtelController.js][postHubtelGoTVAccountSearchService] error validating account: ${error.message}`
+				`[RestServices.js][postHubtelGoTVAccountSearchService] error validating account: ${error.message}`
 			);
 			if (error.response) {
 				Log.info(
-					`[HubtelController.js][postHubtelGoTVAccountSearchService] response status: ${error.response.status}`
+					`[RestServices.js][postHubtelGoTVAccountSearchService] response status: ${error.response.status}`
 				);
 				Log.info(
-					`[HubtelController.js][postHubtelGoTVAccountSearchService] response data: ${JSON.stringify(
+					`[RestServices.js][postHubtelGoTVAccountSearchService] response data: ${JSON.stringify(
 						error.response.data
 					)}`
 				);
 			} else if (error.request) {
 				Log.info(
-					`[HubtelController.js][postHubtelGoTVAccountSearchService] request: ${error.request}`
+					`[RestServices.js][postHubtelGoTVAccountSearchService] request: ${error.request}`
 				);
 			} else {
 				Log.info(
-					`[HubtelController.js][postHubtelGoTVAccountSearchService] unknown error: ${error.message}`
+					`[RestServices.js][postHubtelGoTVAccountSearchService] unknown error: ${error.message}`
 				);
 			}
 			return {
@@ -489,7 +489,7 @@ class RestServices {
 	async postHubtelPayGOtv(accountNumber, Amount, ClientReference) {
 		try {
 			Log.info(
-				`[HubtelController.js][postHubtelPayGOtv][${accountNumber}][${Amount}][${ClientReference}] intial  [POST] to purchase DSTV `
+				`[RestServices.js][postHubtelPayGOtv][${accountNumber}][${Amount}][${ClientReference}] intial  [POST] to purchase DSTV `
 			);
 			const response = await axios.post(
 				`https://cs.hubtel.com/commissionservices/${process.env.HUBTEL_PREPAID_DEPOSTI_ACCOUNT}/${process.env.HUBTEL_GOTV_SERVICE_ID}`,
@@ -509,24 +509,24 @@ class RestServices {
 			return response.data;
 		} catch (error) {
 			Log.info(
-				`[HubtelController.js][postHubtelPayGOtv] error validating account: ${error.message}`
+				`[RestServices.js][postHubtelPayGOtv] error validating account: ${error.message}`
 			);
 			if (error.response) {
 				Log.info(
-					`[HubtelController.js][postHubtelPayGOtv] response status: ${error.response.status}`
+					`[RestServices.js][postHubtelPayGOtv] response status: ${error.response.status}`
 				);
 				Log.info(
-					`[HubtelController.js][postHubtelPayGOtv] response data: ${JSON.stringify(
+					`[RestServices.js][postHubtelPayGOtv] response data: ${JSON.stringify(
 						error.response.data
 					)}`
 				);
 			} else if (error.request) {
 				Log.info(
-					`[HubtelController.js][postHubtelPayGOtv] request: ${error.request}`
+					`[RestServices.js][postHubtelPayGOtv] request: ${error.request}`
 				);
 			} else {
 				Log.info(
-					`[HubtelController.js][postHubtelPayGOtv] unknown error: ${error.message}`
+					`[RestServices.js][postHubtelPayGOtv] unknown error: ${error.message}`
 				);
 			}
 			return {
@@ -540,7 +540,7 @@ class RestServices {
 	async postHubtelStartTimeTVAccountSearchService(accountNumber) {
 		try {
 			Log.info(
-				`[HubtelController.js][postHubtelStartTimeTVAccountSearchService][${accountNumber}] intial  [POST] to search star time tv account `
+				`[RestServices.js][postHubtelStartTimeTVAccountSearchService][${accountNumber}] intial  [POST] to search star time tv account `
 			);
 			const response = await axios.get(
 				`https://cs.hubtel.com/commissionservices/${process.env.HUBTEL_PREPAID_DEPOSTI_ACCOUNT}/${process.env.HUBTEL_STAR_TIMES_TV_SERVICE_ID}?destination=${accountNumber}`,
@@ -554,24 +554,24 @@ class RestServices {
 			return response.data;
 		} catch (error) {
 			Log.info(
-				`[HubtelController.js][postHubtelStartTimeTVAccountSearchService] error validating account: ${error.message}`
+				`[RestServices.js][postHubtelStartTimeTVAccountSearchService] error validating account: ${error.message}`
 			);
 			if (error.response) {
 				Log.info(
-					`[HubtelController.js][postHubtelStartTimeTVAccountSearchService] response status: ${error.response.status}`
+					`[RestServices.js][postHubtelStartTimeTVAccountSearchService] response status: ${error.response.status}`
 				);
 				Log.info(
-					`[HubtelController.js][postHubtelStartTimeTVAccountSearchService] response data: ${JSON.stringify(
+					`[RestServices.js][postHubtelStartTimeTVAccountSearchService] response data: ${JSON.stringify(
 						error.response.data
 					)}`
 				);
 			} else if (error.request) {
 				Log.info(
-					`[HubtelController.js][postHubtelStartTimeTVAccountSearchService] request: ${error.request}`
+					`[RestServices.js][postHubtelStartTimeTVAccountSearchService] request: ${error.request}`
 				);
 			} else {
 				Log.info(
-					`[HubtelController.js][postHubtelStartTimeTVAccountSearchService] unknown error: ${error.message}`
+					`[RestServices.js][postHubtelStartTimeTVAccountSearchService] unknown error: ${error.message}`
 				);
 			}
 			return {
@@ -585,7 +585,7 @@ class RestServices {
 	async postHubtelPayStarTimeTv(accountNumber, Amount, ClientReference) {
 		try {
 			Log.info(
-				`[HubtelController.js][postHubtelPayStarTimeTv][${accountNumber}][${Amount}][${ClientReference}] intial  [POST] to purchase star times tv `
+				`[RestServices.js][postHubtelPayStarTimeTv][${accountNumber}][${Amount}][${ClientReference}] intial  [POST] to purchase star times tv `
 			);
 			const response = await axios.post(
 				`https://cs.hubtel.com/commissionservices/${process.env.HUBTEL_PREPAID_DEPOSTI_ACCOUNT}/${process.env.HUBTEL_STAR_TIMES_TV_SERVICE_ID}`,
@@ -605,24 +605,24 @@ class RestServices {
 			return response.data;
 		} catch (error) {
 			Log.info(
-				`[HubtelController.js][postHubtelPayStarTimeTv] error validating account: ${error.message}`
+				`[RestServices.js][postHubtelPayStarTimeTv] error validating account: ${error.message}`
 			);
 			if (error.response) {
 				Log.info(
-					`[HubtelController.js][postHubtelPayStarTimeTv] response status: ${error.response.status}`
+					`[RestServices.js][postHubtelPayStarTimeTv] response status: ${error.response.status}`
 				);
 				Log.info(
-					`[HubtelController.js][postHubtelPayStarTimeTv] response data: ${JSON.stringify(
+					`[RestServices.js][postHubtelPayStarTimeTv] response data: ${JSON.stringify(
 						error.response.data
 					)}`
 				);
 			} else if (error.request) {
 				Log.info(
-					`[HubtelController.js][postHubtelPayStarTimeTv] request: ${error.request}`
+					`[RestServices.js][postHubtelPayStarTimeTv] request: ${error.request}`
 				);
 			} else {
 				Log.info(
-					`[HubtelController.js][postHubtelPayStarTimeTv] unknown error: ${error.message}`
+					`[RestServices.js][postHubtelPayStarTimeTv] unknown error: ${error.message}`
 				);
 			}
 			return {
@@ -636,7 +636,7 @@ class RestServices {
 	async postHubtelGhanaWaterAccountSearchService(accountNumber, phoneNumber) {
 		try {
 			Log.info(
-				`[HubtelController.js][postHubtelGhanaWaterAccountSearchService][${accountNumber}][${phoneNumber}] intial  [POST] to search ghana water account `
+				`[RestServices.js][postHubtelGhanaWaterAccountSearchService][${accountNumber}][${phoneNumber}] intial  [POST] to search ghana water account `
 			);
 			const response = await axios.get(
 				`https://cs.hubtel.com/commissionservices/${process.env.HUBTEL_PREPAID_DEPOSTI_ACCOUNT}/${process.env.HUBTEL_GHANA_WATER_SERVICE_ID}?destination=${accountNumber}&mobile=${phoneNumber}`,
@@ -650,24 +650,24 @@ class RestServices {
 			return response.data;
 		} catch (error) {
 			Log.info(
-				`[HubtelController.js][postHubtelGhanaWaterAccountSearchService] error validating account: ${error.message}`
+				`[RestServices.js][postHubtelGhanaWaterAccountSearchService] error validating account: ${error.message}`
 			);
 			if (error.response) {
 				Log.info(
-					`[HubtelController.js][postHubtelGhanaWaterAccountSearchService] response status: ${error.response.status}`
+					`[RestServices.js][postHubtelGhanaWaterAccountSearchService] response status: ${error.response.status}`
 				);
 				Log.info(
-					`[HubtelController.js][postHubtelGhanaWaterAccountSearchService] response data: ${JSON.stringify(
+					`[RestServices.js][postHubtelGhanaWaterAccountSearchService] response data: ${JSON.stringify(
 						error.response.data
 					)}`
 				);
 			} else if (error.request) {
 				Log.info(
-					`[HubtelController.js][postHubtelGhanaWaterAccountSearchService] request: ${error.request}`
+					`[RestServices.js][postHubtelGhanaWaterAccountSearchService] request: ${error.request}`
 				);
 			} else {
 				Log.info(
-					`[HubtelController.js][postHubtelGhanaWaterAccountSearchService] unknown error: ${error.message}`
+					`[RestServices.js][postHubtelGhanaWaterAccountSearchService] unknown error: ${error.message}`
 				);
 			}
 			return {
@@ -687,7 +687,7 @@ class RestServices {
 	) {
 		try {
 			Log.info(
-				`[HubtelController.js][postHubtelPayGhanaWater][${accountNumber}][${Amount}][${ClientReference}] intial  [POST] to purchase ghana water `
+				`[RestServices.js][postHubtelPayGhanaWater][${accountNumber}][${Amount}][${ClientReference}] intial  [POST] to purchase ghana water `
 			);
 			const response = await axios.post(
 				`https://cs.hubtel.com/commissionservices/${process.env.HUBTEL_PREPAID_DEPOSTI_ACCOUNT}/${process.env.HUBTEL_GHANA_WATER_SERVICE_ID}`,
@@ -712,24 +712,24 @@ class RestServices {
 			return response.data;
 		} catch (error) {
 			Log.info(
-				`[HubtelController.js][postHubtelPayGhanaWater] error validating account: ${error.message}`
+				`[RestServices.js][postHubtelPayGhanaWater] error validating account: ${error.message}`
 			);
 			if (error.response) {
 				Log.info(
-					`[HubtelController.js][postHubtelPayGhanaWater] response status: ${error.response.status}`
+					`[RestServices.js][postHubtelPayGhanaWater] response status: ${error.response.status}`
 				);
 				Log.info(
-					`[HubtelController.js][postHubtelPayGhanaWater] response data: ${JSON.stringify(
+					`[RestServices.js][postHubtelPayGhanaWater] response data: ${JSON.stringify(
 						error.response.data
 					)}`
 				);
 			} else if (error.request) {
 				Log.info(
-					`[HubtelController.js][postHubtelPayGhanaWater] request: ${error.request}`
+					`[RestServices.js][postHubtelPayGhanaWater] request: ${error.request}`
 				);
 			} else {
 				Log.info(
-					`[HubtelController.js][postHubtelPayGhanaWater] unknown error: ${error.message}`
+					`[RestServices.js][postHubtelPayGhanaWater] unknown error: ${error.message}`
 				);
 			}
 			return {
@@ -744,7 +744,7 @@ class RestServices {
 	async postMtnDataSearchService(accountNumber) {
 		try {
 			Log.info(
-				`[HubtelController.js][postMtnDataSearchService][${accountNumber}] intial  [POST] to search mtn bundle account `
+				`[RestServices.js][postMtnDataSearchService][${accountNumber}] intial  [POST] to search mtn bundle account `
 			);
 			const response = await axios.get(
 				`https://cs.hubtel.com/commissionservices/${process.env.HUBTEL_PREPAID_DEPOSTI_ACCOUNT}/${process.env.HUBTEL_MTN_DATA_SERVICE_ID}?destination=${accountNumber}`,
@@ -758,24 +758,24 @@ class RestServices {
 			return response.data;
 		} catch (error) {
 			Log.info(
-				`[HubtelController.js][postMtnDataSearchService] error validating account: ${error.message}`
+				`[RestServices.js][postMtnDataSearchService] error validating account: ${error.message}`
 			);
 			if (error.response) {
 				Log.info(
-					`[HubtelController.js][postMtnDataSearchService] response status: ${error.response.status}`
+					`[RestServices.js][postMtnDataSearchService] response status: ${error.response.status}`
 				);
 				Log.info(
-					`[HubtelController.js][postMtnDataSearchService] response data: ${JSON.stringify(
+					`[RestServices.js][postMtnDataSearchService] response data: ${JSON.stringify(
 						error.response.data
 					)}`
 				);
 			} else if (error.request) {
 				Log.info(
-					`[HubtelController.js][postMtnDataSearchService] request: ${error.request}`
+					`[RestServices.js][postMtnDataSearchService] request: ${error.request}`
 				);
 			} else {
 				Log.info(
-					`[HubtelController.js][postMtnDataSearchService] unknown error: ${error.message}`
+					`[RestServices.js][postMtnDataSearchService] unknown error: ${error.message}`
 				);
 			}
 			return {
@@ -789,7 +789,7 @@ class RestServices {
 	async postTelecelDataSearchService(accountNumber) {
 		try {
 			Log.info(
-				`[HubtelController.js][postTelecelDataSearchService][${accountNumber}] intial  [POST] to search telecel bundle account `
+				`[RestServices.js][postTelecelDataSearchService][${accountNumber}] intial  [POST] to search telecel bundle account `
 			);
 			const response = await axios.get(
 				`https://cs.hubtel.com/commissionservices/${process.env.HUBTEL_PREPAID_DEPOSTI_ACCOUNT}/${process.env.HUBTEL_TELECEL_DATA_SERVICE_ID}?destination=${accountNumber}`,
@@ -803,24 +803,24 @@ class RestServices {
 			return response.data;
 		} catch (error) {
 			Log.info(
-				`[HubtelController.js][postTelecelDataSearchService] error validating account: ${error.message}`
+				`[RestServices.js][postTelecelDataSearchService] error validating account: ${error.message}`
 			);
 			if (error.response) {
 				Log.info(
-					`[HubtelController.js][postTelecelDataSearchService] response status: ${error.response.status}`
+					`[RestServices.js][postTelecelDataSearchService] response status: ${error.response.status}`
 				);
 				Log.info(
-					`[HubtelController.js][postTelecelDataSearchService] response data: ${JSON.stringify(
+					`[RestServices.js][postTelecelDataSearchService] response data: ${JSON.stringify(
 						error.response.data
 					)}`
 				);
 			} else if (error.request) {
 				Log.info(
-					`[HubtelController.js][postTelecelDataSearchService] request: ${error.request}`
+					`[RestServices.js][postTelecelDataSearchService] request: ${error.request}`
 				);
 			} else {
 				Log.info(
-					`[HubtelController.js][postTelecelDataSearchService] unknown error: ${error.message}`
+					`[RestServices.js][postTelecelDataSearchService] unknown error: ${error.message}`
 				);
 			}
 			return {
@@ -834,7 +834,7 @@ class RestServices {
 	async postAirtelTigoDataSearchService(accountNumber) {
 		try {
 			Log.info(
-				`[HubtelController.js][postAirtelTigoDataSearchService][${accountNumber}] intial  [POST] to airtel tigo data bundle account `
+				`[RestServices.js][postAirtelTigoDataSearchService][${accountNumber}] intial  [POST] to airtel tigo data bundle account `
 			);
 			const response = await axios.get(
 				`https://cs.hubtel.com/commissionservices/${process.env.HUBTEL_PREPAID_DEPOSTI_ACCOUNT}/${process.env.HUBTEL_AIRTEL_TIGO_DATA_SERVICE_ID}?destination=${accountNumber}`,
@@ -848,24 +848,24 @@ class RestServices {
 			return response.data;
 		} catch (error) {
 			Log.info(
-				`[HubtelController.js][postAirtelTigoDataSearchService] error validating account: ${error.message}`
+				`[RestServices.js][postAirtelTigoDataSearchService] error validating account: ${error.message}`
 			);
 			if (error.response) {
 				Log.info(
-					`[HubtelController.js][postAirtelTigoDataSearchService] response status: ${error.response.status}`
+					`[RestServices.js][postAirtelTigoDataSearchService] response status: ${error.response.status}`
 				);
 				Log.info(
-					`[HubtelController.js][postAirtelTigoDataSearchService] response data: ${JSON.stringify(
+					`[RestServices.js][postAirtelTigoDataSearchService] response data: ${JSON.stringify(
 						error.response.data
 					)}`
 				);
 			} else if (error.request) {
 				Log.info(
-					`[HubtelController.js][postAirtelTigoDataSearchService] request: ${error.request}`
+					`[RestServices.js][postAirtelTigoDataSearchService] request: ${error.request}`
 				);
 			} else {
 				Log.info(
-					`[HubtelController.js][postAirtelTigoDataSearchService] unknown error: ${error.message}`
+					`[RestServices.js][postAirtelTigoDataSearchService] unknown error: ${error.message}`
 				);
 			}
 			return {
@@ -898,24 +898,24 @@ class RestServices {
 			return response.data;
 		} catch (error) {
 			Log.info(
-				`[HubtelController.js][postHubtelMtnDataBundle] error validating account: ${error.message}`
+				`[RestServices.js][postHubtelMtnDataBundle] error validating account: ${error.message}`
 			);
 			if (error.response) {
 				Log.info(
-					`[HubtelController.js][postHubtelMtnDataBundle] response status: ${error.response.status}`
+					`[RestServices.js][postHubtelMtnDataBundle] response status: ${error.response.status}`
 				);
 				Log.info(
-					`[HubtelController.js][postHubtelMtnDataBundle] response data: ${JSON.stringify(
+					`[RestServices.js][postHubtelMtnDataBundle] response data: ${JSON.stringify(
 						error.response.data
 					)}`
 				);
 			} else if (error.request) {
 				Log.info(
-					`[HubtelController.js][postHubtelMtnDataBundle] request: ${error.request}`
+					`[RestServices.js][postHubtelMtnDataBundle] request: ${error.request}`
 				);
 			} else {
 				Log.info(
-					`[HubtelController.js][postHubtelMtnDataBundle] unknown error: ${error.message}`
+					`[RestServices.js][postHubtelMtnDataBundle] unknown error: ${error.message}`
 				);
 			}
 			return {
@@ -946,24 +946,24 @@ class RestServices {
 			return response.data;
 		} catch (error) {
 			Log.info(
-				`[HubtelController.js][postHubtelTelecelDataBundle] error validating account: ${error.message}`
+				`[RestServices.js][postHubtelTelecelDataBundle] error validating account: ${error.message}`
 			);
 			if (error.response) {
 				Log.info(
-					`[HubtelController.js][postHubtelTelecelDataBundle] response status: ${error.response.status}`
+					`[RestServices.js][postHubtelTelecelDataBundle] response status: ${error.response.status}`
 				);
 				Log.info(
-					`[HubtelController.js][postHubtelTelecelDataBundle] response data: ${JSON.stringify(
+					`[RestServices.js][postHubtelTelecelDataBundle] response data: ${JSON.stringify(
 						error.response.data
 					)}`
 				);
 			} else if (error.request) {
 				Log.info(
-					`[HubtelController.js][postHubtelTelecelDataBundle] request: ${error.request}`
+					`[RestServices.js][postHubtelTelecelDataBundle] request: ${error.request}`
 				);
 			} else {
 				Log.info(
-					`[HubtelController.js][postHubtelTelecelDataBundle] unknown error: ${error.message}`
+					`[RestServices.js][postHubtelTelecelDataBundle] unknown error: ${error.message}`
 				);
 			}
 			return {
@@ -994,24 +994,24 @@ class RestServices {
 			return response.data;
 		} catch (error) {
 			Log.info(
-				`[HubtelController.js][postHubtelAirtelTigoDataBundle] error validating account: ${error.message}`
+				`[RestServices.js][postHubtelAirtelTigoDataBundle] error validating account: ${error.message}`
 			);
 			if (error.response) {
 				Log.info(
-					`[HubtelController.js][postHubtelAirtelTigoDataBundle] response status: ${error.response.status}`
+					`[RestServices.js][postHubtelAirtelTigoDataBundle] response status: ${error.response.status}`
 				);
 				Log.info(
-					`[HubtelController.js][postHubtelAirtelTigoDataBundle] response data: ${JSON.stringify(
+					`[RestServices.js][postHubtelAirtelTigoDataBundle] response data: ${JSON.stringify(
 						error.response.data
 					)}`
 				);
 			} else if (error.request) {
 				Log.info(
-					`[HubtelController.js][postHubtelAirtelTigoDataBundle] request: ${error.request}`
+					`[RestServices.js][postHubtelAirtelTigoDataBundle] request: ${error.request}`
 				);
 			} else {
 				Log.info(
-					`[HubtelController.js][postHubtelAirtelTigoDataBundle] unknown error: ${error.message}`
+					`[RestServices.js][postHubtelAirtelTigoDataBundle] unknown error: ${error.message}`
 				);
 			}
 			return {
@@ -1027,7 +1027,7 @@ class RestServices {
 		try {
 			const url = `https://api-txnstatus.hubtel.com/transactions/${process.env.HUBTEL_POS_SALES_ID}/status?clientReference=${clientReference}`;
 			Log.info(
-				`[HubtelController.js][getTransactionStatusCheckService][${clientReference}] intial  [GET] to ${url}`
+				`[RestServices.js][getTransactionStatusCheckService][${clientReference}] intial  [GET] to ${url}`
 			);
 
 			const response = await axios.get(url, {
@@ -1039,24 +1039,24 @@ class RestServices {
 			return response.data;
 		} catch (error) {
 			Log.info(
-				`[HubtelController.js][getTransactionStatusCheckService] error validating account: ${error.message}`
+				`[RestServices.js][getTransactionStatusCheckService] error validating account: ${error.message}`
 			);
 			if (error.response) {
 				Log.info(
-					`[HubtelController.js][getTransactionStatusCheckService] response status: ${error.response.status}`
+					`[RestServices.js][getTransactionStatusCheckService] response status: ${error.response.status}`
 				);
 				Log.info(
-					`[HubtelController.js][getTransactionStatusCheckService] response data: ${JSON.stringify(
+					`[RestServices.js][getTransactionStatusCheckService] response data: ${JSON.stringify(
 						error.response.data
 					)}`
 				);
 			} else if (error.request) {
 				Log.info(
-					`[HubtelController.js][getTransactionStatusCheckService] request: ${error.request}`
+					`[RestServices.js][getTransactionStatusCheckService] request: ${error.request}`
 				);
 			} else {
 				Log.info(
-					`[HubtelController.js][getTransactionStatusCheckService] unknown error: ${error.message}`
+					`[RestServices.js][getTransactionStatusCheckService] unknown error: ${error.message}`
 				);
 			}
 			return {
@@ -1071,7 +1071,7 @@ class RestServices {
 		try {
 			const url = `https://trnf.hubtel.com/api/inter-transfers/${process.env.HUBTEL_POS_SALES_ID}`;
 			Log.info(
-				`[HubtelController.js][getBalanceQueryService] intial  [GET] to ${url}`
+				`[RestServices.js][getBalanceQueryService] intial  [GET] to ${url}`
 			);
 
 			const response = await axios.get(url, {
@@ -1083,24 +1083,24 @@ class RestServices {
 			return response.data;
 		} catch (error) {
 			Log.info(
-				`[HubtelController.js][getBalanceQueryService] error getting balance query: ${error.message}`
+				`[RestServices.js][getBalanceQueryService] error getting balance query: ${error.message}`
 			);
 			if (error.response) {
 				Log.info(
-					`[HubtelController.js][getBalanceQueryService] response status: ${error.response.status}`
+					`[RestServices.js][getBalanceQueryService] response status: ${error.response.status}`
 				);
 				Log.info(
-					`[HubtelController.js][getBalanceQueryService] response data: ${JSON.stringify(
+					`[RestServices.js][getBalanceQueryService] response data: ${JSON.stringify(
 						error.response.data
 					)}`
 				);
 			} else if (error.request) {
 				Log.info(
-					`[HubtelController.js][getBalanceQueryService] request: ${error.request}`
+					`[RestServices.js][getBalanceQueryService] request: ${error.request}`
 				);
 			} else {
 				Log.info(
-					`[HubtelController.js][getBalanceQueryService] unknown error: ${error.message}`
+					`[RestServices.js][getBalanceQueryService] unknown error: ${error.message}`
 				);
 			}
 			return {
@@ -1113,9 +1113,9 @@ class RestServices {
 	// get prepaid balance query
 	async getPrepaidBalanceQueryService() {
 		try {
-			const url = `https://trnf.hubtel.com/api/inter-transfers/${process.env.HUBTEL_PREPAID_DEPOSTI_ACCOUNT}`;
+			const url = `https://trnf.hubtel.com/api/inter-transfers/prepaid/${process.env.HUBTEL_PREPAID_DEPOSTI_ACCOUNT}`;
 			Log.info(
-				`[HubtelController.js][getPrepaidBalanceQueryService] intial  [GET] to ${url}`
+				`[RestServices.js][getPrepaidBalanceQueryService] intial  [GET] to ${url}`
 			);
 
 			const response = await axios.get(url, {
@@ -1127,24 +1127,24 @@ class RestServices {
 			return response.data;
 		} catch (error) {
 			Log.info(
-				`[HubtelController.js][getPrepaidBalanceQueryService] error validating account: ${error.message}`
+				`[RestServices.js][getPrepaidBalanceQueryService] error validating account: ${error.message}`
 			);
 			if (error.response) {
 				Log.info(
-					`[HubtelController.js][getPrepaidBalanceQueryService] response status: ${error.response.status}`
+					`[RestServices.js][getPrepaidBalanceQueryService] response status: ${error.response.status}`
 				);
 				Log.info(
-					`[HubtelController.js][getPrepaidBalanceQueryService] response data: ${JSON.stringify(
+					`[RestServices.js][getPrepaidBalanceQueryService] response data: ${JSON.stringify(
 						error.response.data
 					)}`
 				);
 			} else if (error.request) {
 				Log.info(
-					`[HubtelController.js][getPrepaidBalanceQueryService] request: ${error.request}`
+					`[RestServices.js][getPrepaidBalanceQueryService] request: ${error.request}`
 				);
 			} else {
 				Log.info(
-					`[HubtelController.js][getPrepaidBalanceQueryService] unknown error: ${error.message}`
+					`[RestServices.js][getPrepaidBalanceQueryService] unknown error: ${error.message}`
 				);
 			}
 			return {
@@ -1159,7 +1159,7 @@ class RestServices {
 		try {
 			const url = `https://trnf.hubtel.com/api/inter-transfers/${process.env.HUBTEL_POS_SALES_ID}`;
 			Log.info(
-				`[HubtelController.js][postTransferBalance] intial  [POST] to ${url}`
+				`[RestServices.js][postTransferBalance] intial  [POST] to ${url}`
 			);
 
 			const response = await axios.post(
@@ -1181,24 +1181,24 @@ class RestServices {
 			return response.data;
 		} catch (error) {
 			Log.info(
-				`[HubtelController.js][postTransferBalance] error transfering balance: ${error.message}`
+				`[RestServices.js][postTransferBalance] error transfering balance: ${error.message}`
 			);
 			if (error.response) {
 				Log.info(
-					`[HubtelController.js][postTransferBalance] response status: ${error.response.status}`
+					`[RestServices.js][postTransferBalance] response status: ${error.response.status}`
 				);
 				Log.info(
-					`[HubtelController.js][postTransferBalance] response data: ${JSON.stringify(
+					`[RestServices.js][postTransferBalance] response data: ${JSON.stringify(
 						error.response.data
 					)}`
 				);
 			} else if (error.request) {
 				Log.info(
-					`[HubtelController.js][postTransferBalance] request: ${error.request}`
+					`[RestServices.js][postTransferBalance] request: ${error.request}`
 				);
 			} else {
 				Log.info(
-					`[HubtelController.js][postTransferBalance] unknown error: ${error.message}`
+					`[RestServices.js][postTransferBalance] unknown error: ${error.message}`
 				);
 			}
 			return {
