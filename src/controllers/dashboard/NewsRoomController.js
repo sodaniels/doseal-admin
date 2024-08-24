@@ -135,6 +135,38 @@ async function postAddItem(req, res) {
 		});
 	}
 }
+async function getAddItem(req, res) {
+	try {
+		return res.status(200).render("admin/news-room/edit", {
+			pageTitle: "Add News Item",
+			path: "/news-room/add/",
+			errors: false,
+			userInput: false,
+			item: false,
+			items: false,
+			errorMessage: false,
+			successMessage: false,
+			csrfToken: req.csrfToken(),
+			shortData: shortData,
+			cuteDate: cuteDate,
+		});
+	} catch (error) {
+		return res.status(200).render("admin/news-room/edit", {
+			pageTitle: "Add News Item",
+			path: "/news-room/add/",
+			errors: false,
+			userInput: false,
+			errorMessage: error,
+			item: false,
+			items: false,
+			successMessage: false,
+			csrfToken: req.csrfToken(),
+			shortData: shortData,
+			cuteDate: cuteDate,
+		});
+	}
+}
+
 async function getEditItem(req, res) {
 	const _id = req.params._id;
 	try {
@@ -186,7 +218,6 @@ async function getEditItem(req, res) {
 		});
 	}
 }
-
 async function putEditItem(req, res) {
 	const requestBody = req.body;
 	const _id = req.params._id;
@@ -303,6 +334,7 @@ async function getDeleteItem(req, res) {
 }
 
 module.exports = {
+	getAddItem,
 	listItem,
 	postAddItem,
 	getEditItem,

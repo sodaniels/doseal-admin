@@ -18,6 +18,12 @@ router.get(
 	newsRoomController.listItem
 );
 // get add news room
+router.get(
+	"/news-room/add",
+	isAuth,
+	isSuperUser,
+	newsRoomController.getAddItem
+);
 router.post(
 	"/news-room/add",
 	isAuth,
