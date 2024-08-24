@@ -31,6 +31,7 @@ const { connectAndStartCron } = require("./CRONS/cronJobs.crons");
 connectAndStartCron();
 
 const apiRoutes = require("./routes/mp/api.route");
+const internalApiRoutes = require("./routes/mp/internal-api.route");
 const callbackRoutes = require("./routes/mp/callback.route");
 
 const passportJwt = require("./helpers/passport-jwt");
@@ -99,10 +100,14 @@ app.use("/api/v1/", callbackRoutes);
 
 app.use(
 	"/api/v1/",
-	// ensureAuthenticated,
 	passportJwt.authenticate("jwt", { session: false }),
-
 	apiRoutes
+);
+
+app.use(
+	"/api/v1/",
+	passportJwt.authenticate("jwt", { session: false }),
+	internalApiRoutes
 );
 
 app.use("/", newsRoomRoutes);
@@ -146,8 +151,6 @@ app.use("/", expensesRoutes);
 app.use("/", vendorRoutes);
 
 app.use("/", deskDeskRoutes);
-
-
 
 // error handling middleware
 app.use(errorHandler);
