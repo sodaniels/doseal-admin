@@ -75,7 +75,7 @@ async function postHubtelAirtimeTopup(req, res) {
 
 		try {
 			if (transaction.isModified) {
-				await transaction.save();
+				saveTransaction = await transaction.save();
 				// update debit request for transaction
 				updateDrTransactionStatus(transaction, Data.Description);
 			}
@@ -85,17 +85,6 @@ async function postHubtelAirtimeTopup(req, res) {
 			Log.info(
 				"[CallbackController.js][postBuyCredit]\t Emitting wallet update: "
 			);
-			try {
-				io.getIO().emit("singleTransactionUpdate", transaction);
-				Log.info(
-					"[CallbackController.js][postHubtelAirtimeTopup]\t Emitted single topup update: "
-				);
-			} catch (error) {
-				Log.info(
-					`[CallbackController.js][postHubtelAirtimeTopup]\t error emitting walletTopUp update: `,
-					error
-				);
-			}
 
 			const currency = "GHS";
 			const amount = parseFloat(transaction.amount).toFixed(2);
@@ -107,37 +96,6 @@ async function postHubtelAirtimeTopup(req, res) {
 
 			if (saveTransaction) {
 				if (req.body.ResponseCode.toString() === "0000") {
-					// update balance
-					try {
-						if (transaction.paymentOption === "Wallet") {
-							let user = await User.findOne({
-								_id: transaction.createdBy._id,
-							});
-							const balance = user.balance ? user.balance : 0;
-							user.balance = Number(balance) - Number(transaction.amount);
-							await user.save();
-
-							Log.info(
-								"[CallbackController.js][postHubtelAirtimeTopup]\t Emitting balance update: "
-							);
-							try {
-								io.getIO().emit("balanceUpdate", user.balance);
-								Log.info(
-									"[CallbackController.js][postHubtelAirtimeTopup]\t Emitted balance update: "
-								);
-							} catch (error) {
-								Log.info(
-									`[CallbackController.js][postHubtelAirtimeTopup]\t error emitting balance update: `,
-									error
-								);
-							}
-						}
-					} catch (error) {
-						Log.info(
-							`[CallbackController.js][postHubtelAirtimeTopup][${transactionId}]\t error updating balance: ${error}`
-						);
-					}
-
 					const message = `Hi ${name}, your acccount has been topup with the amount of ${currency} ${amount}. Transaction ID: ${transactionId}. Date: ${new Date().toLocaleString()}. Reference: ${
 						req.body.externalReference
 					}`;
@@ -169,13 +127,13 @@ async function postHubtelAirtimeTopup(req, res) {
 			}
 
 			try {
-				io.getIO().emit("excerptTransData", transaction);
+				io.getIO().emit("singleTransactionUpdate", saveTransaction);
 				Log.info(
-					"[CallbackController.js][postBuyCredit]\t Emitted wallet update: "
+					"[CallbackController.js][postHubtelAirtimeTopup]\t Emitted single topup update: "
 				);
 			} catch (error) {
 				Log.info(
-					`[CallbackController.js][postBuyCredit]\t error emitting wallet update: `,
+					`[CallbackController.js][postHubtelAirtimeTopup]\t error emitting walletTopUp update: `,
 					error
 				);
 			}
@@ -262,7 +220,7 @@ async function postHubtelUtilityCallbackServices(req, res) {
 
 		try {
 			if (transaction.isModified) {
-				await transaction.save();
+				saveTransaction = await transaction.save();
 				// update debit request for transaction
 				updateDrTransactionStatus(transaction, Data.Description);
 			}
@@ -294,37 +252,6 @@ async function postHubtelUtilityCallbackServices(req, res) {
 
 			if (saveTransaction) {
 				if (req.body.ResponseCode.toString() === "0000") {
-					// update balance
-					try {
-						if (transaction.paymentOption === "Wallet") {
-							let user = await User.findOne({
-								_id: transaction.createdBy._id,
-							});
-							const balance = user.balance ? user.balance : 0;
-							user.balance = Number(balance) - Number(transaction.amount);
-							await user.save();
-
-							Log.info(
-								"[CallbackController.js][postHubtelUtilityCallbackServices]\t Emitting balance update: "
-							);
-							try {
-								io.getIO().emit("balanceUpdate", user.balance);
-								Log.info(
-									"[CallbackController.js][postHubtelUtilityCallbackServices]\t Emitted balance update: "
-								);
-							} catch (error) {
-								Log.info(
-									`[CallbackController.js][postHubtelUtilityCallbackServices]\t error emitting balance update: `,
-									error
-								);
-							}
-						}
-					} catch (error) {
-						Log.info(
-							`[CallbackController.js][postHubtelUtilityCallbackServices][${transactionId}]\t error updating balance: ${error}`
-						);
-					}
-
 					const message = `Hi ${name}, your acccount has been topup with the amount of ${currency} ${amount}. Transaction ID: ${transactionId}. Date: ${new Date().toLocaleString()}. Reference: ${
 						req.body.externalReference
 					}`;

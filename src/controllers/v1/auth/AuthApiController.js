@@ -79,7 +79,7 @@ async function sendCode(req, res) {
 		}
 	} catch (error) {
 		Log.info(
-			`[AuthApiController.js][sendCode][${req.body.phoneNumber}] \t error sending sms: ${error.message}`
+			`[AuthApiController.js][sendCode][${req.body.phoneNumber}] \t error sending sms: ${error}`
 		);
 		return res.status(200).json({
 			success: false,
