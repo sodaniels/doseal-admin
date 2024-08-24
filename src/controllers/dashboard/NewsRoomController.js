@@ -21,7 +21,6 @@ async function listItem(req, res) {
 				successMessage: successMessage ? successMessage : false,
 				items: items,
 				item: false,
-				csrfToken: req.csrfToken(),
 				shortData: shortData,
 				cuteDate: cuteDate,
 			});
@@ -36,7 +35,6 @@ async function listItem(req, res) {
 			successMessage: true,
 			items: items,
 			item: false,
-			csrfToken: req.csrfToken(),
 			shortData: shortData,
 			cuteDate: cuteDate,
 		});
@@ -50,7 +48,6 @@ async function listItem(req, res) {
 			items: items,
 			item: false,
 			successMessage: false,
-			csrfToken: req.csrfToken(),
 			shortData: shortData,
 			cuteDate: cuteDate,
 		});
@@ -73,16 +70,19 @@ async function postAddItem(req, res) {
 			successMessage: false,
 			items: items,
 			item: false,
-			csrfToken: req.csrfToken(),
 			shortData: shortData,
 			cuteDate: cuteDate,
 		});
 	}
 
 	try {
+		const imageFile = req.files["image"][0];
+		const baseUrl = `${req.protocol}://${req.get("host")}`;
+		const imageFileUrl = `${baseUrl}/uploads/news/${imageFile.filename}`;
+
 		const itemObject = new NewsRoom({
 			title: req.body.title,
-			// image: req.body.image,
+			image: imageFileUrl,
 			content: req.body.content,
 			excerpt: req.body.excerpt,
 			createdBy: admin._id,
@@ -101,7 +101,6 @@ async function postAddItem(req, res) {
 				successMessage: "Help Desk saved successfully",
 				items: items,
 				item: false,
-				csrfToken: req.csrfToken(),
 				shortData: shortData,
 			});
 		}
@@ -115,11 +114,13 @@ async function postAddItem(req, res) {
 			successMessage: false,
 			items: items,
 			item: false,
-			csrfToken: req.csrfToken(),
 			shortData: shortData,
 			cuteDate: cuteDate,
 		});
 	} catch (error) {
+		Log.info(
+			`[NewsRoomController.js][postAddItem]\t .. error saving news item: ${error}`
+		);
 		return res.status(200).render("admin/news-room/manage", {
 			pageTitle: "Manage News Room",
 			path: "/news-room/manage",
@@ -129,12 +130,12 @@ async function postAddItem(req, res) {
 			successMessage: false,
 			items: items,
 			item: false,
-			csrfToken: req.csrfToken(),
 			shortData: shortData,
 			cuteDate: cuteDate,
 		});
 	}
 }
+
 async function getAddItem(req, res) {
 	try {
 		return res.status(200).render("admin/news-room/edit", {
@@ -146,7 +147,6 @@ async function getAddItem(req, res) {
 			items: false,
 			errorMessage: false,
 			successMessage: false,
-			csrfToken: req.csrfToken(),
 			shortData: shortData,
 			cuteDate: cuteDate,
 		});
@@ -160,7 +160,6 @@ async function getAddItem(req, res) {
 			item: false,
 			items: false,
 			successMessage: false,
-			csrfToken: req.csrfToken(),
 			shortData: shortData,
 			cuteDate: cuteDate,
 		});
@@ -183,7 +182,6 @@ async function getEditItem(req, res) {
 				items: items,
 				errorMessage: false,
 				successMessage: false,
-				csrfToken: req.csrfToken(),
 				shortData: shortData,
 				cuteDate: cuteDate,
 			});
@@ -197,7 +195,6 @@ async function getEditItem(req, res) {
 				successMessage: true,
 				item: item,
 				items: items,
-				csrfToken: req.csrfToken(),
 				shortData: shortData,
 				cuteDate: cuteDate,
 			});
@@ -212,7 +209,6 @@ async function getEditItem(req, res) {
 			item: false,
 			items: false,
 			successMessage: false,
-			csrfToken: req.csrfToken(),
 			shortData: shortData,
 			cuteDate: cuteDate,
 		});
@@ -235,18 +231,21 @@ async function putEditItem(req, res) {
 			item: item,
 			errorMessage: false,
 			successMessage: false,
-			csrfToken: req.csrfToken(),
 			shortData: shortData,
 			cuteDate: cuteDate,
 		});
 	}
 
 	try {
+		const imageFile = req.files["image"][0];
+		const baseUrl = `${req.protocol}://${req.get("host")}`;
+		const imageFileUrl = `${baseUrl}/uploads/news/${imageFile.filename}`;
+
 		const updatedExpenseData = {
 			title: req.body.title,
-			amount: req.body.amount,
-			date: req.body.date,
-			note: req.body.note,
+			image: imageFileUrl ? imageFileUrl : undefined,
+			content: req.body.content,
+			excerpt: req.body.excerpt,
 		};
 
 		NewsRoom.findOne({ _id: req.params._id })
@@ -280,7 +279,6 @@ async function putEditItem(req, res) {
 					item: item,
 					errorMessage: error,
 					successMessage: false,
-					csrfToken: req.csrfToken(),
 					shortData: shortData,
 					cuteDate: cuteDate,
 				});
@@ -295,7 +293,6 @@ async function putEditItem(req, res) {
 			item: item,
 			errorMessage: error,
 			successMessage: false,
-			csrfToken: req.csrfToken(),
 			shortData: shortData,
 			cuteDate: cuteDate,
 		});

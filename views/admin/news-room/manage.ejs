@@ -70,6 +70,9 @@
                                                                                             <tr>
                                                                                                 <th></th>
                                                                                                 <th>
+                                                                                                    Image
+                                                                                                </th>
+                                                                                                <th>
                                                                                                     Title
                                                                                                 </th>
                                                                                                 <th>
@@ -92,6 +95,9 @@
                                                                                                     <td>
                                                                                                         <%= index + 1 %>
 
+                                                                                                    </td>
+                                                                                                    <td>
+                                                                                                        <img width="100" src="<%= item.image %>">
                                                                                                     </td>
                                                                                                     <td>
                                                                                                         <%= item.title
@@ -124,8 +130,12 @@
                                                                                             <tr>
                                                                                                 <th></th>
                                                                                                 <th>
+                                                                                                    Image
+                                                                                                </th>
+                                                                                                <th>
                                                                                                     Title
                                                                                                 </th>
+                                                                                                
                                                                                                 <th>
                                                                                                     Excerpt
                                                                                                 </th>
@@ -156,8 +166,7 @@
         <div class="modal-dialog" role="document">
             <form action="<% if (item) { %>/news-room/edit/<%= item._id %><% } else { %>/news-room/add<% } %>"
                 method="POST" class="form_container left_label">
-                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-
+         
                 <div class="modal-content">
                     <div class="modal-header">
                         <h2 class="modal-title" id="exampleModalLabel">Add news item</h2>

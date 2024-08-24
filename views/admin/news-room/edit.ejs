@@ -49,10 +49,8 @@
 
                                                         <div class="grid_8 full_block">
                                                             <form action="<% if (item) { %>/news-room/edit/<%= item._id %><% } else { %>/news-room/add<% } %>"
-                                                                method="POST" class="form_container left_label">
-
-                                                                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-
+                                                                method="POST" class="form_container left_label" enctype="multipart/form-data">
+                                                                
                                                                 <div class="widget_wrap">
                                                                     <div class="widget_top">
                                                                         <span class="h_icon list_image"></span>
@@ -87,7 +85,7 @@
                                                                                             <div class="form_input">
                                                                                                 <div class="form-group">
                                                                                                     <div class="form-group">
-                                                                                                       <input type="file" name="image" class="form-control">
+                                                                                                       <input type="file" name="image" class="form-control" <%= item ? '' : 'required' %>>
                                                                                                     </div>
                                                                                                 </div>
                                                                                             </div>

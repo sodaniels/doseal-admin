@@ -105,6 +105,8 @@ app.use(
 	apiRoutes
 );
 
+app.use("/", newsRoomRoutes);
+
 app.use(csrfProtection);
 
 app.use((req, res, next) => {
@@ -145,7 +147,7 @@ app.use("/", vendorRoutes);
 
 app.use("/", deskDeskRoutes);
 
-app.use("/", newsRoomRoutes);
+
 
 // error handling middleware
 app.use(errorHandler);
