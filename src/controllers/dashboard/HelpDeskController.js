@@ -5,7 +5,7 @@ const { rand10Id, randId } = require("../../helpers/randId");
 const { validationResult } = require("express-validator");
 const { v4: uuidv4 } = require("uuid");
 
-async function listHelpDesk(req, res) {
+async function listItem(req, res) {
 	const errorMessage = req.query.errorMessage;
 	const successMessage = req.query.successMessage;
 
@@ -301,7 +301,7 @@ async function getDeleteHelpDesk(req, res) {
 }
 
 module.exports = {
-	listHelpDesk,
+	listItem,
 	postAddHelpDesk,
 	getEditHelpDesk,
 	putEditHelpDesk,

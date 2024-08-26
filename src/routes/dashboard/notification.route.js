@@ -10,37 +10,37 @@ const isSuperUser = require("../../Middleware/is-superUser");
 
 const helpDeskController = require("../../controllers/dashboard/HelpDeskController");
 
-// list expenses
+// list notifications
 router.get(
-	"/help-desk/manage",
+	"/notification/manage",
 	isAuth,
 	isSuperUser,
 	helpDeskController.listItem
 );
 // get add expense
 router.post(
-	"/help-desk/add",
+	"/notification/add",
 	isAuth,
 	isSuperUser,
 	helpDeskController.postAddHelpDesk
 );
 // // get edit expense
 router.get(
-	"/help-desk/edit/:_id",
+	"/notification/edit/:_id",
 	isAuth,
 	isSuperUser,
 	helpDeskController.getEditHelpDesk
 );
 // // post edit expense to db
 router.post(
-	"/help-desk/edit/:_id",
+	"/notification/edit/:_id",
 	isAuth,
 	isSuperUser,
 	helpDeskController.putEditHelpDesk
 );
 // // get delete expense
 router.get(
-	"/help-desk/delete/:_id",
+	"/notification/delete/:_id",
 	isAuth,
 	isSuperUser,
 	helpDeskController.getDeleteHelpDesk
