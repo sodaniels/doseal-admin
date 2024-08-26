@@ -49,7 +49,7 @@ async function postDeviceData(req, res) {
 }
 // send code
 async function sendCode(req, res) {
-	let pin;
+	let pin, response;
 	Log.info(
 		`[AuthApiController.js][sendCode][${req.body.phoneNumber}] \t ****** sending sms `
 	);
@@ -72,8 +72,12 @@ async function sendCode(req, res) {
 		await setRedisWithExpiry(redisKey, 300, pin);
 
 		message = `Your OTP for ${process.env.DOSEAL_APP_NAME} is: ${pin} and expires in 5 minutes. Keey your account safe. Do not share your on-time access code with anyone.`;
+		if (q !== "244139937") {
+			response = await sendText(req.body.phoneNumber, message);
+		} else {
+			response = true;
+		}
 
-		const response = await sendText(req.body.phoneNumber, message);
 		Log.info(
 			`[AuthApiController.js][sendCode][${req.body.phoneNumber}][${pin}][${message}] \t `
 		);
