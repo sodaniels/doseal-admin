@@ -82,6 +82,11 @@ async function sendCode(req, res) {
 			`[AuthApiController.js][sendCode][${req.body.phoneNumber}][${pin}][${message}] \t `
 		);
 		if (response) {
+			Log.info(
+				`[AuthApiController.js][sendCode][${
+					req.body.phoneNumber
+				}][${pin}][${message}] \t response: ${JSON.stringify(response)}`
+			);
 			return res.status(200).json({
 				success: true,
 				message: "SMS_SENT",
