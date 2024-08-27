@@ -212,6 +212,7 @@ async function confirmCode(req, res) {
 					phoneNumber: user.phoneNumber,
 					status: user.registration,
 					balance: user.balance,
+					nameFromTelco: user.nameFromTelco,
 					token: await createJwtToken(user._id),
 				});
 			} else {

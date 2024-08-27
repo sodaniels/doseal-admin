@@ -213,7 +213,7 @@ async function getProfile(req, res) {
 			`[ApiController.js][getProfile][${req.user._id}]\t profile information`
 		);
 		const user = await User.findOne({ _id: req.user._id }).select(
-			"firstName middleName lastName email"
+			"firstName middleName lastName email nameFromTelco"
 		);
 		if (user) {
 			return res.json({
