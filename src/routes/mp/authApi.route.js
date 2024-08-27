@@ -2,12 +2,12 @@ const express = require("express");
 
 const router = express.Router();
 
-const authApiController = require('../../controllers/v1/auth/AuthApiController');
+const authApiController = require("../../controllers/v1/auth/AuthApiController");
 
 /**Auth */
 // store device information
 router.post("/device/information/store", authApiController.postDeviceData);
-// send code to user phone  
+// send code to user phone
 router.post("/send-code", authApiController.sendCode);
 // confirm code
 router.post("/confirm-code", authApiController.confirmCode);
@@ -15,9 +15,8 @@ router.post("/confirm-code", authApiController.confirmCode);
 router.post("/login", authApiController.doLogin);
 // complete registration
 router.post("/complete-registration", authApiController.completeRegistration);
+// get information
+router.get("/pages/:pageCategory", authApiController.getPageCategory);
 /**Auth */
-
-
-
 
 module.exports = router;

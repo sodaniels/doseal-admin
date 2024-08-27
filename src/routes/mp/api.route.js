@@ -6,8 +6,7 @@ const apiController = require("../../controllers/v1/ApiController");
 const hubtelController = require("../../controllers/v1/HubtelController");
 const validator = require("../../helpers/validator-api");
 
-// get information
-router.get("/pages/:pageCategory", apiController.getPageCategory);
+
 // post topup wallet
 router.post(
 	"/topup-wallet",

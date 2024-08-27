@@ -343,10 +343,44 @@ async function createToken(_id) {
 	return { acccess_token, expiresIn };
 }
 
+async function getPageCategory(req, res) {
+	const cat = req.params.pageCategory;
+
+	try {
+		const page = await Page.findOne({ category: cat }).select(
+			"title category content"
+		);
+		if (page) {
+			return res.json({
+				success: true,
+				code: 200,
+				data: page,
+			});
+		} else {
+			return res.json({
+				success: false,
+				code: 404,
+				message: "No data found for category",
+			});
+		}
+	} catch (error) {
+		Log.error(
+			"[AuthApiController.js][getPageCategory]..error retrieving team",
+			error
+		);
+		return res.json({
+			success: false,
+			code: 500,
+			message: "An error occurred while retrieving data",
+		});
+	}
+}
+
 module.exports = {
 	postDeviceData,
 	sendCode,
 	confirmCode,
 	doLogin,
 	completeRegistration,
+	getPageCategory,
 };
