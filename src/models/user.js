@@ -75,6 +75,10 @@ const userSchema = new Schema({
 		default: 0,
 		required: false,
 	},
+	nameFromTelco: {
+		type: Boolean,
+		required: false,
+	},
 	createdAt: { type: Date, default: Date.now },
 	updatedAt: { type: Date, default: Date.now },
 });

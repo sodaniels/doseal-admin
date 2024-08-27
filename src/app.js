@@ -33,6 +33,7 @@ connectAndStartCron();
 
 const apiRoutes = require("./routes/mp/api.route");
 const internalApiRoutes = require("./routes/mp/internal-api.route");
+const externalApiRoutes = require("./routes/mp/external-api.route");
 const callbackRoutes = require("./routes/mp/callback.route");
 
 const passportJwt = require("./helpers/passport-jwt");
@@ -110,7 +111,11 @@ app.use(
 	passportJwt.authenticate("jwt", { session: false }),
 	internalApiRoutes
 );
-
+app.use(
+	"/api/v1/",
+	passportJwt.authenticate("jwt", { session: false }),
+	externalApiRoutes
+);
 app.use("/", newsRoomRoutes);
 
 app.use(csrfProtection);

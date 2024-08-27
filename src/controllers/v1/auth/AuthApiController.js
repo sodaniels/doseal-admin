@@ -17,6 +17,10 @@ const {
 } = require("../../../helpers/redis");
 const { sendText } = require("../../../helpers/sendText");
 const { randId } = require("../../../helpers/randId");
+const StringFunctions = require("../../../helpers/stringFunctions");
+const stringFunctions = new StringFunctions();
+const RestServices = require("../../../services/api/RestServices");
+const restServices = new RestServices();
 
 // store device information
 async function postDeviceData(req, res) {
@@ -105,6 +109,11 @@ async function sendCode(req, res) {
 }
 // confirm code
 async function confirmCode(req, res) {
+	let hubtelMSISDNResponse,
+		registeredFirstName,
+		registeredLastName,
+		registeredName,
+		nameFromTelco;
 	let AcountStatus = "INITIAL";
 	try {
 		Log.info(
@@ -118,8 +127,45 @@ async function confirmCode(req, res) {
 
 		if (!user) {
 			try {
+				Log.info(
+					`[AuthApiController.js][confirmCode][${req.body.phoneNumber}] \t  quering MSISDN ********************************  `
+				);
+				hubtelMSISDNResponse = await restServices.postHubtelMSISDNSearchService(
+					req.body.phoneNumber
+				);
+				if (
+					hubtelMSISDNResponse &&
+					hubtelMSISDNResponse.ResponseCode === "0000"
+				) {
+					const responseData = hubtelMSISDNResponse.Data[0];
+					const splitNames = stringFunctions.split_name(responseData.Value);
+					registeredFirstName = splitNames[0];
+					registeredLastName = splitNames[1];
+					registeredName =
+						registeredFirstName || registeredLastName
+							? registeredFirstName + " " + registeredLastName
+							: undefined;
+					nameFromTelco =
+						registeredFirstName || registeredLastName ? true : false;
+				}
+
+				Log.info(
+					`[AuthApiController.js][confirmCode][${
+						req.body.phoneNumber
+					}] \t  MSISDN Response: ${JSON.stringify(hubtelMSISDNResponse)} `
+				);
+			} catch (error) {
+				Log.info(
+					`[AuthApiController.js][confirmCode][${req.body.phoneNumber}] \t  error query MSISDN: ${error}  `
+				);
+			}
+			try {
 				const userData = new User({
 					phoneNumber: req.body.phoneNumber,
+					firstName: registeredFirstName ? registeredFirstName : undefined,
+					lastName: registeredLastName ? registeredLastName : undefined,
+					nameFromTelco:
+						registeredLastName || registeredLastName ? true : false,
 					registration: AcountStatus,
 					role: "Subscriber",
 					status: "Inactive",
@@ -155,7 +201,7 @@ async function confirmCode(req, res) {
 			console.log("encryptedCode: " + encryptedCode);
 
 			// remove redis code after verification
-			await removeRedis(`otp_token_${q}`);
+			// await removeRedis(`otp_token_${q}`);
 
 			if (user && user.registration === "COMPLETED") {
 				return res.json({
@@ -176,6 +222,8 @@ async function confirmCode(req, res) {
 					message: "SUCCESS",
 					status: AcountStatus,
 					accessCode: encryptedCode,
+					registeredName: registeredName ? registeredName : undefined,
+					nameFromTelco: nameFromTelco ? nameFromTelco : undefined,
 				});
 			}
 		}
@@ -256,8 +304,14 @@ async function completeRegistration(req, res) {
 					phoneNumber: { $regex: q, $options: "i" },
 				});
 				if (user) {
-					user.firstName = req.body.firstName;
-					user.lastName = req.body.lastName;
+					const userJSON = JSON.parse(JSON.stringify(user));
+					const nameFromTelco = userJSON.nameFromTelco;
+
+					if (!nameFromTelco) {
+						user.firstName = req.body.firstName;
+						user.lastName = req.body.lastName;
+					}
+
 					user.idType = req.body.idType;
 					user.idNumber = req.body.idNumber;
 					user.idExpiryDate = req.body.idExpiry;

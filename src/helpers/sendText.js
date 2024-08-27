@@ -34,9 +34,15 @@ async function sendText(number, message) {
 		);
 		return response.data;
 	} catch (error) {
+		const response = {
+			success: false,
+			code: 500,
+			message: error.message,
+		};
 		Log.info(
 			`[sendText.js][sendText]\t ... error occurred while sending text ${error}`
 		);
+		return response;
 	}
 }
 

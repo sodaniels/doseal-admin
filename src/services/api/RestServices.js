@@ -327,10 +327,7 @@ class RestServices {
 						error.response.data
 					)}`
 				);
-				Log.info(
-					`[RestServices.js][postHubtelPaymentService] error: `,
-					error
-				);
+				Log.info(`[RestServices.js][postHubtelPaymentService] error: `, error);
 			} else if (error.request) {
 				Log.info(
 					`[RestServices.js][postHubtelPaymentService] request: ${error.request}`
@@ -1199,6 +1196,48 @@ class RestServices {
 			} else {
 				Log.info(
 					`[RestServices.js][postTransferBalance] unknown error: ${error.message}`
+				);
+			}
+			return {
+				success: false,
+				code: 500,
+				message: error.response.data ? error.response.data : error.response,
+			};
+		}
+	}
+	// hubtel search ecg meter information
+	async postHubtelMSISDNSearchService(phoneNumber) {
+		try {
+			const response = await axios.get(
+				`https://cs.hubtel.com/commissionservices/${process.env.HUBTEL_PREPAID_DEPOSTI_ACCOUNT}/${process.env.HUBTEL_MSISDN_SERVICE_ID}?destination=${phoneNumber}`,
+				{
+					headers: {
+						Authorization: `Basic ${token()}`,
+						"Content-Type": "application/json",
+					},
+				}
+			);
+			return response.data;
+		} catch (error) {
+			Log.info(
+				`[RestServices.js][postHubtelMSISDNSearchService] error validating account: ${error.message}`
+			);
+			if (error.response) {
+				Log.info(
+					`[RestServices.js][postHubtelMSISDNSearchService] response status: ${error.response.status}`
+				);
+				Log.info(
+					`[RestServices.js][postHubtelMSISDNSearchService] response data: ${JSON.stringify(
+						error.response.data
+					)}`
+				);
+			} else if (error.request) {
+				Log.info(
+					`[RestServices.js][postHubtelMSISDNSearchService] request: ${error.request}`
+				);
+			} else {
+				Log.info(
+					`[RestServices.js][postHubtelMSISDNSearchService] unknown error: ${error.message}`
 				);
 			}
 			return {
