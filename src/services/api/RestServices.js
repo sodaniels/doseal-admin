@@ -1247,6 +1247,48 @@ class RestServices {
 			};
 		}
 	}
+	// hutbel ID card validation
+	async postHubtelIDCardValidationService(idtype, idnumber) {
+		try {
+			const response = await axios.get(
+				`https://rnv.hubtel.com/v2/merchantaccount/merchants/${process.env.HUBTEL_POS_SALES_ID}/idcard/verify?idtype=${idtype}&idnumber=${idnumber}`,
+				{
+					headers: {
+						Authorization: `Basic ${token()}`,
+						"Content-Type": "application/json",
+					},
+				}
+			);
+			return response.data;
+		} catch (error) {
+			Log.info(
+				`[RestServices.js][postHubtelIDCardValidationService] error validating account: ${error.message}`
+			);
+			if (error.response) {
+				Log.info(
+					`[RestServices.js][postHubtelIDCardValidationService] response status: ${error.response.status}`
+				);
+				Log.info(
+					`[RestServices.js][postHubtelIDCardValidationService] response data: ${JSON.stringify(
+						error.response.data
+					)}`
+				);
+			} else if (error.request) {
+				Log.info(
+					`[RestServices.js][postHubtelIDCardValidationService] request: ${error.request}`
+				);
+			} else {
+				Log.info(
+					`[RestServices.js][postHubtelIDCardValidationService] unknown error: ${error.message}`
+				);
+			}
+			return {
+				success: false,
+				code: 500,
+				message: error.response.data ? error.response.data : error.response,
+			};
+		}
+	}
 }
 
 function token() {

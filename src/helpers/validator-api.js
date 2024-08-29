@@ -103,6 +103,9 @@ const validateReportFault = [
 	body("category").exists().withMessage("The category is required"),
 	body("message").exists().withMessage("The message is required"),
 ];
+const validatePhoneRequest = [
+	body("phoneNumber").exists().withMessage("The Account Number is required"),
+];
 
 module.exports = {
 	validateProfile,
@@ -118,4 +121,5 @@ module.exports = {
 	validateTransactionStatus,
 	validateDataBundleSearch,
 	validateReportFault,
+	validatePhoneRequest
 };

@@ -6,6 +6,11 @@ const externalApiController = require("../../controllers/v1/ExternalApiControlle
 const validator = require("../../helpers/validator-api");
 
 // hubtel msisdn query
-router.post("/msisdn-query", externalApiController.postMSISDNquery);
+router.post(
+	"/msisdn-query",
+	validator.validatePhoneRequest,
+	externalApiController.postMSISDNquery
+);
 
+router.post("/validate-identity", externalApiController.postValidateIDCard);
 module.exports = router;

@@ -72,7 +72,50 @@ async function postMSISDNquery(req, res) {
 		});
 	}
 }
+// post validate ID card. Ghana card and Voter Id
+async function postValidateIDCard(req, res) {
+	let hubtelResponse;
+	const validationError = handleValidationErrors(req, res);
+	if (validationError) {
+		const errorRes = await apiErrors.create(
+			errorMessages.errors.API_MESSAGE_CREDIT_PURCHASE_FAILED,
+			"POST",
+			validationError,
+			undefined
+		);
+		return res.json(errorRes);
+	}
+	try {
+		Log.info(
+			`[ExternalApiController.js][postMSISDNquery]\t incoming msisdn request: ` +
+				req.ip
+		);
+
+		hubtelResponse = await restServices.postHubtelIDCardValidationService(
+			req.body.idType,
+			req.body.idNumber,
+		);
+		if (hubtelResponse) {
+			if (hubtelResponse.ResponseCode === "0000") {
+				hubtelResponse["success"] = true;
+				return res.json(hubtelResponse);
+			}
+			return res.json(hubtelResponse);
+		}
+		return res.json({
+			success: false,
+			message: ServiceCode.FAILED,
+		});
+	} catch (error) {
+		return res.json({
+			success: false,
+			error: error.message,
+			message: ServiceCode.ERROR_OCCURED,
+		});
+	}
+}
 
 module.exports = {
 	postMSISDNquery,
+	postValidateIDCard,
 };

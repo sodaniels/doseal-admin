@@ -8,42 +8,21 @@ const validator = require("../../helpers/validator");
 const isAuth = require("../../Middleware/is-auth");
 const isSuperUser = require("../../Middleware/is-superUser");
 
-const helpDeskController = require("../../controllers/dashboard/HelpDeskController");
+const notificationController = require("../../controllers/dashboard/NotificationController");
 
 // list notifications
 router.get(
 	"/notification/manage",
 	isAuth,
 	isSuperUser,
-	helpDeskController.listItem
+	notificationController.listItem
 );
 // get add expense
 router.post(
 	"/notification/add",
 	isAuth,
 	isSuperUser,
-	helpDeskController.postAddHelpDesk
-);
-// // get edit expense
-router.get(
-	"/notification/edit/:_id",
-	isAuth,
-	isSuperUser,
-	helpDeskController.getEditHelpDesk
-);
-// // post edit expense to db
-router.post(
-	"/notification/edit/:_id",
-	isAuth,
-	isSuperUser,
-	helpDeskController.putEditHelpDesk
-);
-// // get delete expense
-router.get(
-	"/notification/delete/:_id",
-	isAuth,
-	isSuperUser,
-	helpDeskController.getDeleteHelpDesk
+	notificationController.postAddItem
 );
 
 module.exports = router;

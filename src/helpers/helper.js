@@ -4,7 +4,7 @@ const https = require("https");
 require("dotenv").config();
 
 class Helpers {
-	constructor() { }
+	constructor() {}
 
 	async token() {
 		let response;
@@ -22,13 +22,13 @@ class Helpers {
 			);
 			Log.info(
 				"... Request:" +
-				JSON.stringify({
-					client_id: `******************************* ${tenantId}`,
-					client_secret: "********************************",
-					grant_type: "***********************************",
-					username: "********************************",
-					password: "********************************",
-				})
+					JSON.stringify({
+						client_id: `******************************* ${tenantId}`,
+						client_secret: "********************************",
+						grant_type: "***********************************",
+						username: "********************************",
+						password: "********************************",
+					})
 			);
 
 			const startTime = Date.now();
@@ -136,7 +136,6 @@ class Helpers {
 		}
 	}
 
-
 	randomString(length) {
 		const alphanumericChars =
 			"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -148,6 +147,12 @@ class Helpers {
 		return randomString;
 	}
 
+	truncateText(str, maxLength) {
+		if (str.length > maxLength) {
+			return str.substring(0, maxLength - 3) + "...";
+		}
+		return str;
+	}
 }
 
 module.exports = Helpers;

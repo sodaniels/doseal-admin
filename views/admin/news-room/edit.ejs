@@ -1,4 +1,5 @@
 <%- include('../../includes/admin/top-with-style.ejs') %>
+<link rel="stylesheet" type="text/css" href="/assets/dashboard/summernote/summernote.min.css">
     </head>
 
     <body id="theme-default" class="full_block">
@@ -108,14 +109,14 @@
                                                                                         <div class="form_grid_12">
                                                                                             <label
                                                                                                 class="field_title">Content</label>
-                                                                                            <div class="form_input">
-                                                                                                <textarea name="content"
+                                                                                             <div class="form_input">
+                                                                                                <textarea name="content" id="summernote"
                                                                                                     value="<%= userInput.content ? userInput.content : (item ? item.content : '') %>"
                                                                                                     class="input_grow"
                                                                                                     cols="100" rows="6"
                                                                                                     tabindex="5"
                                                                                                     style="width: auto; height: auto; overflow: hidden;"><%= userInput.content ? userInput.content : (item ? item.content : '') %></textarea>
-                                                                                            </div>
+                                                                                            </div> 
                                                                                         </div>
                                                                                     </li>
                                                                                 </ul>
@@ -138,7 +139,10 @@
                 </div>
 
         </div>
+
     </body>
+
+   
 
 
 

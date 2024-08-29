@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const Schema = mongoose.Schema;
 
-const helpsSchema = new Schema({
+const notificationSchema = new Schema({
 	title: { type: String, required: false },
 	message: { type: String, required: true },
 	sendToAll: { type: Boolean, required: false },
@@ -20,4 +20,4 @@ const helpsSchema = new Schema({
 	updatedAt: { type: Date, default: Date.now },
 });
 
-module.exports = mongoose.model("Help", helpsSchema);
+module.exports = mongoose.model("Notification", notificationSchema);
