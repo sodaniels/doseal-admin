@@ -2,6 +2,8 @@ const path = require("path");
 const express = require("express");
 const multer = require("multer");
 
+
+
 const storage = multer.diskStorage({
 	destination: function (req, file, cb) {
 		// Set the destination folder where uploaded files will be stored
@@ -42,11 +44,11 @@ const upload = multer({
 
 const router = express.Router();
 
-const validator = require("../../helpers/validator");
+
 
 const isAuth = require("../../Middleware/is-auth");
 const isSuperUser = require("../../Middleware/is-superUser");
-
+const validator = require("../../helpers/validator-processor");
 const newsRoomController = require("../../controllers/dashboard/NewsRoomController");
 
 // list news room

@@ -4,6 +4,8 @@ const { shortData, longDate, cuteDate } = require("../../helpers/shortData");
 const { rand10Id, randId } = require("../../helpers/randId");
 const { validationResult } = require("express-validator");
 const { v4: uuidv4 } = require("uuid");
+const Helpers = require("../../helpers/helper");
+const helpers = new Helpers();
 
 async function listItem(req, res) {
 	const errorMessage = req.query.errorMessage;
@@ -12,7 +14,7 @@ async function listItem(req, res) {
 	const items = await NewsRoom.find({}).sort({ _id: -1 });
 	try {
 		if (items) {
-			return res.status(200).render("admin/news-room/manage", {
+			return res.status(200).render("backend/news-room/manage", {
 				pageTitle: "Manage News Room",
 				path: "/news-room/manage",
 				errors: false,
@@ -23,10 +25,11 @@ async function listItem(req, res) {
 				item: false,
 				shortData: shortData,
 				cuteDate: cuteDate,
+				truncateText: helpers.truncateText,
 			});
 		}
 
-		return res.status(200).render("admin/news-room/manage", {
+		return res.status(200).render("backend/news-room/manage", {
 			pageTitle: "Manage News Room",
 			path: "/news-room/manage",
 			errors: false,
@@ -37,9 +40,10 @@ async function listItem(req, res) {
 			item: false,
 			shortData: shortData,
 			cuteDate: cuteDate,
+			truncateText: helpers.truncateText,
 		});
 	} catch (error) {
-		return res.status(200).render("admin/news-room/manage", {
+		return res.status(200).render("backend/news-room/manage", {
 			pageTitle: "Manage News Room",
 			path: "/news-room/manage",
 			errors: false,
@@ -50,6 +54,7 @@ async function listItem(req, res) {
 			successMessage: false,
 			shortData: shortData,
 			cuteDate: cuteDate,
+			truncateText: helpers.truncateText,
 		});
 	}
 }
@@ -61,7 +66,7 @@ async function postAddItem(req, res) {
 	const admin = req.session.user;
 
 	if (!errors.isEmpty()) {
-		return res.status(200).render("admin/news-room/manage", {
+		return res.status(200).render("backend/news-room/manage", {
 			pageTitle: "Manage News Room",
 			path: "/news-room/manage",
 			errors: errors.array(),
@@ -72,6 +77,7 @@ async function postAddItem(req, res) {
 			item: false,
 			shortData: shortData,
 			cuteDate: cuteDate,
+			truncateText: helpers.truncateText,
 		});
 	}
 
@@ -92,7 +98,7 @@ async function postAddItem(req, res) {
 
 		if (savedItem) {
 			const items = await NewsRoom.find({}).sort({ _id: -1 });
-			return res.status(200).render("admin/news-room/manage", {
+			return res.status(200).render("backend/news-room/manage", {
 				pageTitle: "Manage News Room",
 				path: "/news-room/manage",
 				errors: false,
@@ -102,10 +108,11 @@ async function postAddItem(req, res) {
 				items: items,
 				item: false,
 				shortData: shortData,
+				truncateText: helpers.truncateText,
 			});
 		}
 
-		return res.status(200).render("admin/news-room/manage", {
+		return res.status(200).render("backend/news-room/manage", {
 			pageTitle: "Manage News Room",
 			path: "/news-room/manage",
 			errors: false,
@@ -116,12 +123,13 @@ async function postAddItem(req, res) {
 			item: false,
 			shortData: shortData,
 			cuteDate: cuteDate,
+			truncateText: helpers.truncateText,
 		});
 	} catch (error) {
 		Log.info(
 			`[NewsRoomController.js][postAddItem]\t .. error saving news item: ${error}`
 		);
-		return res.status(200).render("admin/news-room/manage", {
+		return res.status(200).render("backend/news-room/manage", {
 			pageTitle: "Manage News Room",
 			path: "/news-room/manage",
 			errors: false,
@@ -132,13 +140,14 @@ async function postAddItem(req, res) {
 			item: false,
 			shortData: shortData,
 			cuteDate: cuteDate,
+			truncateText: helpers.truncateText,
 		});
 	}
 }
 
 async function getAddItem(req, res) {
 	try {
-		return res.status(200).render("admin/news-room/edit", {
+		return res.status(200).render("backend/news-room/add", {
 			pageTitle: "Add News Item",
 			path: "/news-room/add/",
 			errors: false,
@@ -151,7 +160,7 @@ async function getAddItem(req, res) {
 			cuteDate: cuteDate,
 		});
 	} catch (error) {
-		return res.status(200).render("admin/news-room/edit", {
+		return res.status(200).render("backend/news-room/add", {
 			pageTitle: "Add News Item",
 			path: "/news-room/add/",
 			errors: false,
@@ -173,7 +182,7 @@ async function getEditItem(req, res) {
 		const items = await NewsRoom.find({}).sort({ _id: -1 });
 
 		if (item) {
-			return res.status(200).render("admin/news-room/edit", {
+			return res.status(200).render("backend/news-room/add", {
 				pageTitle: "Edit News Item",
 				path: "/news-room/edit/" + _id,
 				errors: false,
@@ -186,7 +195,7 @@ async function getEditItem(req, res) {
 				cuteDate: cuteDate,
 			});
 		} else {
-			return res.status(200).render("admin/news-room/edit", {
+			return res.status(200).render("backend/news-room/add", {
 				pageTitle: "Edit News Item",
 				path: "/news-room/edit/" + _id,
 				errors: false,
@@ -200,7 +209,7 @@ async function getEditItem(req, res) {
 			});
 		}
 	} catch (error) {
-		return res.status(200).render("admin/news-room/edit", {
+		return res.status(200).render("backend/news-room/add", {
 			pageTitle: "Edit News Item",
 			path: "/news-room/edit/" + _id,
 			errors: false,
@@ -215,6 +224,7 @@ async function getEditItem(req, res) {
 	}
 }
 async function putEditItem(req, res) {
+	let imageFile, baseUrl, imageFileUrl, updatedExpenseData;
 	const requestBody = req.body;
 	const _id = req.params._id;
 	const items = await NewsRoom.find({}).sort({ _id: -1 });
@@ -222,7 +232,7 @@ async function putEditItem(req, res) {
 	const errors = validationResult(req);
 
 	if (!errors.isEmpty()) {
-		return res.status(200).render("admin/news-room/edit", {
+		return res.status(200).render("backend/news-room/add", {
 			pageTitle: "Edit News Item",
 			path: "/news-room/edit/" + _id,
 			errors: false,
@@ -237,17 +247,31 @@ async function putEditItem(req, res) {
 	}
 
 	try {
-		const imageFile = req.files["image"][0];
-		const baseUrl = `${req.protocol}://${req.get("host")}`;
-		const imageFileUrl = `${baseUrl}/uploads/news/${imageFile.filename}`;
+		imageFile =
+			req.files && req.files["image"] && req.files["image"].length > 0
+				? req.files["image"][0]
+				: null;
+		if (imageFile) {
+			baseUrl = `${req.protocol}://${req.get("host")}`;
+			imageFileUrl = `${baseUrl}/uploads/news/${imageFile.filename}`;
 
-		const updatedExpenseData = {
-			title: req.body.title,
-			image: imageFileUrl ? imageFileUrl : undefined,
-			content: req.body.content,
-			excerpt: req.body.excerpt,
-		};
+			updatedExpenseData = {
+				title: req.body.title,
+				image: imageFileUrl ? imageFileUrl : undefined,
+				content: req.body.content,
+				excerpt: req.body.excerpt,
+			};
+	
+		} else {
+			updatedExpenseData = {
+				title: req.body.title,
+				content: req.body.content,
+				excerpt: req.body.excerpt,
+			};
+	
+		}
 
+		
 		NewsRoom.findOne({ _id: req.params._id })
 			.then((item) => {
 				if (item) {
@@ -270,7 +294,7 @@ async function putEditItem(req, res) {
 			})
 			.catch((error) => {
 				// Handle any errors that occurred during the update process
-				return res.status(200).render("admin/news-room/edit", {
+				return res.status(200).render("backend/news-room/add", {
 					pageTitle: "Edit News Item",
 					path: "/news-room/edit/" + _id,
 					errors: false,
@@ -284,7 +308,7 @@ async function putEditItem(req, res) {
 				});
 			});
 	} catch (error) {
-		return res.status(200).render("admin/news-room/edit", {
+		return res.status(200).render("backend/news-room/add", {
 			pageTitle: "Edit News Item",
 			path: "/news-room/edit/" + _id,
 			errors: false,
