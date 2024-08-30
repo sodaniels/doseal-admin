@@ -21,11 +21,11 @@ router.post("/user/edit/:userId", isAuth, isSuperUser, usersController.putEditUs
 // list users
 router.get("/users", isAuth, isSuperUser, usersController.listUsers);
 // get user page
-router.get("/users/add", isAuth, isSuperUser, usersController.getAddUser);
+router.get("/users/add", isAuth, isSuperUser, usersController.listUsers);
 // post add user
 router.post("/users/add", isAuth, isSuperUser, validator.validateUser, usersController.postAddUser);
 // get edit user page
-router.get("/users/edit/:userId", isAuth, isSuperUser, usersController.getEditUser);
+router.get("/users/edit/:userId", isAuth, isSuperUser, usersController.listUsers);
 // post edit user to db
 router.post("/users/edit/:userId", isAuth, isSuperUser, usersController.putEditUser);
 

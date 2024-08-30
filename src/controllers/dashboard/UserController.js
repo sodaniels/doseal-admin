@@ -2,12 +2,15 @@ const axios = require("axios");
 const { validationResult } = require("express-validator");
 const { v4: uuidv4 } = require("uuid");
 const mongoose = require("mongoose");
+
 const customData = require("../../helpers/shortData");
 const { Hash } = require("../../helpers/hash");
 const User = require("../../models/user");
 const Admin = require("../../models/admin.model");
 const Permission = require("../../models/permission");
 const { Log } = require("../../helpers/Log");
+const Helpers = require('../../helpers/helper');
+const helpers = new Helpers();
 
 async function listUsers(req, res) {
 	const users = await Admin.find({ role: { $ne: "Subscriber" } });
@@ -25,6 +28,7 @@ async function listUsers(req, res) {
                 admin: req.session.user,
 				csrfToken: req.csrfToken(),
 				shortData: customData.shortData,
+                getInitials: helpers.getInitials
 			});
 		}
 
@@ -40,6 +44,7 @@ async function listUsers(req, res) {
             admin: req.session.user,
 			csrfToken: req.csrfToken(),
 			shortData: customData.shortData,
+            getInitials: helpers.getInitials
 		});
 	} catch (error) {
 		return res.status(200).render("backend/users/manage", {
@@ -54,6 +59,7 @@ async function listUsers(req, res) {
 			successMessage: false,
 			csrfToken: req.csrfToken(),
 			shortData: customData.shortData,
+            getInitials: helpers.getInitials
 		});
 	}
 }
@@ -77,16 +83,18 @@ async function getAddUser(req, res) {
 }
 
 async function postAddUser(req, res) {
+    const users = await Admin.find({ role: { $ne: "Subscriber" } });
 	const permissions = await Permission.find({});
 	const errors = validationResult(req);
 	let selectRole = req.body.role;
     const requestBody = req.body;
 
 	if (!errors.isEmpty()) {
-		return res.status(422).render("admin/users/add", {
-			pageTitle: "Add User",
-			path: "/users/add",
+        return res.status(400).render("backend/users/manage", {
+            pageTitle: "Manage Users",
+            path: "/users",
 			role: selectRole,
+			users: users,
 			user: false,
 			admin: false,
 			permissions: permissions,
@@ -96,6 +104,8 @@ async function postAddUser(req, res) {
 			iUser: false,
 			successMessage: false,
 			transformWord: customData.transformWord,
+            getInitials: helpers.getInitials,
+            shortData: customData.shortData,
 			csrfToken: req.csrfToken(),
 		});
 	}
@@ -128,10 +138,12 @@ async function postAddUser(req, res) {
 		const savedCustomer = await newUser.save();
 
 		if (savedCustomer) {
-			return res.status(200).render("admin/users/add", {
-				pageTitle: "Add User",
-				path: "/users/add",
+            const users = await Admin.find({ role: { $ne: "Subscriber" } });
+            return res.status(200).render("backend/users/manage", {
+				pageTitle: "Manage Users",
+				path: "/users",
 				errors: false,
+                users: users,
 				user: false,
 				permissions: permissions,
 				role: selectRole,
@@ -141,15 +153,18 @@ async function postAddUser(req, res) {
 				errorMessage: false,
 				successMessage: "User added successfully",
 				transformWord: customData.transformWord,
+                getInitials: helpers.getInitials,
+                shortData: customData.shortData,
 				csrfToken: req.csrfToken(),
 			});
 		}
 
-		return res.status(422).render("admin/users/add", {
-			pageTitle: "Add Customer",
-			path: "/users/add",
+        return res.status(422).render("backend/users/manage", {
+            pageTitle: "Manage Users",
+            path: "/users",
 			errors: errors.array(),
 			role: selectRole,
+            users: users,
 			user: false,
 			permissions: permissions,
             userInput: requestBody,
@@ -158,14 +173,17 @@ async function postAddUser(req, res) {
 			errorMessage: false,
 			successMessage: false,
 			transformWord: customData.transformWord,
+            shortData: customData.shortData,
+            getInitials: helpers.getInitials,
 			csrfToken: req.csrfToken(),
 		});
 	} catch (error) {
-		return res.status(422).render("admin/users/add", {
-			pageTitle: "Add User",
-			path: "/users/add",
+        return res.status(422).render("backend/users/manage", {
+            pageTitle: "Manage Users",
+            path: "/users",
 			errors: errors.array(),
 			role: selectRole,
+            users: users,
 			user: false,
 			permissions: permissions,
             userInput: requestBody,
@@ -174,6 +192,8 @@ async function postAddUser(req, res) {
 			errorMessage: error,
 			successMessage: true,
 			transformWord: customData.transformWord,
+            shortData: customData.shortData,
+            getInitials: helpers.getInitials,
 			csrfToken: req.csrfToken(),
 		});
 	}
@@ -195,6 +215,7 @@ async function getEditUser(req, res) {
 			permissions: permissions,
 			successMessage: false,
 			transformWord: customData.transformWord,
+            getInitials: helpers.getInitials,
 			csrfToken: req.csrfToken(),
 		});
 	} else {
@@ -209,6 +230,7 @@ async function getEditUser(req, res) {
 			permissions: permissions,
 			successMessage: false,
 			transformWord: customData.transformWord,
+            getInitials: helpers.getInitials,
 			csrfToken: req.csrfToken(),
 		});
 	}

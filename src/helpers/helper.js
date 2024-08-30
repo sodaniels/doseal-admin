@@ -153,6 +153,21 @@ class Helpers {
 		}
 		return str;
 	}
+
+	getInitials(firstname, lastname) {
+		if (!firstname || !lastname) {
+			throw new Error("Both firstname and lastname are required.");
+		}
+
+		// Get the first letter of the firstname and lastname
+		const firstInitial = firstname.charAt(0);
+		const lastInitial = lastname.charAt(0);
+
+		// Concatenate the initials and convert to uppercase
+		const initials = (firstInitial + lastInitial).toUpperCase();
+
+		return initials;
+	}
 }
 
 module.exports = Helpers;
