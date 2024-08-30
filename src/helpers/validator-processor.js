@@ -25,6 +25,13 @@ const validateNewsRoom = [
 	body("content").notEmpty().isString().withMessage("Content is required."),
 ];
 
+const validateNotification = [
+	body("title").notEmpty().isString().withMessage("Title is required."),
+	body("image").notEmpty().isString().withMessage("Image is required."),
+	body("excerpt").notEmpty().isString().withMessage("Excerpt is required."),
+	body("content").notEmpty().isString().withMessage("Content is required."),
+];
+
 module.exports = {
 	validateHelpDesk,
 	validateNewsRoom,
