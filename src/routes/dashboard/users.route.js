@@ -25,7 +25,7 @@ router.get("/users/add", isAuth, isSuperUser, usersController.listUsers);
 // post add user
 router.post("/users/add", isAuth, isSuperUser, validator.validateUser, usersController.postAddUser);
 // get edit user page
-router.get("/users/edit/:userId", isAuth, isSuperUser, usersController.listUsers);
+router.get("/users/edit/:userId", isAuth, isSuperUser, usersController.getEditUser);
 // post edit user to db
 router.post("/users/edit/:userId", isAuth, isSuperUser, usersController.putEditUser);
 

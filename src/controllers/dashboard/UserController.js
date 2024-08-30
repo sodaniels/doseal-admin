@@ -200,14 +200,17 @@ async function postAddUser(req, res) {
 }
 
 async function getEditUser(req, res) {
-	const user = await Admin.findOne({ userId: req.params.userId });
+    const users = await Admin.find({ role: { $ne: "Subscriber" } });
+	const user = await Admin.findOne({ _id: req.params.userId });
 	const permissions = await Permission.find({});
 	if (user) {
 		const userRole = user.role;
-		res.render("admin/users/add", {
-			pageTitle: "Edit User",
-			path: `/users/edit/${req.query.userId}`,
+		return res.status(200).render("backend/users/manage", {
+            pageTitle: "Manage Users",
+            path: "/users",
+            users: users,
 			user: user,
+            userInput: false,
 			role: userRole ? userRole : false,
 			admin: req.session.user,
 			errors: false,
@@ -215,14 +218,17 @@ async function getEditUser(req, res) {
 			permissions: permissions,
 			successMessage: false,
 			transformWord: customData.transformWord,
+            shortData: customData.shortData,
             getInitials: helpers.getInitials,
 			csrfToken: req.csrfToken(),
 		});
 	} else {
-		res.render("admin/users/add", {
-			pageTitle: "Add User",
-			path: `/users/add`,
+		return res.status(200).render("backend/users/manage", {
+            pageTitle: "Manage Users",
+            path: "/users",
+            users: users,
 			user: false,
+            userInput: false,
 			role: false,
 			admin: req.session.user,
 			errors: false,
@@ -230,6 +236,7 @@ async function getEditUser(req, res) {
 			permissions: permissions,
 			successMessage: false,
 			transformWord: customData.transformWord,
+            shortData: customData.shortData,
             getInitials: helpers.getInitials,
 			csrfToken: req.csrfToken(),
 		});
