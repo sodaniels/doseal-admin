@@ -3,7 +3,7 @@ const express = require("express");
 
 const router = express.Router();
 
-const validator = require("../../helpers/validator");
+const validator = require("../../helpers/validator-processor");
 
 const isAuth = require("../../Middleware/is-auth");
 const isSuperUser = require("../../Middleware/is-superUser");
@@ -17,11 +17,18 @@ router.get(
 	isSuperUser,
 	helpDeskController.listItem
 );
+router.get(
+	"/help-desk/add",
+	isAuth,
+	isSuperUser,
+	helpDeskController.AddItem
+);
 // get add expense
 router.post(
 	"/help-desk/add",
 	isAuth,
 	isSuperUser,
+	validator.validateHelpDesk,
 	helpDeskController.postAddHelpDesk
 );
 // // get edit expense

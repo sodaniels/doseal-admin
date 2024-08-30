@@ -4,6 +4,12 @@ const { shortData, longDate, cuteDate } = require("../../helpers/shortData");
 const { rand10Id, randId } = require("../../helpers/randId");
 const { validationResult } = require("express-validator");
 const { v4: uuidv4 } = require("uuid");
+const Helper = require("../../helpers/helper");
+const helper = new Helper();
+
+const { handleValidationErrors } = require("../../helpers/validationHelper");
+const apiErrors = require("../../helpers/errors/errors");
+const errorMessages = require("../../helpers/error-messages");
 
 async function listItem(req, res) {
 	const errorMessage = req.query.errorMessage;
@@ -12,7 +18,7 @@ async function listItem(req, res) {
 	const helps = await Help.find({}).sort({ _id: -1 });
 	try {
 		if (helps) {
-			return res.status(200).render("admin/help-desk/manage", {
+			return res.status(200).render("backend/help-desk/manage", {
 				pageTitle: "Manage Help Desk",
 				path: "/help-desk/manage",
 				errors: false,
@@ -24,10 +30,11 @@ async function listItem(req, res) {
 				csrfToken: req.csrfToken(),
 				shortData: shortData,
 				cuteDate: cuteDate,
+				truncateText: helper.truncateText,
 			});
 		}
 
-		return res.status(200).render("admin/help-desk/manage", {
+		return res.status(200).render("backend/help-desk/manage", {
 			pageTitle: "Manage Help Desk",
 			path: "/help-desk/manage",
 			errors: false,
@@ -39,9 +46,10 @@ async function listItem(req, res) {
 			csrfToken: req.csrfToken(),
 			shortData: shortData,
 			cuteDate: cuteDate,
+			truncateText: helper.truncateText,
 		});
 	} catch (error) {
-		return res.status(200).render("admin/help-desk/manage", {
+		return res.status(200).render("backend/help-desk/manage", {
 			pageTitle: "Manage Help Desk",
 			path: "/help-desk/manage",
 			errors: false,
@@ -53,6 +61,62 @@ async function listItem(req, res) {
 			csrfToken: req.csrfToken(),
 			shortData: shortData,
 			cuteDate: cuteDate,
+			truncateText: helper.truncateText,
+		});
+	}
+}
+
+async function AddItem(req, res) {
+	const errorMessage = req.query.errorMessage;
+	const successMessage = req.query.successMessage;
+
+	const helps = await Help.find({}).sort({ _id: -1 });
+	try {
+		if (helps) {
+			return res.status(200).render("backend/help-desk/add", {
+				pageTitle: "Manage Help Desk",
+				path: "/help-desk/add",
+				errors: false,
+				userInput: false,
+				errorMessage: errorMessage ? errorMessage : false,
+				successMessage: successMessage ? successMessage : false,
+				helps: helps,
+				help: false,
+				csrfToken: req.csrfToken(),
+				shortData: shortData,
+				cuteDate: cuteDate,
+				truncateText: helper.truncateText,
+			});
+		}
+
+		return res.status(200).render("backend/help-desk/add", {
+			pageTitle: "Manage Help Desk",
+			path: "/help-desk/add",
+			errors: false,
+			userInput: false,
+			errorMessage: false,
+			successMessage: true,
+			helps: helps,
+			help: false,
+			csrfToken: req.csrfToken(),
+			shortData: shortData,
+			cuteDate: cuteDate,
+			truncateText: helper.truncateText,
+		});
+	} catch (error) {
+		return res.status(200).render("backend/help-desk/add", {
+			pageTitle: "Manage Help Desk",
+			path: "/help-desk/add",
+			errors: false,
+			userInput: false,
+			errorMessage: error,
+			helps: helps,
+			help: false,
+			successMessage: false,
+			csrfToken: req.csrfToken(),
+			shortData: shortData,
+			cuteDate: cuteDate,
+			truncateText: helper.truncateText,
 		});
 	}
 }
@@ -64,7 +128,7 @@ async function postAddHelpDesk(req, res) {
 	const admin = req.session.user;
 
 	if (!errors.isEmpty()) {
-		return res.status(200).render("admin/help-desk/manage", {
+		return res.status(200).render("backend/help-desk/manage", {
 			pageTitle: "Manage Help Desk",
 			path: "/help-desk/manage",
 			errors: errors.array(),
@@ -76,6 +140,7 @@ async function postAddHelpDesk(req, res) {
 			csrfToken: req.csrfToken(),
 			shortData: shortData,
 			cuteDate: cuteDate,
+			truncateText: helper.truncateText,
 		});
 	}
 
@@ -91,7 +156,7 @@ async function postAddHelpDesk(req, res) {
 
 		if (savedHelp) {
 			const helps = await Help.find({}).sort({ _id: -1 });
-			return res.status(200).render("admin/help-desk/manage", {
+			return res.status(200).render("backend/help-desk/manage", {
 				pageTitle: "Manage Help Desk",
 				path: "/help-desk/manage",
 				errors: false,
@@ -102,10 +167,11 @@ async function postAddHelpDesk(req, res) {
 				help: false,
 				csrfToken: req.csrfToken(),
 				shortData: shortData,
+				truncateText: helper.truncateText,
 			});
 		}
 
-		return res.status(200).render("admin/help-desk/manage", {
+		return res.status(200).render("backend/help-desk/manage", {
 			pageTitle: "Manage Help Desk",
 			path: "/help-desk/manage",
 			errors: false,
@@ -117,9 +183,10 @@ async function postAddHelpDesk(req, res) {
 			csrfToken: req.csrfToken(),
 			shortData: shortData,
 			cuteDate: cuteDate,
+			truncateText: helper.truncateText,
 		});
 	} catch (error) {
-		return res.status(200).render("admin/help-desk/manage", {
+		return res.status(200).render("backend/help-desk/manage", {
 			pageTitle: "Manage Help Desk",
 			path: "/help-desk/manage",
 			errors: false,
@@ -131,9 +198,11 @@ async function postAddHelpDesk(req, res) {
 			csrfToken: req.csrfToken(),
 			shortData: shortData,
 			cuteDate: cuteDate,
+			truncateText: helper.truncateText,
 		});
 	}
 }
+
 async function getEditHelpDesk(req, res) {
 	const _id = req.params._id;
 	try {
@@ -306,4 +375,5 @@ module.exports = {
 	getEditHelpDesk,
 	putEditHelpDesk,
 	getDeleteHelpDesk,
+	AddItem,
 };
