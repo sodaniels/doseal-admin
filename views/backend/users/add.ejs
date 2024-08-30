@@ -25,7 +25,7 @@
 						<div
 							class="flex flex-col gap-2 py-4 md:flex-row md:items-center print:hidden">
 							<div class="grow">
-								<h5 class="text-16"><%= help ? 'Edit' : 'Add' %> Help Desk</h5>
+								<h5 class="text-16"><%= user ? 'Edit' : 'Add' %> User</h5>
 							</div>
 							<ul class="flex items-center gap-2 text-sm font-normal shrink-0">
 								<li
@@ -36,17 +36,20 @@
 										>Dashboard</a
 									>
 								</li>
-								<li class="text-slate-700 dark:text-zink-100"><%= help ? 'Edit' : 'Add' %> Help help-desk</li>
+								<li class="text-slate-700 dark:text-zink-100"><%= user ? 'Edit' : 'Add' %> User</li>
 							</ul>
 						</div>
 
 						<div class="grid grid-cols-1 gap-x-5 xl:grid-cols-12">
 							<div class="xl:col-span-12">
-								<div class="flex justify-center items-start min-h-screen pt-10"> <!-- Adjusted here -->
+								
+								<div class="flex justify-center items-start min-h-screen pt-10"> 
+									
 									<div
 										class="card w-full md:w-[30rem] bg-white shadow rounded-md dark:bg-zink-600"
 										id="helpsTable"
 									>
+
 										<div class="card-body">
 											<div class="-mx-5 -mb-5 overflow-x-auto">
 												<div class="flex flex-col gap-3">
@@ -74,40 +77,158 @@
 													<% } %>
 												</div>
 						
+												
 												<div class="p-4">
-													<form action="<% if (help) { %>/help-desk/edit/<%= help._id %><% } else { %>/help-desk/add<% } %>" method="POST">
-														
+													<form action="<% if (user) { %>/users/edit/<%= user._id %><% } else { %>/users/add<% } %>" method="POST">
 														<div class="mb-3">
-															<label for="title" class="inline-block mb-2 text-base font-medium">Title</label>
-															<input type="hidden" name="_csrf" value="<%= csrfToken %>">
+															<input type="hidden" name="adminId"
+															value="<%= admin.user_id %>">
+															<input type="hidden" name="_csrf"
+																value="<%= csrfToken %>">
+														</div>
+														<div class="mb-3">
+															<label
+																for="firstName"
+																class="inline-block mb-2 text-base font-medium"
+																>First Name</label
+															>
 															<input
 																type="text"
-																value="<%= userInput.title ? userInput.title : (help ? help.title : '') %>"
-																name="title"
+																value="<%= userInput.firstName ? userInput.firstName : (user ? user.firstName : '') %>"
+																name="firstName"
 																class="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200"
-																placeholder="Title" required>
+																placeholder="First name" required>
 														</div>
-						
 														<div class="mb-3">
-															<label for="content" class="inline-block mb-2 text-base font-medium">Category</label>
-															<select class="form-input border-slate-300 focus:outline-none focus:border-custom-500"
-															data-choices
-															data-choices-search-false
-															name="category">
-																<option value="">Select Category</option>
-																<option value="General Inquiry" <%= (userInput.category === 'General Inquiry' || (!userInput.category && help && help.category === 'General Inquiry')) ? 'selected' : '' %>>General Inquiry</option>
-																<option value="Technical Support" <%= (userInput.category === 'Technical Support' || (!userInput.category && help && help.category === 'Technical Support')) ? 'selected' : '' %>>Technical Support</option>
-																<option value="Report Fault" <%= (userInput.category === 'Report Fault' || (!userInput.category && help && help.category === 'Report Fault')) ? 'selected' : '' %>>Report Fault</option>
+															<label
+																for="middleName"
+																class="inline-block mb-2 text-base font-medium"
+																>Middle Name</label
+															>
+															<input
+																type="text"
+																value="<%= userInput.middleName ? userInput.middleName : (user ? user.middleName : '') %>"
+																name="middleName"
+																class="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200"
+																placeholder="Middle name">
+														</div>
+														<div class="mb-3">
+															<label
+																for="lastName"
+																class="inline-block mb-2 text-base font-medium"
+																>Last Name</label
+															>
+															<input
+																type="text"
+																value="<%= userInput.lastName ? userInput.lastName : (user ? user.lastName : '') %>"
+																name="lastName"
+																class="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200"
+																placeholder="Last name" required>
+														</div>
+														<div class="mb-3">
+															<label
+																for="phoneNumber"
+																class="inline-block mb-2 text-base font-medium"
+																>Phone Number</label
+															>
+															<input
+																type="tel"
+																value="<%= userInput.phoneNumber ? userInput.phoneNumber : (user ? user.phoneNumber : '') %>"
+																name="phoneNumber"
+																class="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200"
+																placeholder="Phone Number" required>
+														</div>
+														
+														<div class="mb-3">
+															<label
+																for="email"
+																class="inline-block mb-2 text-base font-medium"
+																>Email</label
+															>
+															<input
+																type="email"
+																name="email"
+																value="<%= userInput.email ? userInput.email : (user ? user.email : '') %>"
+																class="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200"
+																placeholder="Enter email"
+																required />
+														</div>
+														<div class="mb-3">
+															<label
+																for="role"
+																class="inline-block mb-2 text-base font-medium"
+																>Role</label
+															>
+															<select
+																class="form-input border-slate-300 focus:outline-none focus:border-custom-500"
+																data-choices
+																data-choices-search-false
+																name="role" required>
+																<option value="">Select Role</option>
+																<option value="Sale" <%= (userInput.role === 'Sale' || (!userInput.role && user && user.role === 'Sale')) ? 'selected' : '' %>>Sale</option>
+																<option value="HR" <%= (userInput.role === 'HR' || (!userInput.role && user && user.role === 'HR')) ? 'selected' : '' %>>HR</option>
+																<option value="Operations" <%= (userInput.role === 'Operations' || (!userInput.role && user && user.role === 'Operations')) ? 'selected' : '' %>>Operations</option>
+																<option value="Customer Service" <%= (userInput.role === 'Customer Service' || (!userInput.role && user && user.role === 'Customer Service')) ? 'selected' : '' %>>Customer Service</option>
+																<option value="Admin" <%= (userInput.role === 'Admin' || (!userInput.role && user && user.role === 'Admin')) ? 'selected' : '' %>>Admin</option>
+																<option value="Super Admin" <%= (userInput.role === 'Super Admin' || (!userInput.role && user && user.role === 'Super Admin')) ? 'selected' : '' %>>Super Admin</option>
+
 															</select>
 														</div>
-						
 														<div class="mb-3">
-															<label for="content" class="inline-block mb-2 text-base font-medium">Content</label>
-															<textarea name="content" class="ckeditor-classic text-slate-800">
-																<%= userInput.content ? userInput.content : (help ? help.content : '') %>
-															</textarea>
+															<label
+																for="status"
+																class="inline-block mb-2 text-base font-medium"
+																>Status</label
+															>
+															<select
+																class="form-input border-slate-300 focus:outline-none focus:border-custom-500"
+																data-choices
+																data-choices-search-false
+																name="status" required>
+																<option value="Active">Active</option>
+																<option value="Inactive">Inactive</option>
+															</select>
 														</div>
-						
+									
+														<% if(!user){ %>
+														<div class="mb-3 grid grid-cols-2 gap-4">
+															<!-- First Column -->
+															<div class="grid items-start">
+																<label
+																	for="password"
+																	class="inline-block mb-2 text-base font-medium"
+																>
+																	Password
+																</label>
+																<input
+																	type="password"
+																	value="<%= userInput ? userInput.password : '' %>"
+																	name="password"
+																	class="form-input border-slate-200 dark:border-zinc-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zinc-600 disabled:border-slate-300 dark:disabled:border-zinc-500 dark:disabled:text-zinc-200 disabled:text-slate-500 dark:text-zinc-100 dark:bg-zinc-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zinc-200"
+																	placeholder="Password"
+																	required>
+															</div>
+															
+															<!-- Second Column -->
+															<div class="grid items-start">
+																<label
+																	for="confirmPassword"
+																	class="inline-block mb-2 text-base font-medium"
+																>
+																	Confirm Password
+																</label>
+																<input
+																	type="password"
+																	value="<%= userInput ? userInput.confirmPassword : '' %>"
+																	name="confirmPassword"
+																	class="form-input border-slate-200 dark:border-zinc-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zinc-600 disabled:border-slate-300 dark:disabled:border-zinc-500 dark:disabled:text-zinc-200 disabled:text-slate-500 dark:text-zinc-100 dark:bg-zinc-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zinc-200"
+																	placeholder="Confirm Password"
+																	required>
+															</div>
+														</div>
+														<% } %>
+														
+									
 														<div class="flex justify-end gap-2 mt-4">
 															<button
 																type="reset"
@@ -118,7 +239,7 @@
 															<button
 																type="submit"
 																class="text-white transition-all duration-200 ease-linear btn bg-custom-500 border-custom-500 hover:text-white hover:bg-custom-600 hover:border-custom-600 focus:text-white focus:bg-custom-600 focus:border-custom-600 focus:ring focus:ring-custom-100 active:text-white active:bg-custom-600 active:border-custom-600 active:ring active:ring-custom-100 dark:ring-custom-400/20">
-																<%= help ? 'Edit' : 'Add' %>
+																<%= user ? 'Edit' : 'Add' %> User
 															</button>
 														</div>
 													</form>
@@ -192,6 +313,7 @@
 				</button>
 			</div>
 		</div>
+		
 		<div class="h-full p-6 overflow-y-auto">
 			<div>
 				<h5 class="mb-3 underline capitalize text-15">Choose Layouts</h5>
@@ -596,6 +718,7 @@
 				</div>
 			</div>
 		</div>
+		
 		<div
 			class="flex items-center justify-between gap-3 p-4 border-t border-slate-200 dark:border-zink-500">
 			<button

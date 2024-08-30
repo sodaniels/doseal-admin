@@ -210,7 +210,7 @@ async function getEditHelpDesk(req, res) {
 		const helps = await Help.find({}).sort({ _id: -1 });
 
 		if (help) {
-			return res.status(200).render("admin/help-desk/edit", {
+			return res.status(200).render("backend/help-desk/add", {
 				pageTitle: "Edit Help",
 				path: "/help-desk/edit/" + _id,
 				errors: false,
@@ -224,7 +224,7 @@ async function getEditHelpDesk(req, res) {
 				cuteDate: cuteDate,
 			});
 		} else {
-			return res.status(200).render("admin/help-desk/edit", {
+			return res.status(200).render("backend/help-desk/add", {
 				pageTitle: "Edit Help",
 				path: "/help-desk/edit/" + _id,
 				errors: false,
@@ -239,7 +239,7 @@ async function getEditHelpDesk(req, res) {
 			});
 		}
 	} catch (error) {
-		return res.status(200).render("admin/help-desk/edit", {
+		return res.status(200).render("backend/help-desk/add", {
 			pageTitle: "Edit Help",
 			errors: false,
 			userInput: false,

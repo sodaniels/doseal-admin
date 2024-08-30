@@ -67,12 +67,13 @@ async function listUsers(req, res) {
 async function getAddUser(req, res) {
 	const permissions = await Permission.find({});
 
-	res.render("admin/users/add", {
+	res.render("backend/users/add", {
 		pageTitle: "Add User",
 		path: "/users/add",
 		errors: false,
 		role: false,
 		user: false,
+		userInput: false,
 		permissions: permissions,
 		admin: req.session.user,
 		errorMessage: false,
@@ -205,7 +206,7 @@ async function getEditUser(req, res) {
 	const permissions = await Permission.find({});
 	if (user) {
 		const userRole = user.role;
-		return res.status(200).render("backend/users/manage", {
+		return res.status(200).render("backend/users/add", {
             pageTitle: "Manage Users",
             path: "/users",
             users: users,
@@ -223,7 +224,7 @@ async function getEditUser(req, res) {
 			csrfToken: req.csrfToken(),
 		});
 	} else {
-		return res.status(200).render("backend/users/manage", {
+		return res.status(200).render("backend/users/add", {
             pageTitle: "Manage Users",
             path: "/users",
             users: users,
