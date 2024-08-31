@@ -15,6 +15,8 @@ const expenseController = require('../../controllers/dashboard/ExpenseController
 // list expenses
 router.get("/expense/manage", isAuth, isSuperUser, expenseController.listExpense);
 // get add expense
+router.get("/expense/add", isAuth, isSuperUser, expenseController.getAddExpense);
+// get add expense
 router.post("/expense/add", isAuth, isSuperUser, expenseController.postAddExpense);
 // // get edit expense
 router.get("/expense/edit/:_id", isAuth, isSuperUser, expenseController.getEditExpense);

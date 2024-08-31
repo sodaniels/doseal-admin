@@ -168,6 +168,8 @@ class Helpers {
 
 		return initials;
 	}
+
+	
 }
 
 module.exports = Helpers;

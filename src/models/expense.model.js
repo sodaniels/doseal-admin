@@ -1,11 +1,12 @@
-
-const mongoose = require("mongoose");
-
+const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const expenseSchema = new Schema({
     title: { type: String, required: false },
-    amount: { type: Object, required: true },
+    amount: {
+        value: { type: Number, required: true },
+        currency: { type: String, required: true }
+    },
     note: { type: String, required: true },
     date: { type: String, required: true },
     status: { type: String, required: false },
@@ -16,5 +17,4 @@ const expenseSchema = new Schema({
     createdAt: { type: Date, default: Date.now },
     updatedAt: { type: Date, default: Date.now },
 });
-
 module.exports = mongoose.model("Expense", expenseSchema);
