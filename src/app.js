@@ -117,6 +117,7 @@ app.use(
 	externalApiRoutes
 );
 app.use("/", newsRoomRoutes);
+app.use("/", expensesRoutes);
 
 app.use(csrfProtection);
 
@@ -151,8 +152,6 @@ app.use("/", schedulingRoutes);
 app.use("/", teamRoutes);
 
 app.use("/", divisionRoutes);
-
-app.use("/", expensesRoutes);
 
 app.use("/", vendorRoutes);
 

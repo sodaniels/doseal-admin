@@ -10,6 +10,7 @@ const expenseSchema = new Schema({
     note: { type: String, required: true },
     date: { type: String, required: true },
     status: { type: String, required: false },
+    receipt: { type: String, required: false },
     createdBy: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Admin'

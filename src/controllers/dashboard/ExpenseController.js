@@ -12,12 +12,11 @@ async function listExpense(req, res) {
 	const errorMessage = req.query.errorMessage;
 	const successMessage = req.query.successMessage;
 
-    const expenses = await Expense.find({}).sort({ _id: -1 });
-    const globalStats = await GSTATS.GlobalStats.findOne();
-    console.log(globalStats);
+	const expenses = await Expense.find({}).sort({ _id: -1 });
+	const globalStats = await GSTATS.GlobalStats.findOne();
+	// console.log(globalStats);
 
 	try {
-       
 		if (expenses) {
 			return res.status(200).render("backend/expenses/manage", {
 				pageTitle: "Manage Expenses",
@@ -25,14 +24,13 @@ async function listExpense(req, res) {
 				errors: false,
 				userInput: false,
 				expense: false,
-                globalStats: globalStats,
+				globalStats: globalStats,
 				errorMessage: errorMessage ? errorMessage : false,
 				successMessage: successMessage ? successMessage : false,
 				expenses: expenses,
-				csrfToken: req.csrfToken(),
 				shortData: shortData,
 				cuteDate: cuteDate,
-                truncateText: helpers.truncateText,
+				truncateText: helpers.truncateText,
 			});
 		}
 
@@ -44,12 +42,11 @@ async function listExpense(req, res) {
 			userInput: false,
 			errorMessage: false,
 			successMessage: true,
-            globalStats: globalStats,
+			globalStats: globalStats,
 			expenses: expenses,
-			csrfToken: req.csrfToken(),
 			shortData: shortData,
 			cuteDate: cuteDate,
-            truncateText: helpers.truncateText,
+			truncateText: helpers.truncateText,
 		});
 	} catch (error) {
 		return res.status(200).render("backend/expenses/manage", {
@@ -58,21 +55,20 @@ async function listExpense(req, res) {
 			errors: false,
 			userInput: false,
 			expense: false,
-            globalStats: false,
+			globalStats: false,
 			errorMessage: error,
 			expenses: false,
 			successMessage: false,
-			csrfToken: req.csrfToken(),
 			shortData: shortData,
 			cuteDate: cuteDate,
-            truncateText: helpers.truncateText,
+			truncateText: helpers.truncateText,
 		});
 	}
 }
 
 async function postAddExpense(req, res) {
 	const expenses = await Expense.find({}).sort({ _id: -1 });
-    const globalStats = await GSTATS.GlobalStats.find({});
+	const globalStats = await GSTATS.GlobalStats.find({});
 	const errors = validationResult(req);
 	const requestBody = req.body;
 	const admin = req.session.user;
@@ -86,16 +82,19 @@ async function postAddExpense(req, res) {
 			expense: false,
 			errorMessage: false,
 			successMessage: false,
-            globalStats: globalStats,
+			globalStats: globalStats,
 			expenses: expenses,
-			csrfToken: req.csrfToken(),
 			shortData: shortData,
 			cuteDate: cuteDate,
-            truncateText: helpers.truncateText,
+			truncateText: helpers.truncateText,
 		});
 	}
 
 	try {
+		const receiptFile = req.files["receipt"][0];
+		const baseUrl = `${req.protocol}://${req.get("host")}`;
+		const receiptFileUrl = `${baseUrl}/uploads/receipts/${receiptFile.filename}`;
+
 		const newExpense = new Expense({
 			title: req.body.title,
 			amount: {
@@ -104,6 +103,7 @@ async function postAddExpense(req, res) {
 			},
 			date: req.body.date,
 			note: req.body.note,
+			receipt: receiptFileUrl ? receiptFileUrl : undefined,
 			createdBy: admin._id,
 		});
 
@@ -113,7 +113,7 @@ async function postAddExpense(req, res) {
 		const savedExpense = await newExpense.save();
 
 		if (savedExpense) {
-            const globalStats = await GSTATS.GlobalStats.find({});
+			const globalStats = await GSTATS.GlobalStats.find({});
 			const expenses = await Expense.find({}).sort({ _id: -1 });
 			return res.status(200).render("backend/expenses/manage", {
 				pageTitle: "Manage Expenses",
@@ -123,11 +123,10 @@ async function postAddExpense(req, res) {
 				expense: false,
 				errorMessage: false,
 				successMessage: "Expense saved successfully",
-                globalStats: globalStats,
+				globalStats: globalStats,
 				expenses: expenses,
-				csrfToken: req.csrfToken(),
 				shortData: shortData,
-                truncateText: helpers.truncateText,
+				truncateText: helpers.truncateText,
 			});
 		}
 
@@ -140,11 +139,10 @@ async function postAddExpense(req, res) {
 			errorMessage: false,
 			successMessage: false,
 			expenses: expenses,
-            globalStats: globalStats,
-			csrfToken: req.csrfToken(),
+			globalStats: globalStats,
 			shortData: shortData,
 			cuteDate: cuteDate,
-            truncateText: helpers.truncateText,
+			truncateText: helpers.truncateText,
 		});
 	} catch (error) {
 		return res.status(200).render("backend/expenses/manage", {
@@ -155,12 +153,11 @@ async function postAddExpense(req, res) {
 			expense: false,
 			errorMessage: error,
 			successMessage: false,
-            globalStats: globalStats,
+			globalStats: globalStats,
 			expenses: expenses,
-			csrfToken: req.csrfToken(),
 			shortData: shortData,
 			cuteDate: cuteDate,
-            truncateText: helpers.truncateText,
+			truncateText: helpers.truncateText,
 		});
 	}
 }
@@ -175,7 +172,6 @@ async function getAddExpense(req, res) {
 			expense: false,
 			errorMessage: false,
 			successMessage: false,
-			csrfToken: req.csrfToken(),
 			shortData: shortData,
 			cuteDate: cuteDate,
 		});
@@ -188,7 +184,6 @@ async function getAddExpense(req, res) {
 			expense: false,
 			errorMessage: false,
 			successMessage: false,
-			csrfToken: req.csrfToken(),
 			shortData: shortData,
 			cuteDate: cuteDate,
 		});
@@ -211,7 +206,6 @@ async function getEditExpense(req, res) {
 				expenses: expenses,
 				errorMessage: false,
 				successMessage: false,
-				csrfToken: req.csrfToken(),
 				shortData: shortData,
 				cuteDate: cuteDate,
 			});
@@ -225,7 +219,6 @@ async function getEditExpense(req, res) {
 				errorMessage: false,
 				successMessage: true,
 				expenses: false,
-				csrfToken: req.csrfToken(),
 				shortData: shortData,
 				cuteDate: cuteDate,
 			});
@@ -240,7 +233,6 @@ async function getEditExpense(req, res) {
 			errorMessage: error,
 			expenses: false,
 			successMessage: false,
-			csrfToken: req.csrfToken(),
 			shortData: shortData,
 			cuteDate: cuteDate,
 		});

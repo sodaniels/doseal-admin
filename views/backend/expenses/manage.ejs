@@ -171,6 +171,11 @@
 															 Date
 														</th>
 														<th
+															class="px-3.5 py-2.5 first:pl-5 last:pr-5 font-semibold sort"
+															data-sort="joining-date">
+															 Receipt
+														</th>
+														<th
 															class="px-3.5 py-2.5 first:pl-5 last:pr-5 font-semibold">
 															Action
 														</th>
@@ -211,6 +216,16 @@
 														<td class="px-3.5 py-2.5 first:pl-5 last:pr-5 email">
 															<%= shortData(item.createdAt) %>
 														</td>
+
+														<td
+															class="px-3.5 py-2.5 first:pl-5 last:pr-5 joining-date">
+															<% if(item.receipt){ %>
+															<a href="<%= item.receipt %>" target="_blank">View Receipt</a>
+															<% } else{ %>
+																No Receipt Available
+														     <% } %>	
+														</td>
+
 												
 													
 														<td class="px-3.5 py-2.5 first:pl-5 last:pr-5">
