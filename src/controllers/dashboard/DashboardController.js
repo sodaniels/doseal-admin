@@ -1,5 +1,3 @@
-const axios = require("axios");
-const { validationResult } = require("express-validator");
 const User = require("../../models/user");
 const Admin = require("../../models/admin.model");
 const Schedule = require("../../models/schedule.model");
@@ -18,7 +16,10 @@ async function getIndex(req, res) {
 		systemUsers = await Admin.countDocuments({});
 		totalSchedules = await Schedule.countDocuments({});
 		completePickups = await CompletedJob.countDocuments({});
-		transactions = await Transaction.find({}).populate('createdBy').sort({ _id: -1 }).limit(10);
+		transactions = await Transaction.find({})
+			.populate("createdBy")
+			.sort({ createdAt: -1 })
+			.limit(10);
 		prepadidBalance = await restServices.getPrepaidBalanceQueryService();
 		posBalance = await restServices.getPosBalanceQueryService();
 		console.log("posBalance: " + JSON.stringify(posBalance));

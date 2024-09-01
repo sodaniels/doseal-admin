@@ -1363,14 +1363,14 @@
 													
 													<td
 														class="px-3.5 py-2.5 first:pl-5 last:pr-5 border-y border-slate-200 dark:border-zink-500">
-														<%= convertTo2Decimal(transaction.amount) %>
+														<%= convertTo2Decimal(transaction.amount || 0) %>
 													</td>
 													<td
 
 													
 													
 														class="px-3.5 py-2.5 first:pl-5 last:pr-5 border-y border-slate-200 dark:border-zink-500">
-														<%= convertTo2Decimal(transaction.fee) %>
+														<%= convertTo2Decimal(transaction.fee || 0) %>
 													</td>
 													<td
 														class="px-3.5 py-2.5 first:pl-5 last:pr-5 border-y border-slate-200 dark:border-zink-500">
