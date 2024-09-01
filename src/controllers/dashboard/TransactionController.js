@@ -1,13 +1,7 @@
-const axios = require("axios");
-const { validationResult } = require("express-validator");
-const { v4: uuidv4 } = require('uuid');
-const mongoose = require('mongoose');
-
-
-const Customer = require('../../models/business');
+const Transaction = require('../../models/transaction.model');
 
 async function getTransactions(req, res) {
-    res.render('dashboard/transactions/transactions', {
+    res.render('backend/transactions/manage', {
         pageTitle: 'Transactions',
         path: '/transactions',
         errors: false,
