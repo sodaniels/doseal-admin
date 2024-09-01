@@ -6,7 +6,7 @@ Website: https://themesdesign.in/
 Contact: Themesdesign@gmail.com
 File: Main Js File
 */
-
+f
 // const { document } = require("postcss");
 var navbarMenuHTML = document.querySelector(".app-menu").innerHTML;
 var moreMenuWidth = 150;

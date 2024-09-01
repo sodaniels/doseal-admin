@@ -965,18 +965,11 @@
 									<div class="grid items-center grid-cols-12">
 										<div class="col-span-12 lg:col-span-8 2xl:col-span-7">
 											<h5 class="mb-3 font-normal tracking-wide text-slate-200">
-												Welcome Paula Keenan 🎉
+												Welcome <%= admin.firstName + ' ' + admin.lastName %> 🎉
 											</h5>
 											<p class="mb-5 text-slate-400">
-												An ecommerce dashboard has just that purpose. It
-												provides your ecommerce team with a clear overview of
-												key financial and website KPIs at any time.
+												Kindly note that you will be logged out 15 minutes of inactivity.<br/> All in an attempt to give your account and the entire system safe.
 											</p>
-											<button
-												type="button"
-												class="text-white btn bg-custom-500 border-custom-500 hover:text-white hover:bg-custom-600 hover:border-custom-600 focus:text-white focus:bg-custom-600 focus:border-custom-600 focus:ring focus:ring-custom-500/20 active:text-white active:bg-custom-600 active:border-custom-600 active:ring active:ring-custom-500/20 dark:ring-custom-400/20">
-												Take a Product
-											</button>
 										</div>
 										<div
 											class="hidden col-span-12 2xl:col-span-3 lg:col-span-2 lg:col-start-11 2xl:col-start-10 lg:block">
@@ -1020,13 +1013,13 @@
 										<i data-lucide="wallet-2"></i>
 									</div>
 									<h5 class="mt-4 mb-2">
-										$<span
+										GHS <span
 											class="counter-value"
-											data-target="236.18"
+											data-target="<%= prepadidBalance.data.amount %>"
 											>0</span
-										>k
+										>
 									</h5>
-									<p class="text-slate-500 dark:text-zink-200">Total Revenue</p>
+									<p class="text-slate-500 dark:text-zink-200">Prepaid Balance</p>
 								</div>
 							</div>
 							<!--end col-->
@@ -1038,13 +1031,13 @@
 										<i data-lucide="package"></i>
 									</div>
 									<h5 class="mt-4 mb-2">
-										<span
+										GHS <span
 											class="counter-value"
-											data-target="13461"
+											data-target="<%= convertTo2Decimal(posBalance.data.amount) %>"
 											>0</span
 										>
 									</h5>
-									<p class="text-slate-500 dark:text-zink-200">Total Orders</p>
+									<p class="text-slate-500 dark:text-zink-200">POS Balance</p>
 								</div>
 							</div>
 							<!--end col-->

@@ -169,6 +169,10 @@ class Helpers {
 		return initials;
 	}
 
+	convertTo2Decimal(amount) {
+		return Number(amount).toFixed(2);
+	}
+
 	
 }
 
