@@ -10,6 +10,8 @@ const Meter = require("../../models/meter.model");
 const { sendText } = require("../../helpers/sendText");
 const { rand10Id } = require("../../helpers/randId");
 const RestServices = require("../../services/api/RestServices");
+const TRANSTATS = require("../../models/TransactionStats.model");
+
 const restServices = new RestServices();
 
 // post hubtel airtime topup transaction
@@ -166,8 +168,10 @@ async function postHubtelUtilityCallbackServices(req, res) {
 	transactionId = Data.ClientReference;
 
 	let transaction = await getTransactionByTransactionId(transactionId);
+	
 
 	if (transaction && transaction.statusCode === 411) {
+
 		transaction.statusCode = req.body.code;
 		transaction.status = req.body.status;
 		transaction.statusMessage = req.body.message;
@@ -191,6 +195,7 @@ async function postHubtelUtilityCallbackServices(req, res) {
 				transaction.status = "Successful";
 				transaction.statusCode = 200;
 				transaction.statusMessage = "Transaction was successful";
+				
 				break;
 			case "4080":
 				transaction.status = "Failed";
@@ -296,6 +301,17 @@ async function postHubtelUtilityCallbackServices(req, res) {
 		} catch (error) {
 			Log.info(
 				`[CallbackController.js][postHubtelUtilityCallbackServices][${transactionId}]\t error saving callback data: ${error}`
+			);
+		}
+
+		try {
+			Log.info(
+				"[CallbackController.js][postHubtelUtilityCallbackServices]\t updating transaction totals: "
+			);
+			await TRANSTATS.updateTransactionStats(saveTransaction);
+		} catch (error) {
+			Log.info(
+				`[CallbackController.js][postHubtelUtilityCallbackServices]\t error updating transaction totals: ${error}`
 			);
 		}
 	}

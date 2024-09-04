@@ -1,6 +1,7 @@
 const User = require("../../models/user");
 const Admin = require("../../models/admin.model");
 const Schedule = require("../../models/schedule.model");
+const TRANSTATS = require("../../models/TransactionStats.model");
 const CompletedJob = require("../../models/completed-job.model");
 const Transaction = require("../../models/transaction.model");
 const RestServices = require("../../services/api/RestServices");
@@ -10,12 +11,13 @@ const helpers = new Helpers();
 
 async function getIndex(req, res) {
 	let prepadidBalance, posBalance;
-	let totalUsers, systemUsers, totalSchedules, completePickups, transactions;
+	let totalUsers, systemUsers, totalSchedules, completePickups, transactions, transactionStats;
 	try {
 		totalUsers = await User.countDocuments({ role: "Subscriber" });
 		systemUsers = await Admin.countDocuments({});
 		totalSchedules = await Schedule.countDocuments({});
 		completePickups = await CompletedJob.countDocuments({});
+		transactionStats = await TRANSTATS.TransactionStats.findOne({});
 		transactions = await Transaction.find({})
 			.populate("createdBy")
 			.sort({ createdAt: -1 })
@@ -41,6 +43,7 @@ async function getIndex(req, res) {
 		posBalance: posBalance ? posBalance : 0,
 		admin: req.session.user,
 		transactions: transactions ? transactions : [],
+		transactionStats: transactionStats ? transactionStats: false,
 		convertTo2Decimal: helpers.convertTo2Decimal,
 	});
 }
