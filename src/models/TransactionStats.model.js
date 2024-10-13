@@ -6,6 +6,7 @@ const TransactionStatsSchema = new Schema({
 	totalAmount: { type: Number, default: 0 },
 	totalFee: { type: Number, default: 0 },
 	totalCommission: { type: Number, default: 0 },
+	totalAddedCommission: { type: Number, default: 0 },
 	totalOnTotal: { type: Number, default: 0 },
 });
 
@@ -26,10 +27,11 @@ const updateTransactionStats = async (transaction) => {
 
 		// Update the relevant field based on the currency
 		if (transaction.status === "Successful") {
-			transactionStats.totalAmount += transaction.amount;
-			transactionStats.totalFee += transaction.fee;
+			transactionStats.totalAmount += transaction.amount || 0;
+			transactionStats.totalFee += transaction.fee || 0;
 			transactionStats.totalCommission += transaction.Commission || 0;
-			transactionStats.totalOnTotal += transaction.totalAmount;
+			transactionStats.totalAddedCommission += transaction.commission || 0;
+			transactionStats.totalOnTotal += transaction.totalAmount || 0;
 		}
 
 		// Save the updated document
