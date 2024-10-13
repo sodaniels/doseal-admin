@@ -1,35 +1,37 @@
 const winston = require("winston");
-const { format } = winston;
-const { combine, timestamp, printf } = format;
+const { format, createLogger, transports } = winston;
+const DailyRotateFile = require("winston-daily-rotate-file");
+const fs = require("fs");
+const path = require("path");
 
-const currentDate = new Date();
-const year = currentDate.getFullYear();
-const month = String(currentDate.getMonth() + 1).padStart(2, "0"); // Months are zero-based
-const day = String(currentDate.getDate()).padStart(2, "0");
-
-const formattedDate = `${year}-${month}-${day}`;
-
-const createFileTransports = (logLevels) => {
-	return logLevels.map((logLevel) => {
-		return new winston.transports.File({
-			filename: `storage/logs/${logLevel}/log-${formattedDate}.log`,
-			datePattern: "YYYY-MM-DD",
-			level: logLevel,
-		});
-	});
+const getMonthWithLeadingZeros = () => {
+	const month = new Date().getMonth() + 1; // Adding 1 since months are zero-based
+	return month.toString().padStart(2, "0");
 };
 
-const Log = winston.createLogger({
-	format: combine(
-		timestamp({ format: "YYYY-MM-DD HH:mm:ss" }),
-		printf(({ level, message, timestamp }) => {
-			return `[${timestamp}] ${level}: ${message}`;
-		})
-	),
-	transports: [
-		new winston.transports.Console(),
-		...createFileTransports(["debug", "error"]),
-	],
+const logsFolder = path.join(__dirname, '../..', 'storage', 'logs');
+if (!fs.existsSync(logsFolder)) {
+  fs.mkdirSync(logsFolder, { recursive: true });
+}
+
+// Create a logger with a monthly rotating file transport
+const Log = createLogger({
+  format: format.combine(
+    format.timestamp({
+      format: 'YYYY-MM-DD HH:mm:ss',
+    }),
+    format.printf(info => `${info.timestamp} ${info.level}: ${info.message}`)
+  ),
+  transports: [
+    new transports.Console(), // Log to console for testing
+    new DailyRotateFile({
+      filename: 'log-%DATE%.log',
+      datePattern: 'YYYY-MM-DD',
+      zippedArchive: false,
+      dirname: path.join(__dirname, '../..', 'storage', 'logs', getMonthWithLeadingZeros()),
+    }),
+  ],
 });
+
 
 exports.Log = Log;
