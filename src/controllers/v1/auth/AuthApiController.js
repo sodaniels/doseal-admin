@@ -24,32 +24,52 @@ const restServices = new RestServices();
 
 // store device information
 async function postDeviceData(req, res) {
-	var datetime = new Date();
-	const date = datetime.toISOString();
+	try {
+		const deviceData = JSON.parse(JSON.stringify(req.body));
 
-	const device = new Device({
-		date: date,
-		uuid: req.body.uuid,
-		model: req.body.model,
-		osVersion: req.body.osVersion,
-		sdkVersion: req.body.sdkVersion,
-		deviceType: req.body.deviceType,
-		os: req.body.os,
-		language: req.body.language,
-		manufacturer: req.body.manufacturer,
-		region: req.body.region,
-	});
+		Log.info(
+			`[AuthApiController.js][postDeviceData][${deviceData.UniqueId}] \t ****** storing or updating device information`
+		);
+		var datetime = new Date();
+		const date = datetime.toISOString();
 
-	device
-		.save()
-		.then((result) => {
-			res.status(201).json({ success: true, message: "DEVICE_SAVED" });
-		})
-		.catch((err) => {
-			return res
-				.status(403)
-				.json({ success: false, message: "ERROR_OCCURRED" });
-		});
+		const checkDevice = await Device.findOne({ UniqueId: deviceData.UniqueId });
+		if (checkDevice) {
+			checkDevice.isLocationEnabled = deviceData.isLocationEnabled;
+			checkDevice.isPinOrFingerprintSet = deviceData.isPinOrFingerprintSet;
+			checkDevice.IpAddress = deviceData.IpAddress;
+			checkDevice.updatedDate = date;
+			await checkDevice.save();
+		} else {
+			const device = new Device({
+				date: date,
+				UniqueId: deviceData.UniqueId,
+				Model: deviceData.Model,
+				FirstInstallTime: deviceData.FirstInstallTime,
+				DeviceType: deviceData.DeviceType,
+				MacAddress: deviceData.MacAddress,
+				ReadableVersion: deviceData.ReadableVersion,
+				UserAgent: deviceData.UserAgent,
+				isEmulator: deviceData.isEmulator,
+				isLocationEnabled: deviceData.isLocationEnabled,
+				isPinOrFingerprintSet: deviceData.isPinOrFingerprintSet,
+				Manufacturer: deviceData.Manufacturer,
+				IpAddress: deviceData.IpAddress,
+			});
+
+			const storeDevice = await device.save();
+
+			if (storeDevice) {
+				res.status(201).json({ success: true, message: "DEVICE_SAVED" });
+			} else {
+				return res
+					.status(403)
+					.json({ success: false, message: "ERROR_OCCURRED" });
+			}
+		}
+	} catch (error) {
+		return res.status(403).json({ success: false, message: "ERROR_OCCURRED" });
+	}
 }
 // send code
 async function sendCode(req, res) {

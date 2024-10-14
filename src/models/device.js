@@ -7,45 +7,60 @@ const deviceSchema = new Schema({
 		type: Date,
 		required: true,
 	},
-	uuid: {
+	UniqueId: {
 		type: String,
 		required: true,
 	},
-	model: {
+	Model: {
 		type: String,
 		required: false,
 	},
-	osVersion: {
+	FirstInstallTime: {
 		type: String,
 		required: false,
 	},
-	sdkVersion: {
+	DeviceType: {
 		type: String,
 		required: false,
 	},
-	deviceType: {
+	MacAddress: {
 		type: String,
 		required: false,
 	},
-	os: {
+	ReadableVersion: {
 		type: String,
 		required: false,
 	},
-	language: {
+	UserAgent: {
 		type: String,
 		required: false,
 	},
-	manufacturer: {
+	isEmulator: {
 		type: String,
 		required: false,
 	},
-	region: {
+	isLocationEnabled: {
 		type: String,
 		required: false,
 	},
-    // createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'Admin' },
-    createdAt: { type: Date, default: Date.now },
-    updatedAt: { type: Date, default: Date.now }
+	isPinOrFingerprintSet: {
+		type: String,
+		required: false,
+	},
+	Manufacturer: {
+		type: String,
+		required: false,
+	},
+	IpAddress: {
+		type: String,
+		required: false,
+	},
+	updatedDate: {
+		type: Date,
+		required: false,
+	},
+	createdAt: { type: Date, default: Date.now },
+	updatedAt: { type: Date, default: Date.now },
 });
 
-module.exports = mongoose.model('Device', deviceSchema);
+module.exports = mongoose.model("Device", deviceSchema);
