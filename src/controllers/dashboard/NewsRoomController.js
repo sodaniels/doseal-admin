@@ -83,7 +83,7 @@ async function postAddItem(req, res) {
 
 	try {
 		const imageFile = req.files["image"][0];
-		const baseUrl = `${req.protocol}://${req.get("host")}`;
+		const baseUrl = `${req.protocol}s://${req.get("host")}`;
 		const imageFileUrl = `${baseUrl}/uploads/news/${imageFile.filename}`;
 
 		const itemObject = new NewsRoom({
