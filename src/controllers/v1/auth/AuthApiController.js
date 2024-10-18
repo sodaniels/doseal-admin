@@ -383,6 +383,12 @@ async function postDoBioMetricLogin(req, res) {
 		);
 		let user = await User.findOne({ deviceUniqueId: req.body.UniqueId });
 		if (user) {
+			const currentDate = new Date();
+			const currentDateTime = currentDate.toLocaleString();
+			user.isBiometicAuthentication =  true;
+			user.lastloggedIn = currentDateTime;
+			await user.save();
+
 			return res.json({
 				success: true,
 				userId: user._id,

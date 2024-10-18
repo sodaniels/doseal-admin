@@ -3,10 +3,9 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
 const userSchema = new Schema({
-	
 	deviceUniqueId: {
 		type: String,
-		required: false
+		required: false,
 	},
 	firstName: {
 		type: String,
@@ -82,6 +81,14 @@ const userSchema = new Schema({
 	},
 	nameFromTelco: {
 		type: Boolean,
+		required: false,
+	},
+	isBiometicAuthentication: {
+		type: Boolean,
+		required: false,
+	},
+	lastloggedIn: {
+		type: Date,
 		required: false,
 	},
 	createdAt: { type: Date, default: Date.now },
