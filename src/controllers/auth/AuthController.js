@@ -2,26 +2,24 @@ const axios = require("axios");
 const { validationResult } = require("express-validator");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const { Hash } = require('../../helpers/hash');
+const { Hash } = require("../../helpers/hash");
 
-const { Log } = require('../../helpers/Log');
-const Admin = require('../../models/admin.model');
-
+const { Log } = require("../../helpers/Log");
+const Admin = require("../../models/admin.model");
 
 const createToken = () => {
 	return jwt.sign({}, process.env.SESSION_SECRET, { expiresIn: "1h" });
 };
 
 async function getLogin(req, res) {
-	return res.render('dashboard/auth/login', {
-		pageTitle: 'Login | Tebel',
-		path: '/login',
+	return res.render("dashboard/auth/login", {
+		pageTitle: "Login | Doseal",
+		path: "/login",
 		errors: false,
 		errorMessage: false,
 		csrfToken: req.csrfToken(),
 	});
 }
-
 
 async function postLogin(req, res) {
 	let user;
@@ -89,21 +87,39 @@ async function postLogin(req, res) {
 			console.log(err);
 			return res.status(500).send("Server Error");
 		});
-
-
 }
 
 async function postLogout(req, res, next) {
-	req.session.destroy(err => {
-		console.log(err)
-		res.redirect('/login');
+	req.session.destroy((err) => {
+		console.log(err);
+		res.redirect("/login");
 	});
 }
 
+async function hubtelReturnUrl(req, res) {
+	return res.render("dashboard/auth/transaction-status", {
+		pageTitle: "Login | Doseal",
+		path: "/login",
+		errors: false,
+		errorMessage: false,
+		csrfToken: req.csrfToken(),
+	});
+}
 
+async function hubtelCancellationUrl(req, res) {
+	return res.render("dashboard/auth/transaction-cancelled", {
+		pageTitle: "Login | Doseal",
+		path: "/login",
+		errors: false,
+		errorMessage: false,
+		csrfToken: req.csrfToken(),
+	});
+}
 
 module.exports = {
 	getLogin,
 	postLogin,
-	postLogout
+	postLogout,
+	hubtelReturnUrl,
+	hubtelCancellationUrl,
 };

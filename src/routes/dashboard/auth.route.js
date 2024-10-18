@@ -13,6 +13,8 @@ const validator = require('../../helpers/validator');
 router.get("/login", authController.getLogin);
 router.post("/login", validator.validateLogin, authController.postLogin);
 router.post("/logout", authController.postLogout);
+router.get("/transaction-status", authController.hubtelReturnUrl);
+router.get("/transaction-cancelled", authController.hubtelCancellationUrl);
 
 
 module.exports = router;

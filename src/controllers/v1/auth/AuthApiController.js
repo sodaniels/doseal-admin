@@ -8,6 +8,7 @@ const Page = require("../../../models/page.model");
 const User = require("../../../models/user");
 const { Log } = require("../../../helpers/Log");
 const { encrypt, decrypt } = require("../../../helpers/crypt");
+const ServiceCode = require("../../../constants/serviceCode");
 
 const {
 	getRedis,
@@ -333,6 +334,7 @@ async function completeRegistration(req, res) {
 						user.lastName = req.body.lastName;
 					}
 
+					user.deviceUniqueId = req.body.deviceUniqueId;
 					user.idType = req.body.idType;
 					user.idNumber = req.body.idNumber;
 					user.idExpiryDate = req.body.idExpiry;
@@ -369,6 +371,70 @@ async function completeRegistration(req, res) {
 	} catch (error) {
 		return res.json({
 			success: false,
+			message: error.message || "An unknown error occurred",
+		});
+	}
+}
+// post do biometric login
+async function postDoBioMetricLogin(req, res) {
+	try {
+		Log.info(
+			`[AuthApiController.js][postDoBioMetricLogin][${req.body.UniqueId}] \t ****** checking account status`
+		);
+		let user = await User.findOne({ deviceUniqueId: req.body.UniqueId });
+		if (user) {
+			return res.json({
+				success: true,
+				userId: user._id,
+				firstName: user.firstName,
+				lastName: user.lastName,
+				phoneNumber: user.phoneNumber,
+				status: user.registration,
+				balance: user.balance,
+				token: await createJwtToken(user._id),
+			});
+		} else {
+			return res.json({
+				success: true,
+				code: 500,
+				status: ServiceCode.FAILED,
+			});
+		}
+	} catch (error) {
+		return res.json({
+			success: false,
+			code: 500,
+			status: ServiceCode.ERROR_OCCURED,
+			message: error.message || "An unknown error occurred",
+		});
+	}
+}
+
+// check account status account-status
+async function postCheckAccountStatus(req, res) {
+	try {
+		Log.info(
+			`[AuthApiController.js][postCheckAccountStatus][${req.body.UniqueId}] \t ****** checking account status`
+		);
+		let user = await User.findOne({ deviceUniqueId: req.body.UniqueId });
+		if (user) {
+			return res.json({
+				success: true,
+				code: 200,
+				status: ServiceCode.ACCOUNT_CREATED,
+			});
+		} else {
+			return res.json({
+				success: true,
+				code: 404,
+				status: ServiceCode.NOT_FOUND,
+			});
+		}
+	} catch (error) {
+		return res.json({
+			success: false,
+			code: 500,
+			status: ServiceCode.ERROR_OCCURED,
 			message: error.message || "An unknown error occurred",
 		});
 	}
@@ -458,4 +524,6 @@ module.exports = {
 	doLogin,
 	completeRegistration,
 	getPageCategory,
+	postCheckAccountStatus,
+	postDoBioMetricLogin,
 };
