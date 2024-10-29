@@ -19,6 +19,8 @@ router.get("/our-services", webController.getOurServices);
 router.get("/contact-us", webController.getContactUs);
 // post contact us
 router.post("/contact-us", webController.postContacUs);
+// pages
+router.get("/legal/:category/:slug", webController.getPages);
 
 
 module.exports = router;

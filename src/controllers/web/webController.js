@@ -3,6 +3,7 @@ const { validationResult } = require("express-validator");
 const { Log } = require("../../helpers/Log");
 const Admin = require("../../models/admin.model");
 const ContactUs = require("../../models/contact-us.model");
+const Page = require("../../models/page.model");
 
 const { RecaptchaV2 } = require("express-recaptcha");
 var recaptcha = new RecaptchaV2(process.env.SITE_KEY, process.env.SECRET_KEY);
@@ -123,10 +124,30 @@ async function postContacUs(req, res) {
 	}
 }
 
+async function getPages(req, res) {
+	const category = req.params.category;
+	const slug = req.params.slug;
+	console.log("category: " + category);
+	
+	const page = await Page.findOne({ category: category });
+
+	console.log("page: " + JSON.stringify(page));
+
+	return res.render("web/pages", {
+		pageTitle: "Doseal Limited | Pages",
+		path: "/",
+		errors: false,
+		errorMessage: false,
+		csrfToken: req.csrfToken(),
+		page: page ? page : false,
+	});
+}
+
 module.exports = {
 	getIndex,
 	getContactUs,
 	getAboutUs,
 	getOurServices,
 	postContacUs,
+	getPages,
 };
