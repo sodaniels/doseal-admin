@@ -6,13 +6,24 @@ const Admin = require("../../models/admin.model");
 
 async function getIndex(req, res) {
 	return res.render("web/index", {
-		pageTitle: "Doseal Limited Website",
+		pageTitle: "Doseal Limited | Home Page",
 		path: "/",
 		errors: false,
 		errorMessage: false,
 		csrfToken: req.csrfToken(),
 	});
 }
+
+async function agetAboutUs(req, res) {
+	return res.render("web/about-us", {
+		pageTitle: "Doseal Limited | About Us",
+		path: "/",
+		errors: false,
+		errorMessage: false,
+		csrfToken: req.csrfToken(),
+	});
+}
+
 
 async function postLogin(req, res) {
 	let user;
@@ -85,5 +96,6 @@ async function postLogin(req, res) {
 
 module.exports = {
 	getIndex,
+	agetAboutUs,
 	postLogin,
 };

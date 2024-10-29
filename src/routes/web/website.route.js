@@ -11,6 +11,8 @@ const validator = require('../../helpers/validator');
 
 // post device information
 router.get("/", webController.getIndex);
+// about us page
+router.get("/about-us", webController.agetAboutUs);
 
 
 module.exports = router;
