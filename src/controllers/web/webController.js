@@ -34,6 +34,16 @@ async function agentOurServices(req, res) {
 	});
 }
 
+async function contactUsService(req, res) {
+	return res.render("web/contact-us", {
+		pageTitle: "Doseal Limited | Contact Us",
+		path: "/",
+		SITE_KEY: process.env.SITE_KEY,
+		errors: false,
+		errorMessage: false,
+		csrfToken: req.csrfToken(),
+	});
+}
 
 async function postLogin(req, res) {
 	let user;
@@ -106,6 +116,7 @@ async function postLogin(req, res) {
 
 module.exports = {
 	getIndex,
+	contactUsService,
 	agentAboutUs,
 	agentOurServices,
 	postLogin,

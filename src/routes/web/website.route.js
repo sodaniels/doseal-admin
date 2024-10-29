@@ -15,6 +15,8 @@ router.get("/", webController.getIndex);
 router.get("/about-us", webController.agentAboutUs);
 // services
 router.get("/our-services", webController.agentOurServices);
+// get contact
+router.get("/contact-us", webController.contactUsService);
 
 
 module.exports = router;
