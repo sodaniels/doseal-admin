@@ -14,9 +14,19 @@ async function getIndex(req, res) {
 	});
 }
 
-async function agetAboutUs(req, res) {
+async function agentAboutUs(req, res) {
 	return res.render("web/about-us", {
 		pageTitle: "Doseal Limited | About Us",
+		path: "/",
+		errors: false,
+		errorMessage: false,
+		csrfToken: req.csrfToken(),
+	});
+}
+
+async function agentOurServices(req, res) {
+	return res.render("web/services", {
+		pageTitle: "Doseal Limited | Our Services",
 		path: "/",
 		errors: false,
 		errorMessage: false,
@@ -96,6 +106,7 @@ async function postLogin(req, res) {
 
 module.exports = {
 	getIndex,
-	agetAboutUs,
+	agentAboutUs,
+	agentOurServices,
 	postLogin,
 };
