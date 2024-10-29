@@ -128,7 +128,7 @@ async function getPages(req, res) {
 	const category = req.params.category;
 	const slug = req.params.slug;
 	console.log("category: " + category);
-	
+
 	const page = await Page.findOne({ category: category });
 
 	console.log("page: " + JSON.stringify(page));
@@ -138,8 +138,19 @@ async function getPages(req, res) {
 		path: "/",
 		errors: false,
 		errorMessage: false,
+		page: page ? page : false,
 		csrfToken: req.csrfToken(),
 		page: page ? page : false,
+	});
+}
+
+async function getDownloads(req, res) {
+	return res.render("web/downloads", {
+		pageTitle: "Doseal Limited | Downloads",
+		path: "/",
+		errors: false,
+		errorMessage: false,
+		csrfToken: req.csrfToken(),
 	});
 }
 
@@ -150,4 +161,5 @@ module.exports = {
 	getOurServices,
 	postContacUs,
 	getPages,
+	getDownloads,
 };
