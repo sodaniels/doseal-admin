@@ -18,7 +18,6 @@ const { Log } = require("./helpers/Log");
 const router = express.Router();
 const app = express();
 
-app.use(bodyParser.json());
 app.use(cookieParser());
 
 app.use(express.static(path.join(__dirname, "public")));
@@ -29,6 +28,7 @@ const sessionStore = new MongoDBStore({
 });
 
 const csrfProtection = csrf();
+
 
 app.use(express.urlencoded({ extended: true }));
 
@@ -48,6 +48,9 @@ app.use(
 
 // Set up flash messages
 app.use(flash());
+
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }))
 
 
 app.use(csrfProtection);

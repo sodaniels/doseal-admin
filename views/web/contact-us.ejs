@@ -15,6 +15,98 @@
 			name="keywords"
 			content="" />
 
+		<!-- Latest jQuery from CDN -->
+		<script
+			src="https://code.jquery.com/jquery-3.6.0.min.js"
+			crossorigin="anonymous"></script>
+
+		<link
+			rel="stylesheet"
+			href="https://cdn.jsdelivr.net/npm/line-awesome/dist/line-awesome/css/line-awesome.min.css" />
+
+		<script
+			src="https://www.google.com/recaptcha/api.js"
+			async
+			defer></script>
+
+		<style>
+			.g-recaptcha {
+				float: left;
+			}
+		</style>
+		<meta
+			name="csrf-token"
+			content="<%= csrfToken %>" />
+
+		<style>
+			#loadingOverlay {
+				position: fixed;
+				top: 0;
+				left: 0;
+				width: 100%;
+				height: 100%;
+				background: rgba(0, 0, 0, 0.6);
+				display: none; /* Initially hidden */
+				justify-content: center;
+				align-items: center;
+				z-index: 1000;
+			}
+			.spinner {
+				display: flex;
+				justify-content: center;
+				align-items: center;
+				position: relative;
+				width: 100px;
+				height: 100px;
+			}
+			.spinner::before,
+			.spinner::after {
+				content: "";
+				position: absolute;
+				border-radius: 50%;
+				animation: pulsate 1.5s infinite ease-in-out;
+			}
+			.spinner::before {
+				width: 60px;
+				height: 60px;
+				border: 6px solid #ff6b6b;
+				animation-delay: 0s;
+			}
+			.spinner::after {
+				width: 80px;
+				height: 80px;
+				border: 6px solid #3498db;
+				animation-delay: 0.75s;
+			}
+			.inner-spinner {
+				width: 40px;
+				height: 40px;
+				border: 5px solid transparent;
+				border-top: 5px solid #fff;
+				border-radius: 50%;
+				animation: spin 1s linear infinite;
+			}
+			@keyframes spin {
+				0% {
+					transform: rotate(0deg);
+				}
+				100% {
+					transform: rotate(360deg);
+				}
+			}
+			@keyframes pulsate {
+				0%,
+				100% {
+					transform: scale(1);
+					opacity: 1;
+				}
+				50% {
+					transform: scale(1.5);
+					opacity: 0.5;
+				}
+			}
+		</style>
+
 		<%- include('../includes/web/head.ejs') %>
 
 		<body>
@@ -31,6 +123,12 @@
 					<span></span>
 					<span></span>
 					<span></span>
+				</div>
+			</div>
+
+			<div id="loadingOverlay">
+				<div class="spinner">
+					<div class="inner-spinner"></div>
 				</div>
 			</div>
 
@@ -164,6 +262,7 @@
 								<form
 									action=""
 									method="POST"
+                                    id="contact-form"
 									class="contact-form ajax-contact">
 									<div class="row">
 										<div class="col-md-6">
@@ -172,14 +271,14 @@
 													type="text"
 													class="form-control style-border"
 													name="name"
-													id="fullname"
+													id="fullName"
 													placeholder="Full name*" />
 											</div>
 										</div>
 										<div class="col-md-6">
 											<div class="form-group">
 												<input
-													type="text"
+													type="email"
 													class="form-control style-border"
 													name="email"
 													id="email"
@@ -216,6 +315,7 @@
 									<div class="form-btn col-12">
 										<button
 											type="button"
+											id="procesContactForm"
 											class="btn mt-20">
 											<span class="link-effect">
 												<span class="effect-1">SEND MESSAGE</span>
@@ -294,6 +394,7 @@
 
 			<!-- Jquery -->
 			<script src="assets/web/js/process-contact.js"></script>
+			<script src="assets/web/js/sweetalert2.all.min.js"></script>
 			<%- include('../includes/web/jsfiles.ejs') %>
 		</body>
 	</head>

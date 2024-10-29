@@ -12,11 +12,13 @@ const validator = require('../../helpers/validator');
 // post device information
 router.get("/", webController.getIndex);
 // about us page
-router.get("/about-us", webController.agentAboutUs);
+router.get("/about-us", webController.getAboutUs);
 // services
-router.get("/our-services", webController.agentOurServices);
+router.get("/our-services", webController.getOurServices);
 // get contact
-router.get("/contact-us", webController.contactUsService);
+router.get("/contact-us", webController.getContactUs);
+// post contact us
+router.post("/contact-us", webController.postContacUs);
 
 
 module.exports = router;

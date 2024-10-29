@@ -2,7 +2,10 @@ const axios = require("axios");
 const { validationResult } = require("express-validator");
 const { Log } = require("../../helpers/Log");
 const Admin = require("../../models/admin.model");
+const ContactUs = require("../../models/contact-us.model");
 
+const { RecaptchaV2 } = require("express-recaptcha");
+var recaptcha = new RecaptchaV2(process.env.SITE_KEY, process.env.SECRET_KEY);
 
 async function getIndex(req, res) {
 	return res.render("web/index", {
@@ -14,7 +17,7 @@ async function getIndex(req, res) {
 	});
 }
 
-async function agentAboutUs(req, res) {
+async function getAboutUs(req, res) {
 	return res.render("web/about-us", {
 		pageTitle: "Doseal Limited | About Us",
 		path: "/",
@@ -24,7 +27,7 @@ async function agentAboutUs(req, res) {
 	});
 }
 
-async function agentOurServices(req, res) {
+async function getOurServices(req, res) {
 	return res.render("web/services", {
 		pageTitle: "Doseal Limited | Our Services",
 		path: "/",
@@ -34,90 +37,96 @@ async function agentOurServices(req, res) {
 	});
 }
 
-async function contactUsService(req, res) {
+async function getContactUs(req, res) {
 	return res.render("web/contact-us", {
 		pageTitle: "Doseal Limited | Contact Us",
 		path: "/",
-		SITE_KEY: process.env.SITE_KEY,
 		errors: false,
 		errorMessage: false,
+		SITE_KEY: process.env.SITE_KEY,
+		captcha: recaptcha.render(),
 		csrfToken: req.csrfToken(),
 	});
 }
 
-async function postLogin(req, res) {
-	let user;
+async function postContacUs(req, res) {
+	const captchaResponse = req.body["g-recaptcha-response"];
+	const secret_key = process.env.SECRET_KEY;
 
-	Log.info(`[postSignin] \t initiating.. post request to login`);
-
-	const errors = validationResult(req);
-	console.log(errors.array());
-	if (!errors.isEmpty()) {
-		return res.status(422).render("dashboard/auth/login", {
-			pageTitle: "Login",
-			path: "/login",
-			errors: errors.array(),
-			errorMessage: false,
-			sessionId: req.body.sessionId,
-			csrfToken: req.csrfToken(),
+	if (!req.body["g-recaptcha-response"]) {
+		return res.json({
+			success: false,
+			code: 401,
+			message: "Please select the security check",
 		});
 	}
-	const email = req.body.email;
-	const pw = req.body.password;
 
-	Admin.findOne({ email: email })
-		.then((iUser) => {
-			user = iUser;
-			if (!user) {
-				// User not found
-				return res.status(422).render("dashboard/auth/login", {
-					pageTitle: "Login",
-					errors: false,
-					path: "/login",
-					errorMessage: "Incorrect email and password combination",
-					csrfToken: req.csrfToken(),
-				});
-			}
-			return bcrypt.compare(pw, iUser.password);
-		})
-		.then((result) => {
-			if (!result) {
-				// Password does not match
-				return res.status(422).render("dashboard/auth/login", {
-					pageTitle: "Login",
-					errors: false,
-					path: "/login",
-					errorMessage: "Incorrect email and password combination",
-					csrfToken: req.csrfToken(),
-				});
-			}
-			const token = createToken();
-			const iUser = {
-				firstName: user.firstName,
-				middleName: user.middleName,
-				lastName: user.lastName,
-				role: user.role,
-				email: user.email,
-				user_id: user.userId,
-				_id: user._id,
-			};
+	try {
+		const url = `https://www.google.com/recaptcha/api/siteverify?secret=${secret_key}&response=${captchaResponse}`;
+		const requestOptions = {
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify({
+				secret: secret_key,
+				response: captchaResponse,
+			}),
+		};
+		const response = await fetch(url, requestOptions);
+		const googleResponse = await response.json();
+		if (!googleResponse.success) {
+			return res.json({
+				success: false,
+				code: 401,
+				message: "reCAPTCHA verification failed. Please try again.",
+			});
+		}
+	} catch (error) {
+		Log.info(`[webController.js][postContacUs] error: ${error}`);
+		if (!req.body["g-recaptcha-response"]) {
+			return res.json({
+				success: false,
+				code: 401,
+				message: "reCAPTCHA verification failed. Please try again.",
+			});
+		}
+	}
 
-			req.session.isLoggedIn = true;
-			req.session.user = iUser;
-
-			res.redirect("../dashboard");
-		})
-		.catch((err) => {
-			console.log(err);
-			return res.status(500).send("Server Error");
+	try {
+		const contactObject = new ContactUs({
+			fullName: req.body.fullName,
+			email: req.body.email,
+			website: req.body.website,
+			message: req.body.message,
 		});
-}
 
+		const storeContactUs = await contactObject.save();
+		if (storeContactUs) {
+			return res.json({
+				success: true,
+				code: 200,
+				message: "We have received your message. Thank you for choosing Doseal",
+			});
+		} else {
+			return res.json({
+				success: false,
+				code: 400,
+				message: "An error occurred while storing your information",
+			});
+		}
+	} catch (error) {
+		Log.info(`[webController.js][postContacUs] error: ${error}`);
+		return res.json({
+			success: false,
+			code: 500,
+			message: "An error occurred while storing your information",
+		});
+	}
+}
 
 module.exports = {
 	getIndex,
-	contactUsService,
-	agentAboutUs,
-	agentOurServices,
-	postLogin,
+	getContactUs,
+	getAboutUs,
+	getOurServices,
+	postContacUs,
 };
