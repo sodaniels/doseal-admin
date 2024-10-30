@@ -58,7 +58,7 @@ async function postContacUs(req, res) {
 		return res.json({
 			success: false,
 			code: 401,
-			message: "Please select the security check",
+			message: "Please select the checkbox to indicate you are a human",
 		});
 	}
 

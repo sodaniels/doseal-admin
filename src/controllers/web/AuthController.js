@@ -20,7 +20,7 @@ async function getRegistrationPage(req, res) {
 	});
 }
 
-async function postContacUs(req, res) {
+async function postSignup(req, res) {
 	const captchaResponse = req.body["g-recaptcha-response"];
 	const secret_key = process.env.SECRET_KEY;
 
@@ -64,10 +64,13 @@ async function postContacUs(req, res) {
 
 	try {
 		const contactObject = new ContactUs({
-			fullName: req.body.fullName,
-			email: req.body.email,
-			website: req.body.website,
-			message: req.body.message,
+			firstName: firstName,
+			lastName: lastName,
+			phoneNumber: phoneNumber,
+			email: email,
+			idType: idType,
+			idNumber: idNumber,
+			idExpiry: idExpiry,
 		});
 
 		const storeContactUs = await contactObject.save();
@@ -96,5 +99,5 @@ async function postContacUs(req, res) {
 
 module.exports = {
 	getRegistrationPage,
-	postContacUs,
+	postSignup,
 };
