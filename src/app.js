@@ -13,6 +13,8 @@ const csrf = require('@dr.pogodin/csurf')
 
 
 const websiteRoutes = require("./routes/web/website.route");
+
+const authRoutes = require("./routes/auth/auth.route");
 const { Log } = require("./helpers/Log");
 
 const router = express.Router();
@@ -66,6 +68,8 @@ app.use((req, res, next) => {
 });
 
 app.use("/", websiteRoutes);
+
+app.use("/", authRoutes);
 
 
 mongoose

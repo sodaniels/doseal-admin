@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html
+	class="no-js"
+	lang="zxx">
+	<head>
+		<meta charset="utf-8" />
+		<meta
+			http-equiv="x-ua-compatible"
+			content="ie=edge" />
+		<title>Doseal Limited | Contact Us</title>
+		<%- include('../../includes/web/meta.ejs') %>
+
+		<!-- Latest jQuery from CDN -->
+		<script
+			src="https://code.jquery.com/jquery-3.6.0.min.js"
+			crossorigin="anonymous"></script>
+
+		<link
+			rel="stylesheet"
+			href="https://cdn.jsdelivr.net/npm/line-awesome/dist/line-awesome/css/line-awesome.min.css" />
+
+		<script
+			src="https://www.google.com/recaptcha/api.js"
+			async
+			defer></script>
+
+		<style>
+			.g-recaptcha {
+				float: left;
+			}
+		</style>
+		<meta
+			name="csrf-token"
+			content="<%= csrfToken %>" />
+
+		<style>
+			#loadingOverlay {
+				position: fixed;
+				top: 0;
+				left: 0;
+				width: 100%;
+				height: 100%;
+				background: rgba(0, 0, 0, 0.6);
+				display: none; /* Initially hidden */
+				justify-content: center;
+				align-items: center;
+				z-index: 1000;
+			}
+			.spinner {
+				display: flex;
+				justify-content: center;
+				align-items: center;
+				position: relative;
+				width: 100px;
+				height: 100px;
+			}
+			.spinner::before,
+			.spinner::after {
+				content: "";
+				position: absolute;
+				border-radius: 50%;
+				animation: pulsate 1.5s infinite ease-in-out;
+			}
+			.spinner::before {
+				width: 60px;
+				height: 60px;
+				border: 6px solid #ff6b6b;
+				animation-delay: 0s;
+			}
+			.spinner::after {
+				width: 80px;
+				height: 80px;
+				border: 6px solid #3498db;
+				animation-delay: 0.75s;
+			}
+			.inner-spinner {
+				width: 40px;
+				height: 40px;
+				border: 5px solid transparent;
+				border-top: 5px solid #fff;
+				border-radius: 50%;
+				animation: spin 1s linear infinite;
+			}
+			@keyframes spin {
+				0% {
+					transform: rotate(0deg);
+				}
+				100% {
+					transform: rotate(360deg);
+				}
+			}
+			@keyframes pulsate {
+				0%,
+				100% {
+					transform: scale(1);
+					opacity: 1;
+				}
+				50% {
+					transform: scale(1.5);
+					opacity: 0.5;
+				}
+			}
+		</style>
+
+		<%- include('../../includes/web/head.ejs') %>
+
+		<body>
+			<!--********************************
+   		Code Start From Here
+	******************************** -->
+
+			<!--==============================
+     Preloader
+    ==============================-->
+			<div class="preloader">
+				<div class="preloader-inner">
+					<span></span>
+					<span></span>
+					<span></span>
+					<span></span>
+				</div>
+			</div>
+
+			<div id="loadingOverlay">
+				<div class="spinner">
+					<div class="inner-spinner"></div>
+				</div>
+			</div>
+
+			<%- include('../../includes/web/mobile-menu-and-top.ejs') %>
+			<!--==============================
+	Header Area
+    ==============================-->
+			<header class="nav-header header-layout3 bg-white">
+				<%- include('../../includes/web/header.ejs') %>
+			</header>
+
+			<!--============================== 
+    Contact Area
+    ==============================-->
+			<div class="contact-area-1 space bg-theme">
+				<div
+					class="contact-map shape-mockup wow img-custom-anim-left"
+					data-wow-duration="1.5s"
+					data-wow-delay="0.2s"
+					data-left="0"
+					data-top="-100px"
+					data-bottom="140px">
+					<img
+						src="assets/web/images/contact_bg.webp"
+						alt="icon" />
+				</div>
+				<div class="container">
+					<div class="row align-items-center justify-content-end">
+						<div class="col-lg-6">
+							<div class="contact-form-wrap">
+								<div class="title-area mb-30">
+									<h2 class="sec-title">Create An Account</h2>
+									<p>
+										Great! We're excited you want to join our family. Create an
+										account and get started.
+									</p>
+								</div>
+								<form
+									action=""
+									method="POST"
+									id="contact-form"
+									class="contact-form ajax-contact">
+									<div class="row">
+										<div class="col-md-6">
+											<div class="form-group">
+												<input
+													type="text"
+													class="form-control style-border"
+													name="firstName"
+													id="firstName"
+													placeholder="First name*" />
+											</div>
+										</div>
+										<div class="col-md-6">
+											<div class="form-group">
+												<input
+													type="text"
+													class="form-control style-border"
+													name="lastName"
+													id="lastName"
+													placeholder="Last name*" />
+											</div>
+										</div>
+										<div class="col-md-6">
+											<div class="form-group">
+												<input
+													type="tel"
+													class="form-control style-border"
+													name="phoneNumber"
+													id="phoneNumber"
+													placeholder="Phone Number*" />
+											</div>
+										</div>
+										<div class="col-md-6">
+											<div class="form-group">
+												<input
+													type="email"
+													class="form-control style-border"
+													name="email"
+													id="email"
+													placeholder="Email address*" />
+											</div>
+										</div>
+
+										<div class="col-lg-12">
+											<div class="form-group">
+												<select name="idType" class="form-control style-border">
+													<option value="">Selct ID Type</option>
+													<option value="Ghana Card">Ghana Card</option>
+													<option value="Passport">Passport</option>
+													<option value="Voter's ID">Voter's ID</option>
+												</select>
+											</div>
+										</div>
+										<div class="col-md-6">
+											<div class="form-group">
+												<input
+													type="text"
+													class="form-control style-border"
+													name="idNumber"
+													id="idNumber"
+													placeholder="Enter ID Number*" />
+											</div>
+										</div>
+										<div class="col-md-6">
+											<div class="form-group">
+												<input
+													type="date"
+													class="form-control style-border"
+													name="idExpiry"
+													id="idExpiry"
+													placeholder="Select ID Expiry Date" />
+											</div>
+										</div>
+										<div class="col-lg-12">
+											<div class="form-group">
+												<div
+													class="g-recaptcha"
+													data-sitekey="<%= SITE_KEY %>"></div>
+											</div>
+										</div>
+									</div>
+									<div class="form-btn col-12">
+										<button
+											type="button"
+											id="procesContactForm"
+											class="btn mt-20">
+											<span class="link-effect">
+												<span class="effect-1">SUBMIT</span>
+												<span class="effect-1">SUBMIT</span>
+											</span>
+										</button>
+									</div>
+								</form>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!--==============================
+    Marquee Area
+    ==============================-->
+			<div class="container-fluid p-0 overflow-hidden">
+				<div class="slider__marquee clearfix marquee-wrap">
+					<div class="marquee_mode marquee__group">
+						<h6 class="item m-item">
+							<a href="#"
+								><i class="fas fa-star-of-life"></i> We Give Unparalleled
+								Flexibility</a
+							>
+						</h6>
+						<h6 class="item m-item">
+							<a href="#"
+								><i class="fas fa-star-of-life"></i> We Give Unparalleled
+								Flexibility</a
+							>
+						</h6>
+						<h6 class="item m-item">
+							<a href="#"
+								><i class="fas fa-star-of-life"></i> We Give Unparalleled
+								Flexibility</a
+							>
+						</h6>
+						<h6 class="item m-item">
+							<a href="#"
+								><i class="fas fa-star-of-life"></i> We Give Unparalleled
+								Flexibility</a
+							>
+						</h6>
+					</div>
+				</div>
+			</div>
+
+			<!--==============================
+        Footer Area
+    ==============================-->
+			<footer class="footer-wrapper footer-layout2 overflow-hidden">
+				<%- include('../../includes/web/footer.ejs') %>
+			</footer>
+
+			<!--********************************
+			Code End  Here
+	******************************** -->
+
+			<!-- Scroll To Top -->
+			<div class="scroll-top">
+				<svg
+					class="progress-circle svg-content"
+					width="100%"
+					height="100%"
+					viewBox="-1 -1 102 102">
+					<path
+						d="M50,1 a49,49 0 0,1 0,98 a49,49 0 0,1 0,-98"
+						style="
+							transition: stroke-dashoffset 10ms linear 0s;
+							stroke-dasharray: 307.919, 307.919;
+							stroke-dashoffset: 307.919;
+						"></path>
+				</svg>
+			</div>
+
+			<!-- Jquery -->
+			<script src="assets/web/js/process-contact.js"></script>
+			<script src="assets/web/js/sweetalert2.all.min.js"></script>
+			<%- include('../../includes/web/jsfiles.ejs') %>
+		</body>
+	</head>
+</html>
