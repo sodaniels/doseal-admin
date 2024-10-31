@@ -5,6 +5,10 @@ const Admin = require("../../models/admin.model");
 const ContactUs = require("../../models/contact-us.model");
 const Page = require("../../models/page.model");
 
+const apiErrors = require("../../helpers/errors/errors");
+const errorMessages = require("../../helpers/error-messages");
+const { handleValidationErrors } = require("../../helpers/validationHelper");
+
 const { RecaptchaV2 } = require("express-recaptcha");
 var recaptcha = new RecaptchaV2(process.env.SITE_KEY, process.env.SECRET_KEY);
 
@@ -18,6 +22,94 @@ async function getRegistrationPage(req, res) {
 		captcha: recaptcha.render(),
 		csrfToken: req.csrfToken(),
 	});
+}
+
+async function postInitialSignup(req, res) {
+	const validationError = handleValidationErrors(req, res);
+	if (validationError) {
+		const errorRes = await apiErrors.create(
+			errorMessages.errors.API_MESSAGE_SIGNUP_FAILED,
+			"POST",
+			validationError,
+			undefined
+		);
+		return res.status(400).json(errorRes);
+	}
+
+	const captchaResponse = req.body["g-recaptcha-response"];
+	const secret_key = process.env.SECRET_KEY;
+
+	if (!req.body["g-recaptcha-response"]) {
+		return res.json({
+			success: false,
+			code: 401,
+			message: "Please select the security check",
+		});
+	}
+
+	try {
+		const url = `https://www.google.com/recaptcha/api/siteverify?secret=${secret_key}&response=${captchaResponse}`;
+		const requestOptions = {
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify({
+				secret: secret_key,
+				response: captchaResponse,
+			}),
+		};
+		const response = await fetch(url, requestOptions);
+		const googleResponse = await response.json();
+		if (!googleResponse.success) {
+			return res.json({
+				success: false,
+				code: 401,
+				message: "reCAPTCHA verification failed. Please try again.",
+			});
+		}
+	} catch (error) {
+		Log.info(`[webController.js][postContacUs] error: ${error}`);
+		if (!req.body["g-recaptcha-response"]) {
+			return res.json({
+				success: false,
+				code: 401,
+				message: "reCAPTCHA verification failed. Please try again.",
+			});
+		}
+	}
+
+	try {
+		const contactObject = new ContactUs({
+			firstName: firstName,
+			lastName: lastName,
+			phoneNumber: phoneNumber,
+			email: email,
+			idType: idType,
+			idNumber: idNumber,
+			idExpiry: idExpiry,
+		});
+
+		const storeContactUs = await contactObject.save();
+		if (storeContactUs) {
+			return res.json({
+				success: true,
+				code: 200,
+				message: "We have received your message. Thank you for choosing Doseal",
+			});
+		} else {
+			return res.json({
+				success: false,
+				code: 400,
+				message: "An error occurred while storing your information",
+			});
+		}
+	} catch (error) {
+		Log.info(`[webController.js][postContacUs] error: ${error}`);
+		return res.json({
+			success: false,
+			code: 500,
+			message: "An error occurred while storing your information",
+		});
+	}
 }
 
 async function postSignup(req, res) {
@@ -100,4 +192,5 @@ async function postSignup(req, res) {
 module.exports = {
 	getRegistrationPage,
 	postSignup,
+	postInitialSignup,
 };

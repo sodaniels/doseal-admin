@@ -12,10 +12,24 @@ const idExpiryDateValidator = (value) => {
 	return true;
 };
 
-const validateHelpDesk = [
-	body("title").notEmpty().isString().withMessage("Title is required."),
-	body("category").notEmpty().isString().withMessage("Category is required."),
-	body("content").notEmpty().isString().withMessage("Content is required."),
+const validateInitialSignup = [
+	body("email")
+		.notEmpty()
+		.withMessage("Email is required.")
+		.isEmail()
+		.withMessage("Invalid email format."),
+	body("password")
+		.notEmpty()
+		.withMessage("Password is required.")
+		.isString()
+		.isLength({ min: 8 })
+		.withMessage("Password must be at least 8 characters long."),
+	body("confirmPassword")
+		.notEmpty()
+		.withMessage("Confirm password is required.")
+		.isString()
+		.custom((value, { req }) => value === req.body.password)
+		.withMessage("Passwords do not match."),
 ];
 
 const validateNewsRoom = [
@@ -25,14 +39,7 @@ const validateNewsRoom = [
 	body("content").notEmpty().isString().withMessage("Content is required."),
 ];
 
-const validateNotification = [
-	body("title").notEmpty().isString().withMessage("Title is required."),
-	body("image").notEmpty().isString().withMessage("Image is required."),
-	body("excerpt").notEmpty().isString().withMessage("Excerpt is required."),
-	body("content").notEmpty().isString().withMessage("Content is required."),
-];
-
 module.exports = {
-	validateHelpDesk,
 	validateNewsRoom,
+	validateInitialSignup,
 };
