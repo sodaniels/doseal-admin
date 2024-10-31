@@ -8,7 +8,18 @@ const Page = require("../../models/page.model");
 const { Hash } = require("../../helpers/hash");
 const apiErrors = require("../../helpers/errors/errors");
 const errorMessages = require("../../helpers/error-messages");
+const { has } = require("lodash");
 const { handleValidationErrors } = require("../../helpers/validationHelper");
+const {
+	postEmail,
+} = require("../../services/mailers/sendEmailForLoginService");
+const {
+	getRedis,
+	setRedis,
+	removeRedis,
+	setRedisWithExpiry,
+} = require("../../helpers/redis");
+const { randId } = require("../../helpers/randId");
 
 const { RecaptchaV2 } = require("express-recaptcha");
 var recaptcha = new RecaptchaV2(process.env.SITE_KEY, process.env.SECRET_KEY);
@@ -26,18 +37,23 @@ async function getRegistrationPage(req, res) {
 }
 
 async function postInitialSignup(req, res) {
+	let codeSentViaEmail;
 	Log.info(
-		`[AuthApiController.js][postInitialSignup][${req.body.email}] \t initiating registration  `
+		`[AuthController.js][postInitialSignup][${req.body.email}] \t initiating registration  `
 	);
 	const validationError = handleValidationErrors(req, res);
 	if (validationError) {
-		const errorRes = await apiErrors.create(
-			errorMessages.errors.API_MESSAGE_SIGNUP_FAILED,
-			"POST",
-			validationError,
-			undefined
-		);
-		return res.status(400).json(errorRes);
+		// const errorRes = await apiErrors.create(
+		// 	errorMessages.errors.API_MESSAGE_SIGNUP_FAILED,
+		// 	"POST",
+		// 	validationError,
+		// 	undefined
+		// );
+		return res.status(200).json({
+			success: false,
+			code: 409,
+			errors: validationError,
+		});
 	}
 
 	const captchaResponse = req.body["g-recaptcha-response"];
@@ -81,21 +97,32 @@ async function postInitialSignup(req, res) {
 		}
 	}
 
-	let user = await User.findOne({
-		email: req.body.email,
-		registration: "COMPLETED",
-	});
-	if (user) {
-		return res.redirect(
-			"signin?message=You already have an account with us Kindly signin."
+	const { email, phoneNumber, password } = req.body;
+
+	const q = phoneNumber.slice(-9);
+
+	try {
+		let user = await User.findOne({
+			$or: [{ email: email }, { phoneNumber: { $regex: q, $options: "i" } }],
+			registration: "COMPLETED",
+		});
+		if (user) {
+			return res.redirect(
+				"signin?message=You already have an account with us Kindly signin."
+			);
+		}
+	} catch (error) {
+		Log.info(
+			`[AuthController.js][postInitialSignup][${email}] \t error: ${error}  `
 		);
 	}
 
 	try {
-		const passwd = await Hash(req.body.password);
+		const passwd = await Hash(password);
 
 		const userData = new User({
-			email: req.body.email,
+			phoneNumber: phoneNumber,
+			email: email,
 			password: passwd,
 			role: "Subscriber",
 			status: "Inactive",
@@ -103,8 +130,47 @@ async function postInitialSignup(req, res) {
 		const storeUser = await userData.save();
 		if (storeUser) {
 			Log.info(
-				`[AuthApiController.js][postInitialSignup][${req.body.email}] \t initial registration successful  `
+				`[AuthController.js][postInitialSignup][${email}] \t initial registration successful  `
 			);
+
+			const pin = randId();
+			const q = phoneNumber.slice(-9);
+			const redisKey = `otp_token_${q}`;
+
+			let message;
+
+			await setRedis(redisKey, pin);
+
+			Log.info(`[nigeriaAuthController.js][postInitialSignup][${pin}] \t`);
+
+			message = `Your Doseal verification code is ${pin}. 
+					It will expire in 5 minutes. If you did not request this code, 
+					ignore this message and do not share it with anyone`;
+
+			try {
+				Log.info(
+					`[nigeriaAuthController.js][postInitialSignup] \t sending OTP via email`
+				);
+				codeSentViaEmail = await postEmail(email, message);
+
+				if (has(codeSentViaEmail, "response")) {
+					console.log("codeSentViaEmail: " + JSON.stringify(codeSentViaEmail));
+					return res.json({
+						success: true,
+						code: 200,
+						message: "Initial registration successful",
+					});
+				} else {
+					return res.redirect(
+						"verify-account?message=Please check your email and verify your account.."
+					);
+				}
+			} catch (error) {
+				Log.info(
+					`[nigeriaAuthController.js][postInitialSignup] \t sending OTP via email: ${error}`
+				);
+			}
+
 			return res.json({
 				success: true,
 				code: 200,
@@ -119,7 +185,7 @@ async function postInitialSignup(req, res) {
 		}
 	} catch (error) {
 		Log.info(
-			`[AuthApiController.js][postInitialSignup][${req.body.email}] \t error saving initial registration  ${error}`
+			`[AuthController.js][postInitialSignup][${req.body.email}] \t error saving initial registration  ${error}`
 		);
 		return res.json({
 			success: false,

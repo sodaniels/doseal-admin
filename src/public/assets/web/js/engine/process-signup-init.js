@@ -9,6 +9,7 @@ $(document).ready(function () {
 
 		var $button = $(this);
 
+		var phoneNumber = $("#phoneNumber").val();
 		var email = $("#email").val();
 		var password = $("#password").val();
 		var confirmPassword = $("#confirmPassword").val();
@@ -16,6 +17,15 @@ $(document).ready(function () {
 		let emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
 		let captchaResponse = grecaptcha.getResponse();
+
+		if (phoneNumber === "" || phoneNumber === undefined) {
+			Swal.fire({
+				title: "Enter Phone Number",
+				text: "Please enter a phone number",
+				icon: "warning",
+			});
+			return false;
+		}
 
 		if (email === "" || email === undefined) {
 			Swal.fire({
@@ -53,7 +63,7 @@ $(document).ready(function () {
 			return false;
 		}
 
-		if (password !== confirmPassword ) {
+		if (password !== confirmPassword) {
 			Swal.fire({
 				title: "Password Mismatch",
 				text: "The password and the confirm password do not match",
@@ -61,8 +71,6 @@ $(document).ready(function () {
 			});
 			return false;
 		}
-		
-
 
 		if (captchaResponse === "" || captchaResponse === undefined) {
 			Swal.fire({
@@ -74,6 +82,7 @@ $(document).ready(function () {
 		}
 
 		const userData = {
+			phoneNumber: phoneNumber,
 			email: email,
 			password: password,
 			confirmPassword: confirmPassword,
@@ -96,10 +105,22 @@ $(document).ready(function () {
 				$("#loadingOverlay").css("display", "none");
 
 				$button.prop("disabled", false);
-				$button.html('<i class="la la-send"></i> Send');
+				$button.html('<i class="la la-send"></i> Submit');
+
+				if (result.code === 409) {
+					const errorMessages = errors
+						.map((error) => `${error.field}: ${error.message}`)
+						.join("\n");
+
+					Swal.fire({
+						title: "Validation Error",
+						text: errorMessages,
+						icon: "error",
+					});
+					return false;
+				}
 
 				if (result.code === 401) {
-					$("#loadingOverlay").css("display", "none");
 					Swal.fire({
 						title: "Security Check !!",
 						text: "Please click the 'I'm not a robot checkbox' to proceed",
@@ -128,7 +149,7 @@ $(document).ready(function () {
 						return false;
 					}
 				}
-			},
+			}
 		});
 	});
 });

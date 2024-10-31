@@ -13,6 +13,11 @@ const idExpiryDateValidator = (value) => {
 };
 
 const validateInitialSignup = [
+	body("phoneNumber")
+		.notEmpty()
+		.withMessage("Phone Number is required.")
+		.isMobilePhone()
+		.withMessage("Invalid Phone format."),
 	body("email")
 		.notEmpty()
 		.withMessage("Email is required.")
