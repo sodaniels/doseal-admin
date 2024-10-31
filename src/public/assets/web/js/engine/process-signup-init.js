@@ -1,5 +1,5 @@
 $(document).ready(function () {
-	$("#processSignupForm").click(function (e) {
+	$("#procesContactForm").click(function (e) {
 		e.preventDefault();
 		$.ajaxSetup({
 			headers: {
@@ -44,6 +44,15 @@ $(document).ready(function () {
 			return false;
 		}
 
+		if (password.length < 8) {
+			Swal.fire({
+				title: "Password is too weak",
+				text: "The password must be at least 8 characters",
+				icon: "warning",
+			});
+			return false;
+		}
+
 		if (password !== confirmPassword ) {
 			Swal.fire({
 				title: "Password Mismatch",
@@ -52,6 +61,8 @@ $(document).ready(function () {
 			});
 			return false;
 		}
+		
+
 
 		if (captchaResponse === "" || captchaResponse === undefined) {
 			Swal.fire({
@@ -65,6 +76,7 @@ $(document).ready(function () {
 		const userData = {
 			email: email,
 			password: password,
+			confirmPassword: confirmPassword,
 			"g-recaptcha-response": captchaResponse,
 		};
 

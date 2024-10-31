@@ -1,10 +1,11 @@
 const axios = require("axios");
 const { validationResult } = require("express-validator");
 const { Log } = require("../../helpers/Log");
+const User = require("../../models/user");
 const Admin = require("../../models/admin.model");
 const ContactUs = require("../../models/contact-us.model");
 const Page = require("../../models/page.model");
-
+const { Hash } = require("../../helpers/hash");
 const apiErrors = require("../../helpers/errors/errors");
 const errorMessages = require("../../helpers/error-messages");
 const { handleValidationErrors } = require("../../helpers/validationHelper");
@@ -25,6 +26,9 @@ async function getRegistrationPage(req, res) {
 }
 
 async function postInitialSignup(req, res) {
+	Log.info(
+		`[AuthApiController.js][postInitialSignup][${req.body.email}] \t initiating registration  `
+	);
 	const validationError = handleValidationErrors(req, res);
 	if (validationError) {
 		const errorRes = await apiErrors.create(
@@ -77,37 +81,50 @@ async function postInitialSignup(req, res) {
 		}
 	}
 
-	try {
-		const contactObject = new ContactUs({
-			firstName: firstName,
-			lastName: lastName,
-			phoneNumber: phoneNumber,
-			email: email,
-			idType: idType,
-			idNumber: idNumber,
-			idExpiry: idExpiry,
-		});
+	let user = await User.findOne({
+		email: req.body.email,
+		registration: "COMPLETED",
+	});
+	if (user) {
+		return res.redirect(
+			"signin?message=You already have an account with us Kindly signin."
+		);
+	}
 
-		const storeContactUs = await contactObject.save();
-		if (storeContactUs) {
+	try {
+		const passwd = await Hash(req.body.password);
+
+		const userData = new User({
+			email: req.body.email,
+			password: passwd,
+			role: "Subscriber",
+			status: "Inactive",
+		});
+		const storeUser = await userData.save();
+		if (storeUser) {
+			Log.info(
+				`[AuthApiController.js][postInitialSignup][${req.body.email}] \t initial registration successful  `
+			);
 			return res.json({
 				success: true,
 				code: 200,
-				message: "We have received your message. Thank you for choosing Doseal",
+				message: "Initial Registration successful",
 			});
 		} else {
 			return res.json({
 				success: false,
 				code: 400,
-				message: "An error occurred while storing your information",
+				message: "Initial Registration Failed",
 			});
 		}
 	} catch (error) {
-		Log.info(`[webController.js][postContacUs] error: ${error}`);
+		Log.info(
+			`[AuthApiController.js][postInitialSignup][${req.body.email}] \t error saving initial registration  ${error}`
+		);
 		return res.json({
 			success: false,
 			code: 500,
-			message: "An error occurred while storing your information",
+			message: "An error has occurred",
 		});
 	}
 }
