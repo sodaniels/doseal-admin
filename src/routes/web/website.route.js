@@ -23,6 +23,8 @@ router.post("/contact-us", webController.postContacUs);
 router.get("/legal/:category/:slug", webController.getPages);
 // downloads link
 router.get("/downloads", webController.getDownloads);
+// get pay bill
+router.get("/pay-bill", webController.getPayBill);
 
 
 module.exports = router;

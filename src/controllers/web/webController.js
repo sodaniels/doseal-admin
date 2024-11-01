@@ -154,6 +154,16 @@ async function getDownloads(req, res) {
 	});
 }
 
+async function getPayBill(req, res) {
+	return res.render("web/pay-bill", {
+		pageTitle: "Doseal Limited | Pay Bill",
+		path: "/",
+		errors: false,
+		errorMessage: false,
+		csrfToken: req.csrfToken(),
+	});
+}
+
 module.exports = {
 	getIndex,
 	getContactUs,
@@ -162,4 +172,5 @@ module.exports = {
 	postContacUs,
 	getPages,
 	getDownloads,
+	getPayBill,
 };
