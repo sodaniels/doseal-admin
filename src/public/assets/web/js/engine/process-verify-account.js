@@ -59,7 +59,16 @@ $(document).ready(function () {
 				$button.prop("disabled", false);
 				$button.html('<i class="la la-send"></i> Submit');
 
-				if (result.code === 200) {
+				if (result.code === 2000) {
+					Swal.fire({
+						title: "Sign in successful",
+						text: "You have successfully signed in",
+						icon: "success",
+					});
+					setTimeout(function () {
+						window.location.href = "pay-bill";
+					}, 2000);
+				} else if (result.code === 200) {
 					window.location.href = `complete-registration?token=${result.token}`;
 				} else if (result.code === 400) {
 					Swal.fire({

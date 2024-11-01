@@ -114,8 +114,10 @@ $(document).ready(function () {
 					return false;
 				}
 
-
 				if (result.code === 200) {
+					localStorage.setItem("phoneNumber", result.phoneNumber);
+					localStorage.setItem("email", result.email);
+
 					window.location.href = "verify-account";
 				} else {
 					if (result.code === 406) {

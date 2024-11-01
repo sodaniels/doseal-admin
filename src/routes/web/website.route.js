@@ -27,6 +27,8 @@ router.get("/downloads", webController.getDownloads);
 router.get("/pay-bill", webController.getPayBill);
 // ecg search
 router.get("/service-search", webController.getServiceSearch);
+// psot search-service
+router.post("/search-ecg-meter", webController.getServiceSearch);
 
 
 module.exports = router;

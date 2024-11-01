@@ -122,9 +122,9 @@ async function postInitiateSigin(req, res) {
 					message: "Incorrect email and password combination",
 				});
 			}
-			return bcrypt.compare(password);
+			return bcrypt.compare(password, iUser.password);
 		})
-		.then(async (result, iUser) => {
+		.then(async (result) => {
 			if (!result) {
 				// Password does not match
 				return res.json({
@@ -135,7 +135,7 @@ async function postInitiateSigin(req, res) {
 			}
 
 			// login worked
-			await processEmail(iUser, email, res);
+			await processEmail(user, email, res);
 		})
 		.catch((err) => {
 			console.log(err);
@@ -162,7 +162,7 @@ async function processEmail(user, email, res) {
 
 		await setRedis(redisKey, pin);
 
-		Log.info(`[nigeriaAuthController.js][postInitiateSigin][${pin}] \t`);
+		Log.info(`[AuthController.js][postInitiateSigin][${pin}] \t`);
 
 		message = `Your Doseal verification code is ${pin}. 
 				It will expire in 5 minutes. If you did not request this code, 
@@ -170,15 +170,15 @@ async function processEmail(user, email, res) {
 
 		try {
 			Log.info(
-				`[nigeriaAuthController.js][postInitiateSigin] \t sending OTP via email`
+				`[AuthController.js][postInitiateSigin] \t sending OTP via email`
 			);
 			codeSentViaEmail = await postEmail(email, message);
 
 			if (has(codeSentViaEmail, "response")) {
-				console.log("codeSentViaEmail: " + JSON.stringify(codeSentViaEmail));
-
 				return res.json({
 					success: true,
+					phoneNumber: phoneNumber,
+					email: user.email,
 					code: 200,
 					message: "Email sent successfully",
 				});
@@ -192,7 +192,7 @@ async function processEmail(user, email, res) {
 			}
 		} catch (error) {
 			Log.info(
-				`[nigeriaAuthController.js][postInitiateSigin] \t sending OTP via email: ${error}`
+				`[AuthController.js][postInitiateSigin] \t sending OTP via email: ${error}`
 			);
 			return res.json({
 				success: false,
@@ -290,7 +290,7 @@ async function postInitialSignup(req, res) {
 		return res.json({
 			success: false,
 			code: 500,
-			message: "An error occurred"
+			message: "An error occurred",
 		});
 	}
 
@@ -332,7 +332,7 @@ async function postInitialSignup(req, res) {
 
 			await setRedis(redisKey, pin);
 
-			Log.info(`[nigeriaAuthController.js][postInitialSignup][${pin}] \t`);
+			Log.info(`[AuthController.js][postInitialSignup][${pin}] \t`);
 
 			message = `Your Doseal verification code is ${pin}. 
 					It will expire in 5 minutes. If you did not request this code, 
@@ -340,7 +340,7 @@ async function postInitialSignup(req, res) {
 
 			try {
 				Log.info(
-					`[nigeriaAuthController.js][postInitialSignup] \t sending OTP via email`
+					`[AuthController.js][postInitialSignup] \t sending OTP via email`
 				);
 				codeSentViaEmail = await postEmail(email, message);
 
@@ -362,7 +362,7 @@ async function postInitialSignup(req, res) {
 				}
 			} catch (error) {
 				Log.info(
-					`[nigeriaAuthController.js][postInitialSignup] \t sending OTP via email: ${error}`
+					`[AuthController.js][postInitialSignup] \t sending OTP via email: ${error}`
 				);
 			}
 
@@ -493,16 +493,22 @@ async function postVerifyAccount(req, res) {
 		// remove redis code after verification
 		// await removeRedis(`otp_token_${q}`);
 
-		const token = encrypt(JSON.stringify(user._id));
-
-		return res.json({
-			success: true,
-			code: 200,
-			token: token,
-		});
+		if (user.registration === "COMPLETED") {
+			return res.json({
+				success: true,
+				code: 2000,
+			});
+		} else {
+			const token = encrypt(JSON.stringify(user._id));
+			return res.json({
+				success: true,
+				code: 200,
+				token: token,
+			});
+		}
 	} else {
 		Log.info(
-			`[nigeriaAuthController.js][postVerifyAccount][${phoneNumber}]${code}]\t .. wrong code`
+			`[AuthController.js][postVerifyAccount][${phoneNumber}]${code}]\t .. wrong code`
 		);
 		return res.json({
 			success: false,

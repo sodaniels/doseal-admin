@@ -173,6 +173,14 @@ async function getServiceSearch(req, res) {
 		csrfToken: req.csrfToken(),
 	});
 }
+
+async function postServiceSearch(req, res) {
+	
+
+}
+
+
+
 module.exports = {
 	getIndex,
 	getContactUs,
@@ -183,4 +191,5 @@ module.exports = {
 	getDownloads,
 	getPayBill,
 	getServiceSearch,
+	postServiceSearch,
 };

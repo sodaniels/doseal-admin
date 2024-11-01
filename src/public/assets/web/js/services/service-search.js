@@ -37,7 +37,7 @@ $(document).ready(function () {
 		$(this).text("Please wait...");
 
 		jQuery.ajax({
-			url: "../../initiate-signup",
+			url: "../../search-ecg-meter",
 			method: "post",
 			data: userData,
 
