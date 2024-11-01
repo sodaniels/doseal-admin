@@ -155,7 +155,7 @@ async function getDownloads(req, res) {
 }
 
 async function getPayBill(req, res) {
-	return res.render("web/pay-bill", {
+	return res.render("web/services/pay-bill", {
 		pageTitle: "Doseal Limited | Pay Bill",
 		path: "/",
 		errors: false,
@@ -164,6 +164,15 @@ async function getPayBill(req, res) {
 	});
 }
 
+async function getServiceSearch(req, res) {
+	return res.render("web/services/ecg-search", {
+		pageTitle: "Doseal Limited | Pay Bill",
+		path: "/",
+		errors: false,
+		errorMessage: false,
+		csrfToken: req.csrfToken(),
+	});
+}
 module.exports = {
 	getIndex,
 	getContactUs,
@@ -173,4 +182,5 @@ module.exports = {
 	getPages,
 	getDownloads,
 	getPayBill,
+	getServiceSearch,
 };

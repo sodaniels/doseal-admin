@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html
+	class="no-js"
+	lang="zxx">
+	<head>
+		<script
+			src="https://code.jquery.com/jquery-3.6.0.min.js"
+			crossorigin="anonymous"></script>
+		<%- include('../../includes/web/google-analytics.ejs') %>
+		<meta charset="utf-8" />
+		<meta
+			http-equiv="x-ua-compatible"
+			content="ie=edge" />
+		<title>Doseal Limited | Pay Bill</title>
+		<%- include('../../includes/web/meta.ejs') %> <%-
+		include('../../includes/web/head.ejs') %>
+		<body>
+			<!--********************************
+   		Code Start From Here
+	******************************** -->
+
+			<!--==============================
+     Preloader
+    ==============================-->
+			<div class="preloader">
+				<div class="preloader-inner">
+					<span></span>
+					<span></span>
+					<span></span>
+					<span></span>
+				</div>
+			</div>
+
+			<%- include('../../includes/web/mobile-menu-and-top.ejs') %>
+			<!--==============================
+	Header Area
+    ==============================-->
+			<header class="nav-header header-layout3 bg-white">
+				<%- include('../../includes/web/header.ejs') %>
+			</header>
+
+			<section
+				class="shop__area space"
+				style="margin-top: 10em">
+				<div class="container">
+					<div class="row align-items-center justify-content-end">
+						<div class="col-lg-2"></div>
+						<div class="col-lg-8">
+							<div class="contact-form-wrap">
+								<div class="title-area mb-30">
+									<h2 class="sec-title">Buy ECG</h2>
+									<p>
+										Search for a meter by entering the phone number linked to
+										the meter.
+									</p>
+								</div>
+								<form
+									action=""
+									method="POST"
+									id="processSignupForm"
+									class="contact-form ajax-contact">
+									<div class="row">
+										<div class="col-md-12">
+											<div class="form-group">
+												<input
+													type="tel"
+													class="form-control style-border"
+													name="phoneNumber"
+													id="phoneNumber"
+													placeholder="Phone Number* (233244000000)" />
+											</div>
+										</div>
+									</div>
+									<div class="form-btn col-12">
+										<button
+											type="button"
+											id="signUpBtn"
+											class="btn mt-20">
+											<span class="link-effect">
+												<span class="effect-1">NEXT</span>
+												<span class="effect-1">NEXT</span>
+											</span>
+										</button>
+									</div>
+									
+								</form>
+							</div>
+						</div>
+						<div class="col-lg-2"></div>
+					</div>
+				</div>
+			</section>
+			<!-- shop-area-end -->
+
+			<footer class="footer-wrapper footer-layout2 overflow-hidden">
+				<%- include('../../includes/web/footer.ejs') %>
+			</footer>
+
+			<!--********************************
+			Code End  Here
+	******************************** -->
+
+			<!-- Scroll To Top -->
+			<div class="scroll-top">
+				<svg
+					class="progress-circle svg-content"
+					width="100%"
+					height="100%"
+					viewBox="-1 -1 102 102">
+					<path
+						d="M50,1 a49,49 0 0,1 0,98 a49,49 0 0,1 0,-98"
+						style="
+							transition: stroke-dashoffset 10ms linear 0s;
+							stroke-dasharray: 307.919, 307.919;
+							stroke-dashoffset: 307.919;
+						"></path>
+				</svg>
+			</div>
+
+			<!-- Jquery -->
+			<script src="/assets/web/js/services/service-search.js"></script>
+			<script src="/assets/web/js/sweetalert2.all.min.js"></script>
+			<%- include('../../includes/web/jsfiles.ejs') %>
+		</body>
+	</head>
+</html>

@@ -25,6 +25,8 @@ router.get("/legal/:category/:slug", webController.getPages);
 router.get("/downloads", webController.getDownloads);
 // get pay bill
 router.get("/pay-bill", webController.getPayBill);
+// ecg search
+router.get("/service-search", webController.getServiceSearch);
 
 
 module.exports = router;
