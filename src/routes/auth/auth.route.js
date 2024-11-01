@@ -16,4 +16,10 @@ router.post(
 	authController.postInitialSignup
 );
 
+router.get("/verify-account", authController.getVerifyAccount);
+// verify code
+router.post("/verify-account", authController.postVerifyAccount);
+// complete registration
+router.get("/complete-registration", authController.getCompleteRegistration);
+
 module.exports = router;

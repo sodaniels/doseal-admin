@@ -8,7 +8,7 @@ const Page = require("../../models/page.model");
 const { Hash } = require("../../helpers/hash");
 const apiErrors = require("../../helpers/errors/errors");
 const errorMessages = require("../../helpers/error-messages");
-const { has } = require("lodash");
+const { has, result } = require("lodash");
 const { handleValidationErrors } = require("../../helpers/validationHelper");
 const {
 	postEmail,
@@ -20,6 +20,7 @@ const {
 	setRedisWithExpiry,
 } = require("../../helpers/redis");
 const { randId } = require("../../helpers/randId");
+const { encrypt } = require("../../helpers/crypt");
 
 const { RecaptchaV2 } = require("express-recaptcha");
 var recaptcha = new RecaptchaV2(process.env.SITE_KEY, process.env.SECRET_KEY);
@@ -37,18 +38,12 @@ async function getRegistrationPage(req, res) {
 }
 
 async function postInitialSignup(req, res) {
-	let codeSentViaEmail;
+	let codeSentViaEmail, uncompletedUser, storeUser;
 	Log.info(
 		`[AuthController.js][postInitialSignup][${req.body.email}] \t initiating registration  `
 	);
 	const validationError = handleValidationErrors(req, res);
 	if (validationError) {
-		// const errorRes = await apiErrors.create(
-		// 	errorMessages.errors.API_MESSAGE_SIGNUP_FAILED,
-		// 	"POST",
-		// 	validationError,
-		// 	undefined
-		// );
 		return res.status(200).json({
 			success: false,
 			code: 409,
@@ -118,16 +113,30 @@ async function postInitialSignup(req, res) {
 	}
 
 	try {
-		const passwd = await Hash(password);
-
-		const userData = new User({
-			phoneNumber: phoneNumber,
-			email: email,
-			password: passwd,
-			role: "Subscriber",
-			status: "Inactive",
+		uncompletedUser = await User.findOne({
+			$or: [{ email: email }, { phoneNumber: { $regex: q, $options: "i" } }],
+			registration: "INITIAL",
 		});
-		const storeUser = await userData.save();
+	} catch (error) {}
+
+	try {
+		const passwd = await Hash(password);
+		if (uncompletedUser) {
+			uncompletedUser.phoneNumber = phoneNumber;
+			uncompletedUser.email = email;
+			uncompletedUser.password = passwd;
+			storeUser = await uncompletedUser.save();
+		} else {
+			const userData = new User({
+				phoneNumber: phoneNumber,
+				email: email,
+				password: passwd,
+				role: "Subscriber",
+				status: "Inactive",
+			});
+			storeUser = await userData.save();
+		}
+
 		if (storeUser) {
 			Log.info(
 				`[AuthController.js][postInitialSignup][${email}] \t initial registration successful  `
@@ -155,15 +164,19 @@ async function postInitialSignup(req, res) {
 
 				if (has(codeSentViaEmail, "response")) {
 					console.log("codeSentViaEmail: " + JSON.stringify(codeSentViaEmail));
+
 					return res.json({
 						success: true,
 						code: 200,
-						message: "Initial registration successful",
+						message: "Email sent successfully",
 					});
 				} else {
-					return res.redirect(
-						"verify-account?message=Please check your email and verify your account.."
-					);
+					return res.json({
+						success: false,
+						code: 400,
+						message:
+							"Email could not be be sent. Please check your email and try again",
+					});
 				}
 			} catch (error) {
 				Log.info(
@@ -272,8 +285,67 @@ async function postSignup(req, res) {
 	}
 }
 
+async function getVerifyAccount(req, res) {
+	return res.render("web/auth/verify-account", {
+		pageTitle: "Doseal Limited | Verify Account",
+		path: "/verify-account",
+		errors: false,
+		errorMessage: false,
+		captcha: recaptcha.render(),
+		csrfToken: req.csrfToken(),
+	});
+}
+
+async function postVerifyAccount(req, res) {
+	const { phoneNumber, email, code } = req.body;
+
+	const q = phoneNumber.substr(-9);
+
+	const redisCode = await getRedis(`otp_token_${q}`);
+
+	if (redisCode && redisCode.toString() === code.toString()) {
+		let user = await User.findOne({
+			$or: [{ email: email }, { phoneNumber: { $regex: q, $options: "i" } }],
+		});
+
+		// remove redis code after verification
+		// await removeRedis(`otp_token_${q}`);
+
+		const token = encrypt(JSON.stringify(user._id));
+
+		return res.json({
+			success: true,
+			code: 200,
+			token: token,
+		});
+	} else {
+		Log.info(
+			`[nigeriaAuthController.js][postVerifyAccount][${phoneNumber}]${code}]\t .. wrong code`
+		);
+		return res.json({
+			success: false,
+			code: 400,
+			message: "Invalid code",
+		});
+	}
+}
+
+async function getCompleteRegistration(req, res) {
+	return res.render("web/auth/complete-registration", {
+		pageTitle: "Doseal Limited | Complete Registration",
+		path: "/complete-registration",
+		errors: false,
+		errorMessage: false,
+		captcha: recaptcha.render(),
+		csrfToken: req.csrfToken(),
+	});
+}
+
 module.exports = {
 	getRegistrationPage,
 	postSignup,
 	postInitialSignup,
+	getVerifyAccount,
+	postVerifyAccount,
+	getCompleteRegistration,
 };

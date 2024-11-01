@@ -117,6 +117,8 @@ $(document).ready(function () {
 			return false;
 		}
 
+		
+
 		const userData = {
 			firstName: firstName,
 			lastName: lastName,

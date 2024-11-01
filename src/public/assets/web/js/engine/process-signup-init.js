@@ -89,6 +89,9 @@ $(document).ready(function () {
 			"g-recaptcha-response": captchaResponse,
 		};
 
+		localStorage.setItem("phoneNumber", phoneNumber);
+		localStorage.setItem("email", email);
+
 		$("#loadingOverlay").css("display", "flex");
 
 		$(this).prop("disabled", true);
@@ -130,14 +133,7 @@ $(document).ready(function () {
 				}
 
 				if (result.code === 200) {
-					Swal.fire({
-						title: "Message Received !!",
-						text: "We recieved your message successfully.",
-						icon: "success",
-					});
-
-					document.getElementById("contact-form").reset(); // Reset the form
-					grecaptcha.reset(); // Reset the reCAPTCHA
+					window.location.href = "verify-account";
 				} else {
 					if (result.code === 406) {
 						$("#loadingOverlay").css("display", "none");
@@ -149,7 +145,7 @@ $(document).ready(function () {
 						return false;
 					}
 				}
-			}
+			},
 		});
 	});
 });
