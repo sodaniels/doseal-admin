@@ -1,9 +1,17 @@
 const axios = require("axios");
 const { validationResult } = require("express-validator");
+
 const { Log } = require("../../helpers/Log");
 const Admin = require("../../models/admin.model");
 const ContactUs = require("../../models/contact-us.model");
 const Page = require("../../models/page.model");
+const { handleValidationErrors } = require("../../helpers/validationHelper");
+const apiErrors = require("../../helpers/errors/errors");
+const errorMessages = require("../../helpers/error-messages");
+const ServiceCode = require("../../constants/serviceCode");
+
+const RestServices = require("../../services/api/RestServices");
+const restServices = new RestServices();
 
 const { RecaptchaV2 } = require("express-recaptcha");
 var recaptcha = new RecaptchaV2(process.env.SITE_KEY, process.env.SECRET_KEY);
@@ -175,11 +183,52 @@ async function getServiceSearch(req, res) {
 }
 
 async function postServiceSearch(req, res) {
+	let hubtelResponse;
+	const validationError = handleValidationErrors(req, res);
+	if (validationError) {
+		const errorRes = await apiErrors.create(
+			errorMessages.errors.API_MESSAGE_ECG_ACCOUNT_VALIDATION_FAILED,
+			"POST",
+			validationError,
+			undefined
+		);
+		return res.json(errorRes);
+	}
+
+	req.headers["Authorization"] = `Bearer ${req.cookies.jwt}`;
+
+	try {
+		Log.info(
+			`[ApiController.js][postHubtelEcgMeterSearch]\t incoming ecg meter search request: ` +
+				req.ip
+		);
+
+		hubtelResponse = await restServices.postHubtelEcgMeterSearchService(
+			req.body.phoneNumber
+		);
+		if (hubtelResponse) {
+			if (hubtelResponse.ResponseCode === "0000") {
+				hubtelResponse["success"] = true;
+				return res.json(hubtelResponse);
+			}
+			return res.json(hubtelResponse);
+		}
+		return res.json({
+			success: false,
+			message: ServiceCode.FAILED,
+		});
+	} catch (error) {
+		return res.json({
+			success: false,
+			error: error.message,
+			message: ServiceCode.ERROR_OCCURED,
+		});
+	}
+
+	const user = req.session.user;
+
 	
-
 }
-
-
 
 module.exports = {
 	getIndex,

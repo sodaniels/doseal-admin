@@ -11,6 +11,10 @@
 		<meta
 			http-equiv="x-ua-compatible"
 			content="ie=edge" />
+		<meta
+			name="csrf-token"
+			content="<%= csrfToken %>" />
+
 		<title>Doseal Limited | Pay Bill</title>
 		<%- include('../../includes/web/meta.ejs') %> <%-
 		include('../../includes/web/head.ejs') %>
@@ -82,7 +86,6 @@
 											</span>
 										</button>
 									</div>
-									
 								</form>
 							</div>
 						</div>

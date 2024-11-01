@@ -491,10 +491,9 @@ async function postVerifyAccount(req, res) {
 		});
 
 		// remove redis code after verification
-		// await removeRedis(`otp_token_${q}`);
+		await removeRedis(`otp_token_${q}`);
 
 		if (user.registration === "COMPLETED") {
-
 			const authToken = await helpers.createToken(user._id);
 
 			res.cookie("jwt", authToken, {
@@ -502,22 +501,21 @@ async function postVerifyAccount(req, res) {
 				secure: true,
 				maxAge: 2 * 60 * 60 * 1000,
 			});
-	
+
 			const iUser = {
-				_id: user.user_id,
+				_id: user._id,
 				firstName: user.firstName,
 				middlename: user.middleName ? agent.middleName : undefined,
 				lastName: user.lastName,
 				phoneNumber: user.phoneNumber,
-				type: user.type,
+				type: user.role,
 				email: user.email,
-				token: authToken,
 			};
-	
+
 			req.session.isLoggedIn = true;
 			req.session.user = iUser;
 			req.session.lastloggedIn = Date.now();
-	
+
 			const timeOfLogin = Date.now();
 			user.isLoggedIn = timeOfLogin;
 			await user.save();

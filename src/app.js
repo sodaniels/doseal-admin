@@ -9,8 +9,7 @@ const session = require("express-session");
 const flash = require("express-flash");
 const MongoDBStore = require("connect-mongodb-session")(session);
 const cookieParser = require("cookie-parser");
-const csrf = require('@dr.pogodin/csurf')
-
+const csrf = require("@dr.pogodin/csurf");
 
 const websiteRoutes = require("./routes/web/website.route");
 
@@ -30,7 +29,6 @@ const sessionStore = new MongoDBStore({
 });
 
 const csrfProtection = csrf();
-
 
 app.use(express.urlencoded({ extended: true }));
 
@@ -52,7 +50,28 @@ app.use(
 app.use(flash());
 
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }))
+app.use(bodyParser.urlencoded({ extended: true }));
+
+
+// Auto logout middleware
+app.use((req, res, next) => {
+	const maxInactiveTime = 120 * 60 * 1000; // 15 minutes in milliseconds
+	if (
+		req.session.lastActive &&
+		Date.now() - req.session.lastActive > maxInactiveTime
+	) {
+		// If user has been inactive for too long, destroy the session and log them out
+		req.session.destroy((err) => {
+			if (err) {
+				Log.info("Error destroying session:", err);
+			}
+			res.redirect("/signin"); // Redirect to login page after logout
+		});
+	} else {
+		req.session.lastActive = Date.now(); // Update last active time
+		next(); // Move to next middleware
+	}
+});
 
 
 app.use(csrfProtection);
@@ -70,7 +89,6 @@ app.use((req, res, next) => {
 app.use("/", websiteRoutes);
 
 app.use("/", authRoutes);
-
 
 mongoose
 	.connect(
