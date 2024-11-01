@@ -2,6 +2,7 @@ const axios = require("axios");
 const { Log } = require("./Log");
 const https = require("https");
 require("dotenv").config();
+const jwt = require("jsonwebtoken");
 
 class Helpers {
 	constructor() {}
@@ -173,7 +174,16 @@ class Helpers {
 		return Number(amount).toFixed(2);
 	}
 
-	
+	async createToken(user_id) {
+		const jwtSecret = process.env.JWT_TOKEN;
+		const expiresIn = process.env.EXPIRES_IN;
+
+		const acccess_token = jwt.sign({ user_id }, jwtSecret, {
+			expiresIn,
+			issuer: process.env.APP_NAME,
+		});
+		return acccess_token;
+	}
 }
 
 module.exports = Helpers;

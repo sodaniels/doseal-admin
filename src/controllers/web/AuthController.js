@@ -20,7 +20,9 @@ const {
 	setRedisWithExpiry,
 } = require("../../helpers/redis");
 const { randId } = require("../../helpers/randId");
-const { encrypt } = require("../../helpers/crypt");
+const { encrypt, decrypt } = require("../../helpers/crypt");
+const Helpers = require("../../helpers/helper");
+const helpers = new Helpers();
 
 const { RecaptchaV2 } = require("express-recaptcha");
 var recaptcha = new RecaptchaV2(process.env.SITE_KEY, process.env.SECRET_KEY);
@@ -340,6 +342,63 @@ async function getCompleteRegistration(req, res) {
 		csrfToken: req.csrfToken(),
 	});
 }
+async function postCompleteRegistration(req, res) {
+	const { firstName, lastName, idType, idNumbe, idExpiry, token } = req.body;
+
+	const _id = JSON.parse(decrypt(token));
+
+	let user = await User.findOne({ _id: _id });
+
+	user.firstName = firstName;
+	user.lastName = lastName;
+	user.idType = idType;
+	user.idNumbe = idNumbe;
+	user.idExpiry = idExpiry;
+	const updateUser = await user.save();
+	if (updateUser) {
+		const authToken = await helpers.createToken(user._id);
+
+		res.cookie("jwt", authToken, {
+			httpOnly: true,
+			secure: true,
+			maxAge: 2 * 60 * 60 * 1000,
+		});
+
+		const iUser = {
+			_id: user.user_id,
+			firstName: user.firstName,
+			middlename: user.middleName ? agent.middleName : undefined,
+			lastName: user.lastName,
+			phoneNumber: user.phoneNumber,
+			type: user.type,
+			email: user.email,
+			token: authToken,
+		};
+
+		req.session.isLoggedIn = true;
+		req.session.user = iUser;
+		req.session.lastloggedIn = Date.now();
+
+		const timeOfLogin = Date.now();
+		user.isLoggedIn = timeOfLogin;
+		user.registration = "COMPLETED";
+		await user.save();
+
+		req.headers["Authorization"] = `Bearer ${authToken}`;
+
+		return res.json({
+			success: true,
+			code: 200,
+			message: "Account created successfully",
+		});
+	} else {
+		return res.json({
+			success: falsae,
+			code: 400,
+			token: token,
+		});
+	}
+}
 
 module.exports = {
 	getRegistrationPage,
@@ -348,4 +407,5 @@ module.exports = {
 	getVerifyAccount,
 	postVerifyAccount,
 	getCompleteRegistration,
+	postCompleteRegistration,
 };

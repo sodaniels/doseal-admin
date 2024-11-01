@@ -60,7 +60,7 @@ $(document).ready(function () {
 				$button.html('<i class="la la-send"></i> Submit');
 
 				if (result.code === 200) {
-					window.location.href = `complete-registration?token${result.token}`;
+					window.location.href = `complete-registration?token=${result.token}`;
 				} else if (result.code === 400) {
 					Swal.fire({
 						title: "Invalid Code",

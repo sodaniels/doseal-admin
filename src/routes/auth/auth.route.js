@@ -21,5 +21,7 @@ router.get("/verify-account", authController.getVerifyAccount);
 router.post("/verify-account", authController.postVerifyAccount);
 // complete registration
 router.get("/complete-registration", authController.getCompleteRegistration);
+// post complete registration
+router.post("/complete-registration", authController.postCompleteRegistration);
 
 module.exports = router;

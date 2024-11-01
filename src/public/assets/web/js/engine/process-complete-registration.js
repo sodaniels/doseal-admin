@@ -7,19 +7,16 @@ $(document).ready(function () {
 			},
 		});
 
+		const urlParams = new URLSearchParams(window.location.search);
+		const token = urlParams.get('token')
+
 		var $button = $(this);
 
 		var firstName = $("#firstName").val();
 		var lastName = $("#lastName").val();
-		var phoneNumber = $("#phoneNumber").val();
-		var email = $("#email").val();
 		var idType = $("#idType").val();
 		var idNumber = $("#idNumber").val();
 		var idExpiry = $("#idExpiry").val();
-
-		let emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-
-		let captchaResponse = grecaptcha.getResponse();
 
 		let inputDate = new Date(idExpiry);
 		let currentDate = new Date();
@@ -40,33 +37,6 @@ $(document).ready(function () {
 			Swal.fire({
 				title: "Enter Last Name",
 				text: "Please enter your last name",
-				icon: "warning",
-			});
-			return false;
-		}
-
-		if (phoneNumber === "" || phoneNumber === undefined) {
-			Swal.fire({
-				title: "Enter Phone Number",
-				text: "Please enter your phone number",
-				icon: "warning",
-			});
-			return false;
-		}
-
-		if (email === "" || email === undefined) {
-			Swal.fire({
-				title: "Enter Email",
-				text: "Please enter your email address",
-				icon: "warning",
-			});
-			return false;
-		}
-
-		if (email && !emailPattern.test(email)) {
-			Swal.fire({
-				title: "Invlid Email Address",
-				text: "The email address you entered is not valid",
 				icon: "warning",
 			});
 			return false;
@@ -108,26 +78,13 @@ $(document).ready(function () {
 			return false;
 		}
 
-		if (captchaResponse === "" || captchaResponse === undefined) {
-			Swal.fire({
-				title: "Missing Security Response",
-				text: "Please select the checkbox to indicate you are a human",
-				icon: "warning",
-			});
-			return false;
-		}
-
-		
-
 		const userData = {
 			firstName: firstName,
 			lastName: lastName,
-			phoneNumber: phoneNumber,
-			email: email,
 			idType: idType,
 			idNumber: idNumber,
 			idExpiry: idExpiry,
-			"g-recaptcha-response": captchaResponse,
+			token: token,
 		};
 
 		$("#loadingOverlay").css("display", "flex");
@@ -136,7 +93,7 @@ $(document).ready(function () {
 		$(this).text("Please wait...");
 
 		jQuery.ajax({
-			url: "../../signup",
+			url: "../../complete-registration",
 			method: "post",
 			data: userData,
 
@@ -146,7 +103,7 @@ $(document).ready(function () {
 				$("#loadingOverlay").css("display", "none");
 
 				$button.prop("disabled", false);
-				$button.html('<i class="la la-send"></i> Send');
+				$button.html('<i class="la la-send"></i> SUBMIT');
 
 				if (result.code === 401) {
 					$("#loadingOverlay").css("display", "none");
