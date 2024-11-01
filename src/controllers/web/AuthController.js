@@ -1,5 +1,9 @@
 const axios = require("axios");
 const { validationResult } = require("express-validator");
+const { has, result } = require("lodash");
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+
 const { Log } = require("../../helpers/Log");
 const User = require("../../models/user");
 const Admin = require("../../models/admin.model");
@@ -8,7 +12,6 @@ const Page = require("../../models/page.model");
 const { Hash } = require("../../helpers/hash");
 const apiErrors = require("../../helpers/errors/errors");
 const errorMessages = require("../../helpers/error-messages");
-const { has, result } = require("lodash");
 const { handleValidationErrors } = require("../../helpers/validationHelper");
 const {
 	postEmail,
@@ -37,6 +40,176 @@ async function getRegistrationPage(req, res) {
 		captcha: recaptcha.render(),
 		csrfToken: req.csrfToken(),
 	});
+}
+
+async function getSigninPage(req, res) {
+	return res.render("web/auth/signin", {
+		pageTitle: "Doseal Limited | Sign In",
+		path: "/signin",
+		errors: false,
+		errorMessage: false,
+		SITE_KEY: process.env.SITE_KEY,
+		captcha: recaptcha.render(),
+		csrfToken: req.csrfToken(),
+	});
+}
+
+async function postInitiateSigin(req, res) {
+	let codeSentViaEmail, user, storeUser;
+	Log.info(
+		`[AuthController.js][postInitiateSigin][${req.body.email}] \t initiating signin  `
+	);
+	const validationError = handleValidationErrors(req, res);
+	if (validationError) {
+		return res.status(200).json({
+			success: false,
+			code: 409,
+			errors: validationError,
+		});
+	}
+
+	const captchaResponse = req.body["g-recaptcha-response"];
+	const secret_key = process.env.SECRET_KEY;
+
+	if (!req.body["g-recaptcha-response"]) {
+		return res.json({
+			success: false,
+			code: 401,
+			message: "Please select the security check",
+		});
+	}
+
+	try {
+		const url = `https://www.google.com/recaptcha/api/siteverify?secret=${secret_key}&response=${captchaResponse}`;
+		const requestOptions = {
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify({
+				secret: secret_key,
+				response: captchaResponse,
+			}),
+		};
+		const response = await fetch(url, requestOptions);
+		const googleResponse = await response.json();
+		if (!googleResponse.success) {
+			return res.json({
+				success: false,
+				code: 401,
+				message: "reCAPTCHA verification failed. Please try again.",
+			});
+		}
+	} catch (error) {
+		Log.info(`[webController.js][postInitiateSigin] error: ${error}`);
+		if (!req.body["g-recaptcha-response"]) {
+			return res.json({
+				success: false,
+				code: 401,
+				message: "reCAPTCHA verification failed. Please try again.",
+			});
+		}
+	}
+
+	const { email, password } = req.body;
+
+	User.findOne({ email: email, registration: "COMPLETED" })
+		.then((iUser) => {
+			user = iUser;
+			if (!user) {
+				// User not found
+				return res.json({
+					success: false,
+					code: 403,
+					message: "Incorrect email and password combination",
+				});
+			}
+			return bcrypt.compare(password);
+		})
+		.then(async (result, iUser) => {
+			if (!result) {
+				// Password does not match
+				return res.json({
+					success: false,
+					code: 403,
+					message: "Incorrect email and password combination",
+				});
+			}
+
+			// login worked
+			await processEmail(iUser, email, res);
+		})
+		.catch((err) => {
+			console.log(err);
+			return res.json({
+				success: false,
+				code: 500,
+				message: "An error occurred.",
+			});
+		});
+}
+
+async function processEmail(user, email, res) {
+	try {
+		Log.info(
+			`[AuthController.js][postInitiateSigin][${email}] \t initial registration successful  `
+		);
+
+		const pin = randId();
+		const phoneNumber = user.phoneNumber;
+		const q = phoneNumber.slice(-9);
+		const redisKey = `otp_token_${q}`;
+
+		let message;
+
+		await setRedis(redisKey, pin);
+
+		Log.info(`[nigeriaAuthController.js][postInitiateSigin][${pin}] \t`);
+
+		message = `Your Doseal verification code is ${pin}. 
+				It will expire in 5 minutes. If you did not request this code, 
+				ignore this message and do not share it with anyone`;
+
+		try {
+			Log.info(
+				`[nigeriaAuthController.js][postInitiateSigin] \t sending OTP via email`
+			);
+			codeSentViaEmail = await postEmail(email, message);
+
+			if (has(codeSentViaEmail, "response")) {
+				console.log("codeSentViaEmail: " + JSON.stringify(codeSentViaEmail));
+
+				return res.json({
+					success: true,
+					code: 200,
+					message: "Email sent successfully",
+				});
+			} else {
+				return res.json({
+					success: false,
+					code: 400,
+					message:
+						"Email could not be be sent. Please check your email and try again",
+				});
+			}
+		} catch (error) {
+			Log.info(
+				`[nigeriaAuthController.js][postInitiateSigin] \t sending OTP via email: ${error}`
+			);
+			return res.json({
+				success: false,
+				code: 500,
+				message: "An error has occurred",
+			});
+		}
+	} catch (error) {
+		Log.info(
+			`[AuthController.js][postInitiateSigin][${email}] \t error saving initial registration  ${error}`
+		);
+		return res.json({
+			success: false,
+			code: 500,
+			message: "An error has occurred",
+		});
+	}
 }
 
 async function postInitialSignup(req, res) {
@@ -104,14 +277,21 @@ async function postInitialSignup(req, res) {
 			registration: "COMPLETED",
 		});
 		if (user) {
-			return res.redirect(
-				"signin?message=You already have an account with us Kindly signin."
-			);
+			return res.json({
+				success: false,
+				code: 402,
+				message: "Accout already registered. Please sign in instead.",
+			});
 		}
 	} catch (error) {
 		Log.info(
 			`[AuthController.js][postInitialSignup][${email}] \t error: ${error}  `
 		);
+		return res.json({
+			success: false,
+			code: 500,
+			message: "An error occurred"
+		});
 	}
 
 	try {
@@ -342,6 +522,7 @@ async function getCompleteRegistration(req, res) {
 		csrfToken: req.csrfToken(),
 	});
 }
+
 async function postCompleteRegistration(req, res) {
 	const { firstName, lastName, idType, idNumbe, idExpiry, token } = req.body;
 
@@ -382,6 +563,7 @@ async function postCompleteRegistration(req, res) {
 		const timeOfLogin = Date.now();
 		user.isLoggedIn = timeOfLogin;
 		user.registration = "COMPLETED";
+		user.status = "Active";
 		await user.save();
 
 		req.headers["Authorization"] = `Bearer ${authToken}`;
@@ -408,4 +590,6 @@ module.exports = {
 	postVerifyAccount,
 	getCompleteRegistration,
 	postCompleteRegistration,
+	getSigninPage,
+	postInitiateSigin,
 };

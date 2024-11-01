@@ -8,7 +8,7 @@ $(document).ready(function () {
 		});
 
 		const urlParams = new URLSearchParams(window.location.search);
-		const token = urlParams.get('token')
+		const token = urlParams.get("token");
 
 		var $button = $(this);
 
@@ -116,14 +116,17 @@ $(document).ready(function () {
 				}
 
 				if (result.code === 200) {
+					localStorage.removeItem("phoneNumber");
+					localStorage.removeItem("email");
+
 					Swal.fire({
-						title: "Message Received !!",
-						text: "We recieved your message successfully.",
+						title: "Your account is created successfully",
+						text: "You can now proceed to use our services.",
 						icon: "success",
 					});
-
-					document.getElementById("contact-form").reset(); // Reset the form
-					grecaptcha.reset(); // Reset the reCAPTCHA
+					setTimeout(function () {
+						window.location.href = "pay-bill";
+					}, 3000);
 				} else {
 					if (result.code === 406) {
 						$("#loadingOverlay").css("display", "none");

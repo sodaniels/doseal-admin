@@ -7,7 +7,7 @@
 		<meta
 			http-equiv="x-ua-compatible"
 			content="ie=edge" />
-		<title>Doseal Limited | Sign Up</title>
+		<title>Doseal Limited | Sign In</title>
 		<%- include('../../includes/web/meta.ejs') %>
 
 		<!-- Latest jQuery from CDN -->
@@ -140,6 +140,7 @@
     ==============================-->
 			<div class="contact-area-1 space bg-theme">
 				<div
+					id="page-image"
 					class="contact-map shape-mockup wow img-custom-anim-left"
 					data-wow-duration="1.5s"
 					data-wow-delay="0.2s"
@@ -151,33 +152,23 @@
 						alt="icon" />
 				</div>
 				<div class="container">
-					<div class="row align-items-center justify-content-end">
+					<div
+						class="row align-items-center justify-content-end"
+						style="margin-top: 5em">
 						<div class="col-lg-6">
 							<div class="contact-form-wrap">
 								<div class="title-area mb-30">
-									<h2 class="sec-title">Create An Account</h2>
+									<h2 class="sec-title">Sign In</h2>
 									<p>
-										Great! We're excited you want to join our family. Create an
-										account and get started.
+										Provide your email address and password in the fields below
 									</p>
 								</div>
 								<form
 									action=""
 									method="POST"
-									id="processSignupForm"
+									id="processSiginForm"
 									class="contact-form ajax-contact">
 									<div class="row">
-										<div class="col-md-12">
-											<div class="form-group">
-												<input
-													type="tel"
-													class="form-control style-border"
-													name="phoneNumber"
-													id="phoneNumber"
-													placeholder="Phone Number*" />
-											</div>
-										</div>
-
 										<div class="col-md-12">
 											<div class="form-group">
 												<input
@@ -196,18 +187,7 @@
 													class="form-control style-border"
 													name="password"
 													id="password"
-													placeholder="Choose a  pasword*" />
-											</div>
-										</div>
-
-										<div class="col-md-12">
-											<div class="form-group">
-												<input
-													type="password"
-													class="form-control style-border"
-													name="confirmPassword"
-													id="confirmPassword"
-													placeholder="Confirm the pasword*" />
+													placeholder="Password*" />
 											</div>
 										</div>
 
@@ -219,25 +199,26 @@
 											</div>
 										</div>
 									</div>
+
 									<div class="form-btn col-12">
 										<button
 											type="button"
-											id="signUpBtn"
+											id="procesSiginUserForm"
 											class="btn mt-20">
 											<span class="link-effect">
-												<span class="effect-1">SUBMIT</span>
-												<span class="effect-1">SUBMIT</span>
+												<span class="effect-1">SIGN IN</span>
+												<span class="effect-1">SIGN IN</span>
 											</span>
 										</button>
 									</div>
 									<div class="form-btn col-12">
 										<br /><br />
 										<p style="font-size: 1.3em; color: black">
-											Already have an account?
+											Don't have an account?
 											<span
 												style="cursor: pointer"
-												onclick="window.location.href='signin'"
-												>Sign In</span
+												onclick="window.location.href='signup'"
+												>Sign Up</span
 											>
 										</p>
 									</div>
@@ -311,7 +292,7 @@
 			</div>
 
 			<!-- Jquery -->
-			<script src="/assets/web/js/engine/process-signup-init.js"></script>
+			<script src="/assets/web/js/engine/signin.js"></script>
 			<script src="/assets/web/js/sweetalert2.all.min.js"></script>
 			<%- include('../../includes/web/jsfiles.ejs') %>
 		</body>

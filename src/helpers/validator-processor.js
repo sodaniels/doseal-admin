@@ -27,7 +27,7 @@ const validateInitialSignup = [
 		.notEmpty()
 		.withMessage("Password is required.")
 		.isString()
-		.isLength({ min: 8 })
+		.isLength({ min: 8, max: 30 })
 		.withMessage("Password must be at least 8 characters long."),
 	body("confirmPassword")
 		.notEmpty()

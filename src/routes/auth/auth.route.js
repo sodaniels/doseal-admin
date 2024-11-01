@@ -10,8 +10,12 @@ const validator = require("../../helpers/validator-processor");
 
 //initial signup
 router.get("/signup", authController.getRegistrationPage);
+//sign in
+router.get("/signin", authController.getSigninPage);
+//post initiate signin
+router.post("/initiate-signin", authController.postInitiateSigin);
 router.post(
-	"/initial-signup",
+	"/initiate-signup",
 	validator.validateInitialSignup,
 	authController.postInitialSignup
 );

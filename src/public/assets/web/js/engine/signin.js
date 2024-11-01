@@ -1,5 +1,5 @@
 $(document).ready(function () {
-	$("#signUpBtn").click(function (e) {
+	$("#procesSiginUserForm").click(function (e) {
 		e.preventDefault();
 		$.ajaxSetup({
 			headers: {
@@ -9,23 +9,12 @@ $(document).ready(function () {
 
 		var $button = $(this);
 
-		var phoneNumber = $("#phoneNumber").val();
 		var email = $("#email").val();
 		var password = $("#password").val();
-		var confirmPassword = $("#confirmPassword").val();
 
 		let emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
 		let captchaResponse = grecaptcha.getResponse();
-
-		if (phoneNumber === "" || phoneNumber === undefined) {
-			Swal.fire({
-				title: "Enter Phone Number",
-				text: "Please enter a phone number",
-				icon: "warning",
-			});
-			return false;
-		}
 
 		if (email === "" || email === undefined) {
 			Swal.fire({
@@ -54,24 +43,6 @@ $(document).ready(function () {
 			return false;
 		}
 
-		if (password.length < 8) {
-			Swal.fire({
-				title: "Password is too weak",
-				text: "The password must be at least 8 characters",
-				icon: "warning",
-			});
-			return false;
-		}
-
-		if (password !== confirmPassword) {
-			Swal.fire({
-				title: "Password Mismatch",
-				text: "The password and the confirm password do not match",
-				icon: "warning",
-			});
-			return false;
-		}
-
 		if (captchaResponse === "" || captchaResponse === undefined) {
 			Swal.fire({
 				title: "Missing Security Response",
@@ -82,23 +53,18 @@ $(document).ready(function () {
 		}
 
 		const userData = {
-			phoneNumber: phoneNumber,
 			email: email,
 			password: password,
-			confirmPassword: confirmPassword,
 			"g-recaptcha-response": captchaResponse,
 		};
-
-		localStorage.setItem("phoneNumber", phoneNumber);
-		localStorage.setItem("email", email);
 
 		$("#loadingOverlay").css("display", "flex");
 
 		$(this).prop("disabled", true);
-		$(this).text("Please wait...");
+		$(this).text("Authenticating...");
 
 		jQuery.ajax({
-			url: "../../initiate-signup",
+			url: "../../initiate-signin",
 			method: "post",
 			data: userData,
 
@@ -131,15 +97,23 @@ $(document).ready(function () {
 					});
 					return false;
 				}
-
-				if (result.code === 402) {
+				if (result.code === 403) {
 					Swal.fire({
-						title: "Account Exist!",
-						text: result.message,
+						title: "Invalid Credential !!",
+						text: "Invlide email and password combination",
 						icon: "warning",
 					});
 					return false;
 				}
+				if (result.code === 500) {
+					Swal.fire({
+						title: "An error occurred",
+						text: "An error occurred. Please try again",
+						icon: "warning",
+					});
+					return false;
+				}
+
 
 				if (result.code === 200) {
 					window.location.href = "verify-account";
