@@ -183,6 +183,7 @@ async function getServiceSearch(req, res) {
 }
 
 async function postServiceSearch(req, res) {
+	const { phoneNumber } = req.body;
 	let hubtelResponse;
 	const validationError = handleValidationErrors(req, res);
 	if (validationError) {
@@ -204,14 +205,23 @@ async function postServiceSearch(req, res) {
 		);
 
 		hubtelResponse = await restServices.postHubtelEcgMeterSearchService(
-			req.body.phoneNumber
+			phoneNumber
 		);
 		if (hubtelResponse) {
 			if (hubtelResponse.ResponseCode === "0000") {
-				hubtelResponse["success"] = true;
-				return res.json(hubtelResponse);
+				return res.json({
+					success: true,
+					code: 200,
+					message: "Successful",
+					phoneNumber: phoneNumber,
+					data: hubtelResponse.Data,
+				});
 			}
-			return res.json(hubtelResponse);
+			return res.json({
+				success: false,
+				code: 400,
+				data: [],
+			});
 		}
 		return res.json({
 			success: false,
@@ -226,8 +236,6 @@ async function postServiceSearch(req, res) {
 	}
 
 	const user = req.session.user;
-
-	
 }
 
 module.exports = {

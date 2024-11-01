@@ -10,12 +10,6 @@ $(document).ready(function () {
 		var $button = $(this);
 
 		var phoneNumber = $("#phoneNumber").val();
-		var email = $("#email").val();
-		var password = $("#password").val();
-		var confirmPassword = $("#confirmPassword").val();
-
-		let emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-
 
 		if (phoneNumber === "" || phoneNumber === undefined) {
 			Swal.fire({
@@ -26,7 +20,6 @@ $(document).ready(function () {
 			return false;
 		}
 
-	
 		const userData = {
 			phoneNumber: phoneNumber,
 		};
@@ -44,12 +37,41 @@ $(document).ready(function () {
 			success: function (result) {
 				console.log(result);
 
+				localStorage.setItem("phoneNumber", result.phoneNumber);
+
 				$("#loadingOverlay").css("display", "none");
 
 				$button.prop("disabled", false);
 				$button.html('<i class="la la-send"></i> Submit');
 
-				if (result.code === 409) {
+				if (result.code === 200) {
+
+					$("#step1").hide();
+					$("#step2").show();
+					$("#step3").hide();
+
+					const meterOptions = result.data;
+					const $container = $("#meterOptionsContainer");
+					// Clear any existing content in the container
+					$container.empty();
+					// Loop through each option in result.data and append it to the container
+					$.each(meterOptions, function (index, option) {
+						localStorage.setItem("meterId", option.Value);
+						localStorage.setItem("meterName", option.Display);
+						localStorage.setItem("amount", option.Amount);
+
+						const radioItem = `
+							<div class="radio-item">
+								<input type="radio" id="${option.Value}" name="meterOption" value="${option.Value}" class="form-control style-border" />
+								<label for="${option.Value}">
+								<strong>${option.Display}</strong><br />
+								<span class="subtitle">${option.Value}</span>
+								</label>
+							</div>
+							`;
+						$container.append(radioItem);
+					});
+				} else if (result.code === 409) {
 					const errorMessages = errors
 						.map((error) => `${error.field}: ${error.message}`)
 						.join("\n");
@@ -60,40 +82,48 @@ $(document).ready(function () {
 						icon: "error",
 					});
 					return false;
-				}
-
-				if (result.code === 401) {
+				} else if (result.code === 401) {
 					Swal.fire({
 						title: "Security Check !!",
 						text: "Please click the 'I'm not a robot checkbox' to proceed",
 						icon: "warning",
 					});
 					return false;
-				}
-
-				if (result.code === 402) {
+				} else if (result.code === 402) {
 					Swal.fire({
 						title: "Account Exist!",
 						text: result.message,
 						icon: "warning",
 					});
 					return false;
-				}
-
-				if (result.code === 200) {
-					window.location.href = "verify-account";
 				} else {
-					if (result.code === 406) {
-						$("#loadingOverlay").css("display", "none");
-						Swal.fire({
-							title: "An error occurred !!",
-							text: "An error occurred. please try again",
-							icon: "warning",
-						});
-						return false;
-					}
+					$("#loadingOverlay").css("display", "none");
+					Swal.fire({
+						title: "An error occurred !!",
+						text: "An error occurred. please try again",
+						icon: "warning",
+					});
+					return false;
 				}
 			},
 		});
+	});
+
+	$("#submitMeterID_number").click(function (e) {
+		const phoneNumber = localStorage.getItem("phoneNumber");
+		const meterId = localStorage.getItem("meterId");
+		const meterName = localStorage.getItem("meterName");
+		const amount = localStorage.getItem("amount");
+
+		$("#step1").hide();
+		$("#step2").hide();
+		$("#step3").show();
+
+		$("#accountPhoneNumber").val(phoneNumber);
+		$("#meterName").val(meterId);
+		$("#meterId").val(meterName);
+		$("#amount").val(amount);
+
+		$("#amount").focus();
 	});
 });

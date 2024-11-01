@@ -13,6 +13,10 @@ const csrf = require("@dr.pogodin/csurf");
 
 const websiteRoutes = require("./routes/web/website.route");
 
+const protectedRoutes = require("./routes/web/protected.route");
+
+const isAuth = require("./Middleware/is-auth");
+
 const authRoutes = require("./routes/auth/auth.route");
 const { Log } = require("./helpers/Log");
 
@@ -52,7 +56,6 @@ app.use(flash());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-
 // Auto logout middleware
 app.use((req, res, next) => {
 	const maxInactiveTime = 120 * 60 * 1000; // 15 minutes in milliseconds
@@ -73,7 +76,6 @@ app.use((req, res, next) => {
 	}
 });
 
-
 app.use(csrfProtection);
 
 app.use((req, res, next) => {
@@ -89,6 +91,8 @@ app.use((req, res, next) => {
 app.use("/", websiteRoutes);
 
 app.use("/", authRoutes);
+
+app.use("/", isAuth, protectedRoutes);
 
 mongoose
 	.connect(
