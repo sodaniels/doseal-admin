@@ -19,6 +19,7 @@ $(document).ready(function () {
 
 		var accountNumber = $("#accountNumber").val();
 		var phoneNumber = $("#phoneNumber").val();
+		
 
 		if (accountNumber === "" || accountNumber === undefined) {
 			Swal.fire({

@@ -60,6 +60,12 @@ app.use(flash());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
+app.use((req, res, next) => {
+	res.locals.isAuthenticated = req.session.isLoggedIn;
+	next();
+});
+
+
 // Auto logout middleware
 app.use((req, res, next) => {
 	const maxInactiveTime = 120 * 60 * 1000; // 15 minutes in milliseconds
@@ -80,7 +86,6 @@ app.use((req, res, next) => {
 	}
 });
 
-
 app.use(csrfProtection);
 
 app.use((req, res, next) => {
@@ -91,6 +96,18 @@ app.use((req, res, next) => {
 	);
 	res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
 	next();
+});
+
+app.get("/logout", (req, res) => {
+	res.clearCookie("jwt");
+	req.session.destroy((err) => {
+		if (err) {
+			console.error(err);
+			return res.redirect("/pay-bills");
+		}
+		res.clearCookie("connect.sid"); 
+		res.redirect("/login"); 
+	});
 });
 
 app.use("/", websiteRoutes);

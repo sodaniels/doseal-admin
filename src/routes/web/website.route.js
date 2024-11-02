@@ -6,7 +6,6 @@ const router = express.Router();
 
 const webController = require("../../controllers/web/webController");
 
-
 // post device information
 router.get("/", webController.getIndex);
 // about us page
@@ -22,7 +21,6 @@ router.get("/legal/:category/:slug", webController.getPages);
 // downloads link
 router.get("/downloads", webController.getDownloads);
 // get pay bill
-router.get("/pay-bill", webController.getPayBill);
-
+router.get("/pay-bills", webController.getPayBill);
 
 module.exports = router;

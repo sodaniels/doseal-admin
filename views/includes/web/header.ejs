@@ -52,7 +52,7 @@
 								</a>
 							</li>
 							<li>
-								<a href="/pay-bill">
+								<a href="/pay-bills">
 									<span class="link-effect">
 										<span class="effect-1">PAY BILLS</span>
 										<span class="effect-1">PAY BILLS</span>
@@ -60,13 +60,23 @@
 								</a>
 							</li>
 
-
 							<li class="menu-item-has-children">
 								<a href="#">ACCOUNT</a>
 								<ul class="sub-menu">
+									<% if (!isAuthenticated) { %>
 									<li><a href="/signin">SIGN IN</a></li>
 									<li><a href="/signup">SIGN UP</a></li>
-									<li><a href="/signup">LOGOUT</a></li>
+									<% } %>
+									<% if (isAuthenticated) { %>
+									<li>
+										<a
+											href="/logout"
+											onclick="return confirmLogout(this)"
+											id="logoutBtn"
+											>LOGOUT</a
+										>
+									</li>
+									<% } %>
 								</ul>
 							</li>
 
@@ -116,3 +126,5 @@
 		</div>
 	</div>
 </div>
+
+

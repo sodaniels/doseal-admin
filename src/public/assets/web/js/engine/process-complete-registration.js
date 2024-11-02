@@ -125,7 +125,7 @@ $(document).ready(function () {
 						icon: "success",
 					});
 					setTimeout(function () {
-						window.location.href = "pay-bill";
+						window.location.href = "pay-bills";
 					}, 3000);
 				} else {
 					if (result.code === 406) {

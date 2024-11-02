@@ -66,7 +66,7 @@ $(document).ready(function () {
 						icon: "success",
 					});
 					setTimeout(function () {
-						window.location.href = "pay-bill";
+						window.location.href = "pay-bills";
 					}, 2000);
 				} else if (result.code === 200) {
 					window.location.href = `complete-registration?token=${result.token}`;
