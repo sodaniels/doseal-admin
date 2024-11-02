@@ -30,7 +30,7 @@ $(document).ready(function () {
 		$(this).text("Please wait...");
 
 		jQuery.ajax({
-			url: "../../search-ecg-meter",
+			url: "../../search-account",
 			method: "post",
 			data: userData,
 
@@ -116,6 +116,17 @@ $(document).ready(function () {
 	});
 
 	$("#submitMeterID_number").click(function (e) {
+		const selectedOption = $("input[name='meterOption']:checked").val();
+
+		if (!selectedOption) {
+			// Show a warning message if no option is selected
+			Swal.fire({
+				title: "No Option Selected",
+				text: "Please select an account to proceed",
+				icon: "warning",
+			});
+			return false;
+		}
 		const phoneNumber = localStorage.getItem("phoneNumber");
 		const meterId = localStorage.getItem("meterId");
 		const meterName = localStorage.getItem("meterName");
@@ -133,21 +144,70 @@ $(document).ready(function () {
 		$("#amount").focus();
 	});
 
-	$("#confirmPayment").on("click", function () {
-		// Get the values from the form inputs
-		const phoneNumber = $("#accountPhoneNumber").val();
-		const meterName = $("#meterName").val();
-		const meterId = $("#meterId").val();
+	$("#confirmPayment").click(function (e) {
+		e.preventDefault();
+		$.ajaxSetup({
+			headers: {
+				"X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content"),
+			},
+		});
+
+		var $button = $(this);
+
+		var phoneNumber = localStorage.getItem("phoneNumber");
+		var meterId = localStorage.getItem("meterId");
 		const amount = $("#amount").val();
 
-		// Populate the modal with the form values
-		$("#confirmPhoneNumber").text(phoneNumber);
-		$("#confirmMeterName").text(meterName);
-		$("#confirmMeterId").text(meterId);
-		$("#confirmAmount").text(amount);
+		const userData = {
+			phoneNumber: phoneNumber,
+			meterId: meterId,
+			amount: amount,
+		};
 
-		// Show the modal
-		$("#transactionConfirmModal").modal("show");
+		$("#loadingOverlay").css("display", "flex");
+
+		$(this).prop("disabled", true);
+		$(this).text("Please wait...");
+
+		jQuery.ajax({
+			url: "../../transaction-init",
+			method: "post",
+			data: userData,
+
+			success: function (result) {
+				console.log(result);
+
+				$("#loadingOverlay").css("display", "none");
+
+				$button.prop("disabled", false);
+				$button.html('<i class="la la-send"></i> Next');
+
+				if (result.code === 200) {
+					const res = result.data;
+					
+					const meterName = $("#meterName").val();
+
+					// Populate the modal with the form values
+					$("#confirmPhoneNumber").text(res.phoneNumber);
+					$("#confirmMeterName").text(meterName);
+					$("#confirmMeterId").text(res.meterId);
+					$("#confirmAmount").text(Number(res.amount).toFixed(2));
+					$("#confirmFee").text(Number(res.fee).toFixed(2));
+					$("#confirmTotalAmount").text(Number(res.totalAmount).toFixed(2));
+
+					// Show the modal
+					$("#transactionConfirmModal").modal("show");
+				} else {
+					$("#loadingOverlay").css("display", "none");
+					Swal.fire({
+						title: "An error occurred !!",
+						text: "An error occurred. please try again",
+						icon: "warning",
+					});
+					return false;
+				}
+			},
+		});
 	});
 
 	$("#resetStep1").on("click", function () {
@@ -179,10 +239,9 @@ $(document).ready(function () {
 
 		var $button = $(this);
 
-		var phoneNumber = localStorage.getItem('phoneNumber');
-		var meterId = localStorage.getItem('meterId');
+		var phoneNumber = localStorage.getItem("phoneNumber");
+		var meterId = localStorage.getItem("meterId");
 		const amount = $("#amount").val();
-
 
 		const userData = {
 			phoneNumber: phoneNumber,
@@ -196,7 +255,7 @@ $(document).ready(function () {
 		$(this).text("Please wait...");
 
 		jQuery.ajax({
-			url: "../../search-ecg-meter",
+			url: "../../process-ecg-purchases",
 			method: "post",
 			data: userData,
 

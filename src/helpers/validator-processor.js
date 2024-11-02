@@ -59,9 +59,29 @@ const validateEcgExecute = [
 	body("amount").notEmpty().isString().withMessage("Amount is required."),
 ];
 
+const validateTransaction = [
+	body("amount").notEmpty().trim().withMessage("The Amount is required"),
+	body("meterId")
+		.if(body("type").equals("ECG"))
+		.notEmpty()
+		.trim()
+		.withMessage("The Meter ID is required"),
+	body("meterName")
+		.if(body("type").equals("ECG"))
+		.notEmpty()
+		.trim()
+		.withMessage("The Meter Name is required"),
+	body("phoneNumber")
+		.if(body("type").equals("ECG"))
+		.notEmpty()
+		.trim()
+		.withMessage("The Phone Number is required"),
+];
+
 module.exports = {
 	validateNewsRoom,
 	validateInitialSignup,
 	validateAccountSearch,
 	validateEcgExecute,
+	validateTransaction,
 };

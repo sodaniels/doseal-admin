@@ -10,6 +10,13 @@ const apiErrors = require("../../helpers/errors/errors");
 const errorMessages = require("../../helpers/error-messages");
 const ServiceCode = require("../../constants/serviceCode");
 
+const {
+	getRedis,
+	setRedis,
+	removeRedis,
+	setRedisWithExpiry,
+} = require("../../helpers/redis");
+
 const RestServices = require("../../services/api/RestServices");
 const restServices = new RestServices();
 
@@ -247,8 +254,8 @@ async function postServiceSearch(req, res) {
 	}
 }
 
-async function postProcessEcgServices(req, res) {
-	const { phoneNumber } = req.body;
+async function postTransactionInitiate(req, res) {
+	const { phoneNumber, meterId, amount } = req.body;
 	let hubtelResponse;
 	const validationError = handleValidationErrors(req, res);
 	if (validationError) {
@@ -261,7 +268,10 @@ async function postProcessEcgServices(req, res) {
 		return res.json(errorRes);
 	}
 
-	// req.headers["Authorization"] = `Bearer ${req.cookies.jwt}`;
+	const tokenObject = req.cookies.jwt;
+	const token = tokenObject.acccess_token;
+
+	req.headers["Authorization"] = `Bearer ${token}`;
 
 	try {
 		Log.info(
@@ -269,23 +279,36 @@ async function postProcessEcgServices(req, res) {
 				req.ip
 		);
 
-		hubtelResponse = await restServices.postHubtelEcgMeterSearchService(
-			phoneNumber
+		const data = {
+			phoneNumber: phoneNumber,
+			meterId: meterId,
+			amount: amount,
+		};
+
+		hubtelResponse = await restMiddlewareServices.postTransactionInitiate(
+			data,
+			token
+		);
+		Log.info(
+			`[ApiController.js][postProcessEcgServices]\t hubtelResponse: ` +
+				JSON.stringify(hubtelResponse)
 		);
 		if (hubtelResponse) {
-			if (hubtelResponse.ResponseCode === "0000") {
+			const q = phoneNumber.substr(-9);
+			const redisKey = `payment_key_${q}`;
+			await setRedisWithExpiry(redisKey, 300, hubtelResponse.checksum);
+
+			if (hubtelResponse.code === 200) {
 				return res.json({
 					success: true,
 					code: 200,
 					message: "Successful",
-					phoneNumber: phoneNumber,
-					data: hubtelResponse.Data,
+					data: hubtelResponse.result,
 				});
 			}
 			return res.json({
 				success: false,
 				code: 400,
-				data: [],
 			});
 		}
 		return res.json({
@@ -312,5 +335,5 @@ module.exports = {
 	getPayBill,
 	getServiceSearch,
 	postServiceSearch,
-	postProcessEcgServices,
+	postTransactionInitiate,
 };

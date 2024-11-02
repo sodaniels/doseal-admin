@@ -12,15 +12,15 @@ const validator = require("../../helpers/validator-processor");
 router.get("/service-search", webController.getServiceSearch);
 // psot search-service
 router.post(
-	"/search-ecg-meter",
+	"/search-account",
 	validator.validateAccountSearch,
 	webController.postServiceSearch
 );
 // post process ecg
 router.post(
-	"/process-ecg-purchases",
-	validator.validateEcgExecute,
-	webController.postProcessEcgServices
+	"/transaction-init",
+	validator.validateTransaction,
+	webController.postTransactionInitiate
 );
 
 module.exports = router;
