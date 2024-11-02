@@ -498,7 +498,7 @@ async function postServiceDataSearch(req, res) {
 
 // dstv and others
 async function getSearchUtilityService(req, res) {
-	const user =  req.session.user
+	const user = req.session.user;
 	return res.render("web/services/dstv-and-others", {
 		pageTitle: "Doseal Limited | Utility Service",
 		path: "/",
@@ -566,6 +566,77 @@ async function postUtilityServiceSearch(req, res) {
 		});
 	}
 }
+// get ghana water
+async function getGhanaWater(req, res) {
+	const user = req.session.user;
+	return res.render("web/services/ghana-water-search", {
+		pageTitle: "Doseal Limited | Ghana Water",
+		path: "/",
+		errors: false,
+		errorMessage: false,
+		phoneNumber: user.phoneNumber,
+		csrfToken: req.csrfToken(),
+	});
+}
+// post ghana water
+async function postSearchGhanaWater(req, res) {
+	let inputData;
+	const { accountNumber, type = null, phoneNumber } = req.body;
+	let hubtelResponse;
+	const validationError = handleValidationErrors(req, res);
+	if (validationError) {
+		const errorRes = await apiErrors.create(
+			errorMessages.errors.API_MESSAGE_ECG_ACCOUNT_VALIDATION_FAILED,
+			"POST",
+			validationError,
+			undefined
+		);
+		return res.json(errorRes);
+	}
+
+	const tokenObject = req.cookies.jwt;
+	const token = tokenObject.acccess_token;
+
+	try {
+		inputData = {
+			accountNumber: accountNumber,
+			phoneNumber: phoneNumber,
+			type: type,
+		};
+
+		hubtelResponse = await restMiddlewareServices.postGhanWaterSearch(
+			inputData,
+			token
+		);
+		if (hubtelResponse) {
+			console.log("hubtelResponse: " + JSON.stringify(hubtelResponse));
+			if (hubtelResponse.ResponseCode === "0000") {
+				return res.json({
+					success: true,
+					code: 200,
+					message: "Successful",
+					accountNumber: accountNumber,
+					data: hubtelResponse.Data,
+				});
+			}
+			return res.json({
+				success: false,
+				code: 400,
+				data: [],
+			});
+		}
+		return res.json({
+			success: false,
+			message: ServiceCode.FAILED,
+		});
+	} catch (error) {
+		return res.json({
+			success: false,
+			error: error.message,
+			message: ServiceCode.ERROR_OCCURED,
+		});
+	}
+}
 
 module.exports = {
 	getIndex,
@@ -584,4 +655,6 @@ module.exports = {
 	postServiceDataSearch,
 	getSearchUtilityService,
 	postUtilityServiceSearch,
+	getGhanaWater,
+	postSearchGhanaWater,
 };

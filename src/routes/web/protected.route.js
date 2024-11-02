@@ -48,5 +48,14 @@ router.post(
 	validator.validateUtilitySearch,
 	webController.postUtilityServiceSearch
 );
+// get ghana water
+router.get("/ghana-water", isTokenExist, webController.getGhanaWater);
+// post search ghana water
+router.post(
+	"/search-ghana-water",
+	isTokenExist,
+	validator.validateGhaaWaterSearch,
+	webController.postSearchGhanaWater
+);
 
 module.exports = router;

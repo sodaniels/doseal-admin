@@ -60,6 +60,12 @@ const validateUtilitySearch = [
 	body("type").exists().withMessage("The Type is required"),
 ];
 
+const validateGhaaWaterSearch = [
+	body("accountNumber").exists().withMessage("The Account Number is required"),
+	body("type").exists().withMessage("The Type is required"),
+];
+
+
 
 const validateEcgExecute = [
 	body("meterId").notEmpty().isString().withMessage("Meter ID is required."),
@@ -103,4 +109,5 @@ module.exports = {
 	validateExecute,
 	validateDataBundleSearch,
 	validateUtilitySearch,
+	validateGhaaWaterSearch,
 };

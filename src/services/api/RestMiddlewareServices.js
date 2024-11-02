@@ -223,6 +223,51 @@ class RestMiddlewareServices {
 			};
 		}
 	}
+
+	async postGhanWaterSearch(data, token) {
+		let url;
+		try {
+			url = `${process.env.DOSEAL_API_BASE_URL}/api/v1/search-ghana-water-account`;
+			Log.info(
+				`[RestMiddlewareServices.js][postGhanWaterSearch] initiating request to: ${url}`
+			);
+			const response = await axios.post(url, data, {
+				headers: {
+					Authorization: `Bearer ${token}`,
+					"Content-Type": "application/json",
+				},
+			});
+
+			return response.data;
+		} catch (error) {
+			Log.info(
+				`[RestMiddlewareServices.js][postGhanWaterSearch] error validating account: ${error.message}`
+			);
+			if (error.response) {
+				Log.info(
+					`[RestMiddlewareServices.js][postGhanWaterSearch] response status: ${error.response.status}`
+				);
+				Log.info(
+					`[RestMiddlewareServices.js][postGhanWaterSearch] response data: ${JSON.stringify(
+						error.response.data
+					)}`
+				);
+			} else if (error.request) {
+				Log.info(
+					`[RestMiddlewareServices.js][postGhanWaterSearch] request: ${error.request}`
+				);
+			} else {
+				Log.info(
+					`[RestMiddlewareServices.js][postUtiltySearch] unknown error: ${error.message}`
+				);
+			}
+			return {
+				success: false,
+				code: 500,
+				message: error.message,
+			};
+		}
+	}
 }
 
 module.exports = RestMiddlewareServices;
