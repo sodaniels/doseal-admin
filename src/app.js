@@ -48,7 +48,9 @@ app.use(
 		resave: false,
 		saveUninitialized: false,
 		store: sessionStore,
-		// cookie: { secure: process.env.ENVIRONMENT === 'development' ? false : true }
+		cookie: {
+			secure: process.env.ENVIRONMENT === "development" ? false : true,
+		},
 	})
 );
 
@@ -78,11 +80,6 @@ app.use((req, res, next) => {
 	}
 });
 
-// app.use(
-// 	"/api/v1/",
-// 	passportJwt.authenticate("jwt", { session: false }),
-// 	apiRoutes
-// );
 
 app.use(csrfProtection);
 
