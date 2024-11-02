@@ -222,7 +222,7 @@ async function confirmCode(req, res) {
 			console.log("encryptedCode: " + encryptedCode);
 
 			// remove redis code after verification
-			// await removeRedis(`otp_token_${q}`);
+			await removeRedis(`otp_token_${q}`);
 
 			if (user && user.registration === "COMPLETED") {
 				return res.json({

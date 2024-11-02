@@ -255,7 +255,7 @@ async function postServiceSearch(req, res) {
 }
 
 async function postTransactionInitiate(req, res) {
-	const { phoneNumber, meterId, amount } = req.body;
+	const { phoneNumber, meterId, amount, type, meterName } = req.body;
 	let hubtelResponse;
 	const validationError = handleValidationErrors(req, res);
 	if (validationError) {
@@ -271,8 +271,6 @@ async function postTransactionInitiate(req, res) {
 	const tokenObject = req.cookies.jwt;
 	const token = tokenObject.acccess_token;
 
-	req.headers["Authorization"] = `Bearer ${token}`;
-
 	try {
 		Log.info(
 			`[ApiController.js][postTransactionInitiate]\t incoming ecg meter search request: ` +
@@ -282,8 +280,12 @@ async function postTransactionInitiate(req, res) {
 		const data = {
 			phoneNumber: phoneNumber,
 			meterId: meterId,
+			meterName: meterName,
 			amount: amount,
+			type: type,
 		};
+
+		console.log("initializing datq: " + JSON.stringify(data));
 
 		hubtelResponse = await restMiddlewareServices.postTransactionInitiate(
 			data,
@@ -295,8 +297,14 @@ async function postTransactionInitiate(req, res) {
 		);
 		if (hubtelResponse) {
 			const q = phoneNumber.substr(-9);
-			const redisKey = `payment_key_${q}`;
+			const redisKey = `payment_checksum_${q}`;
+			// const request = `payment_request_${q}`;
 			await setRedisWithExpiry(redisKey, 300, hubtelResponse.checksum);
+			// await setRedisWithExpiry(
+			// 	request,
+			// 	300,
+			// 	JSON.stringify(hubtelResponse.result)
+			// );
 
 			if (hubtelResponse.code === 200) {
 				return res.json({
@@ -325,7 +333,7 @@ async function postTransactionInitiate(req, res) {
 }
 
 async function postTransactionExecute(req, res) {
-	const { phoneNumber, meterId, amount, type } = req.body;
+	const { type, phoneNumber } = req.body;
 	let hubtelResponse;
 	const validationError = handleValidationErrors(req, res);
 	if (validationError) {
@@ -341,20 +349,20 @@ async function postTransactionExecute(req, res) {
 	const tokenObject = req.cookies.jwt;
 	const token = tokenObject.acccess_token;
 
-	req.headers["Authorization"] = `Bearer ${token}`;
-
 	try {
 		Log.info(
 			`[ApiController.js][postTransactionExecute]\t incoming ecg meter search request: ` +
 				req.ip
 		);
 
+		const q = phoneNumber.substr(-9);
+		const checksum = await getRedis(`payment_checksum_${q}`);
+
 		const data = {
-			phoneNumber: phoneNumber,
-			meterId: meterId,
-			amount: amount,
+			checksum: checksum,
 			type: type,
 		};
+		console.log("data: " + JSON.stringify(data));
 
 		hubtelResponse = await restMiddlewareServices.postTransactionExecute(
 			data,
@@ -364,27 +372,17 @@ async function postTransactionExecute(req, res) {
 			`[ApiController.js][postTransactionExecute]\t hubtelResponse: ` +
 				JSON.stringify(hubtelResponse)
 		);
-		if (hubtelResponse) {
-			const q = phoneNumber.substr(-9);
-			const redisKey = `payment_key_${q}`;
-			await setRedisWithExpiry(redisKey, 300, hubtelResponse.checksum);
-
-			if (hubtelResponse.code === 200) {
-				return res.json({
-					success: true,
-					code: 200,
-					message: "Successful",
-					type: type,
-					data: hubtelResponse.result,
-				});
-			}
+		if (hubtelResponse && hubtelResponse.responseCode === "0000") {
+			const data = hubtelResponse.data;
 			return res.json({
-				success: false,
-				code: 400,
+				success: true,
+				code: 200,
+				url: data.checkoutUrl,
 			});
 		}
 		return res.json({
 			success: false,
+			code: 400,
 			message: ServiceCode.FAILED,
 		});
 	} catch (error) {

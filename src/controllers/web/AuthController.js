@@ -581,9 +581,9 @@ async function postCompleteRegistration(req, res) {
 	user.idExpiry = idExpiry;
 	const updateUser = await user.save();
 	if (updateUser) {
-		const authToken = await helpers.createToken(user._id);
+		const token = await createJwtToken(user._id);
 
-		res.cookie("jwt", authToken, {
+		res.cookie("jwt", token, {
 			httpOnly: true,
 			secure: true,
 			maxAge: 2 * 60 * 60 * 1000,
@@ -597,7 +597,6 @@ async function postCompleteRegistration(req, res) {
 			phoneNumber: user.phoneNumber,
 			type: user.type,
 			email: user.email,
-			token: authToken,
 		};
 
 		req.session.isLoggedIn = true;
@@ -610,7 +609,7 @@ async function postCompleteRegistration(req, res) {
 		user.status = "Active";
 		await user.save();
 
-		req.headers["Authorization"] = `Bearer ${authToken}`;
+		req.headers["Authorization"] = `Bearer ${token}`;
 
 		return res.json({
 			success: true,

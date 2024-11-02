@@ -23,11 +23,6 @@ router.post(
 	webController.postTransactionInitiate
 );
 // post execute transaction
-router.post(
-	"/transaction-exec",
-	validator.validateTransaction,
-	webController.postTransactionExecute
-);
-
+router.post("/transaction-exec", webController.postTransactionExecute);
 
 module.exports = router;
