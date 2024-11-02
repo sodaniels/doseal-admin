@@ -62,6 +62,10 @@ const tranactionSchema = new Schema({
 		type: Number,
 		required: false,
 	},
+	verifiedName: {
+		type: String,
+		required: false,
+	},
 	meterId: {
 		type: String,
 		required: false,

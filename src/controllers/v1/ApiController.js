@@ -22,13 +22,16 @@ const {
 } = require("../../helpers/calculateFee");
 const io = require("../../../socket");
 
+const { getRedis, setRedisWithExpiry } = require("../../helpers/redis");
+const { decrypt, encrypt } = require("../../helpers/crypt");
+
 const { handleValidationErrors } = require("../../helpers/validationHelper");
 const apiErrors = require("../../helpers/errors/errors");
 const errorMessages = require("../../helpers/error-messages");
 const RestServices = require("../../services/api/RestServices");
 const restServices = new RestServices();
 const callbackController = require("../v1/CallbackController");
-const { result } = require("lodash");
+const { result, has } = require("lodash");
 
 //get page
 async function getPageCategory(req, res) {
@@ -395,7 +398,7 @@ async function getWallets(req, res) {
 }
 // post transaction init
 async function postTransactionInitiate(req, res) {
-	let fee, totalAmount;
+	let fee, totalAmount, verifiedName;
 	const validationError = handleValidationErrors(req, res);
 	if (validationError) {
 		const errorRes = await apiErrors.create(
@@ -421,19 +424,38 @@ async function postTransactionInitiate(req, res) {
 
 		fee = dosealFee + hubtelFee;
 
-		console.log("hubtelFee: " + hubtelFee);
-		console.log("dosealFee: " + dosealFee);
-
 		req.body.fee = fee;
 
 		totalAmount = Number(req.body.amount) + Number(fee);
 		req.body.totalAmount = totalAmount;
 
-		console.log("Before encryption: " + JSON.stringify(req.body));
+		let currentDate = new Date();
+		req.body["transaction_time"] = currentDate;
+
+		if (req.body.network) {
+			const hubtelResponse = await restServices.postHubtelMSISDNSearchService(
+				req.body.phoneNumber
+			);
+			// console.log("hubtel Response: " + JSON.stringify(hubtelResponse));
+
+			if (hubtelResponse && hubtelResponse.ResponseCode === "0000") {
+				const data = hubtelResponse.Data[0];
+				verifiedName = data.Value;
+			}
+		}
+
+		console.log("verifiedName: " + verifiedName);
+
+		req.body["verifiedName"] = verifiedName;
+
+		// console.log("Before encryption: " + JSON.stringify(req.body));
 
 		const transactionHash = hashTransaction(req.body);
 
 		const checksum = transactionHash.toUpperCase();
+
+		const encryptedTransaction = encrypt(JSON.stringify(req.body));
+		await setRedisWithExpiry(checksum, 600, encryptedTransaction);
 
 		return res.json({
 			success: true,
@@ -473,12 +495,9 @@ async function postTransactionExecute(req, res) {
 		const transactionId = rand10Id().toString();
 		const checksum = req.body.checksum;
 
-		const orderedResults = orderTransactionResults(req.body);
-		console.log("after encrytion: ", orderedResults);
+		const encryptedTransaction = await getRedis(checksum);
 
-		const isValid = verifyTransaction(orderedResults, checksum);
-
-		if (!isValid) {
+		if (!encryptedTransaction) {
 			Log.info(
 				`[ApiController.js][postTransactionExecute]\t... transaction validation failed`
 			);
@@ -494,6 +513,13 @@ async function postTransactionExecute(req, res) {
 				error: errorRes,
 			};
 		}
+
+		const decryptedTransaction = decrypt(encryptedTransaction);
+		const transactionDetails = JSON.parse(decryptedTransaction);
+
+		req.body = transactionDetails;
+
+		console.log("transactionDetails: " + JSON.stringify(transactionDetails));
 
 		// give hubtel fee
 		const hubtelFee = await calculateCompositeFee(
@@ -553,6 +579,7 @@ async function postTransactionExecute(req, res) {
 			category: "DR",
 			type: req.body.type,
 			amount: req.body.amount,
+			verifiedName: req.body.verifiedName ? req.body.verifiedName : undefined,
 			fee: req.body.fee,
 			commission: commission,
 			totalAmount: req.body.totalAmount,
@@ -788,6 +815,11 @@ async function postHubtelDstvAccountSearch(req, res) {
 			req.body.accountNumber
 		);
 		if (hubtelResponse) {
+			Log.info(
+				`[ApiController.js][postHubtelDstvAccountSearch]\t hubtelResponse: ` +
+					JSON.stringify(hubtelResponse)
+			);
+
 			if (hubtelResponse.ResponseCode === "0000") {
 				hubtelResponse["success"] = true;
 				return res.json(hubtelResponse);
@@ -1301,6 +1333,11 @@ async function postSearchDataBundleByNetwork(req, res) {
 		}
 
 		if (hubtelResponse) {
+			Log.info(
+				`[ApiController.js][postSearchMtnBundle][${req.body.accountNumber}][${req.body.network}]\t hubtelResponse: ` +
+					JSON.stringify(hubtelResponse)
+			);
+
 			if (hubtelResponse.ResponseCode === "0000") {
 				hubtelResponse["success"] = true;
 				return res.json(hubtelResponse);

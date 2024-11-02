@@ -1,3 +1,5 @@
+const { has, result } = require("lodash");
+
 const Page = require("../../models/page.model");
 const User = require("../../models/user");
 const NewsRoom = require("../../models/news-room.model");
@@ -29,7 +31,6 @@ const errorMessages = require("../../helpers/error-messages");
 const RestServices = require("../../services/api/RestServices");
 const restServices = new RestServices();
 const callbackController = require("./CallbackController");
-const { result } = require("lodash");
 
 // post msisdn query
 async function postMSISDNquery(req, res) {

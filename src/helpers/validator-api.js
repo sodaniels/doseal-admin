@@ -46,6 +46,11 @@ const validateTransaction = [
 		.withMessage("The Phone Number is required"),
 ];
 
+const validateExecute = [
+	body("checksum").notEmpty().trim().withMessage("The checksum is required"),
+	body("type").notEmpty().trim().withMessage("The Type is required"),
+]
+
 const validateAccount = [
 	body("phoneNumber")
 		.notEmpty()
@@ -121,5 +126,6 @@ module.exports = {
 	validateTransactionStatus,
 	validateDataBundleSearch,
 	validateReportFault,
-	validatePhoneRequest
+	validatePhoneRequest,
+	validateExecute
 };

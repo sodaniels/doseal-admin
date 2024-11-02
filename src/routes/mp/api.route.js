@@ -35,7 +35,7 @@ router.post(
 );
 router.post(
 	"/transaction/execute",
-	validator.validateTransaction,
+	validator.validateExecute,
 	apiController.postTransactionExecute
 );
 
@@ -49,6 +49,7 @@ router.post(
 	validator.validateAccount,
 	hubtelController.AccountValidation
 );
+
 // hubtel airtime topup
 router.post(
 	"/hubtel-airtime-topup",
