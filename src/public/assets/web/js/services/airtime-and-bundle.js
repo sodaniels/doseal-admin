@@ -1,4 +1,32 @@
 $(document).ready(function () {
+
+	
+	$("#step0Button").click(function (e) {
+		const selectedOption = $("input[name='airtimeOption']:checked").val();
+
+		if (!selectedOption) {
+			// Show a warning message if no option is selected
+			Swal.fire({
+				title: "No Option Selected",
+				text: "Please select the service time",
+				icon: "warning",
+			});
+			return false;
+		}
+
+		var airtime = localStorage.getItem("airtime");
+		var data = localStorage.getItem("data");
+
+		localStorage.setItem("airtime", airtime);
+		localStorage.setItem("data", data);
+
+		$("#step0").hide();
+		$("#step1").show();
+		$("#step2").hide();
+		$("#step3").hide();
+
+	});
+
 	$("#listServiceButton").click(function (e) {
 		e.preventDefault();
 		$.ajaxSetup({
