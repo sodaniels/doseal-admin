@@ -743,6 +743,10 @@ async function postHubtelEcgMeterSearch(req, res) {
 			req.body.phoneNumber
 		);
 		if (hubtelResponse) {
+			Log.info(
+				`[ApiController.js][postHubtelEcgMeterSearch]\t incoming ecg meter search request: ` +
+					JSON.stringify(hubtelResponse)
+			);
 			if (hubtelResponse.ResponseCode === "0000") {
 				hubtelResponse["success"] = true;
 				return res.json(hubtelResponse);
