@@ -16,6 +16,8 @@ const websiteRoutes = require("./routes/web/website.route");
 const protectedRoutes = require("./routes/web/protected.route");
 
 const isAuth = require("./Middleware/is-auth");
+const apiRoutes = require("./routes/mp/api.route");
+const passportJwt = require("./helpers/passport-jwt");
 
 const authRoutes = require("./routes/auth/auth.route");
 const { Log } = require("./helpers/Log");
@@ -75,6 +77,12 @@ app.use((req, res, next) => {
 		next(); // Move to next middleware
 	}
 });
+
+// app.use(
+// 	"/api/v1/",
+// 	passportJwt.authenticate("jwt", { session: false }),
+// 	apiRoutes
+// );
 
 app.use(csrfProtection);
 

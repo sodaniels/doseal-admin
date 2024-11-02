@@ -4,31 +4,23 @@ const express = require("express");
 
 const router = express.Router();
 
-const webController = require('../../controllers/web/webController');
+const webController = require("../../controllers/web/webController");
 
-const validator = require('../../helpers/validator');
+const validator = require("../../helpers/validator-processor");
 
-
-// post device information
-router.get("/", webController.getIndex);
-// about us page
-router.get("/about-us", webController.getAboutUs);
-// services
-router.get("/our-services", webController.getOurServices);
-// get contact
-router.get("/contact-us", webController.getContactUs);
-// post contact us
-router.post("/contact-us", webController.postContacUs);
-// pages
-router.get("/legal/:category/:slug", webController.getPages);
-// downloads link
-router.get("/downloads", webController.getDownloads);
-// get pay bill
-router.get("/pay-bill", webController.getPayBill);
 // ecg search
 router.get("/service-search", webController.getServiceSearch);
 // psot search-service
-router.post("/search-ecg-meter", webController.postServiceSearch);
-
+router.post(
+	"/search-ecg-meter",
+	validator.validateAccountSearch,
+	webController.postServiceSearch
+);
+// post process ecg
+router.post(
+	"/process-ecg-purchases",
+	validator.validateEcgExecute,
+	webController.postProcessEcgServices
+);
 
 module.exports = router;

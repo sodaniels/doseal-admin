@@ -13,6 +13,9 @@ const ServiceCode = require("../../constants/serviceCode");
 const RestServices = require("../../services/api/RestServices");
 const restServices = new RestServices();
 
+const RestMiddlewareServices = require("../../services/api/RestMiddlewareServices");
+const restMiddlewareServices = new RestMiddlewareServices();
+
 const { RecaptchaV2 } = require("express-recaptcha");
 var recaptcha = new RecaptchaV2(process.env.SITE_KEY, process.env.SECRET_KEY);
 
@@ -196,11 +199,73 @@ async function postServiceSearch(req, res) {
 		return res.json(errorRes);
 	}
 
-	req.headers["Authorization"] = `Bearer ${req.cookies.jwt}`;
+	const tokenObject = req.cookies.jwt;
+	const token = tokenObject.acccess_token;
+
+	req.headers["Authorization"] = `Bearer ${token}`;
 
 	try {
 		Log.info(
-			`[ApiController.js][postHubtelEcgMeterSearch]\t incoming ecg meter search request: ` +
+			`[ApiController.js][postServiceSearch]\t incoming ecg meter search request: ` +
+				req.ip
+		);
+
+		const data = {
+			phoneNumber: phoneNumber,
+		};
+
+		hubtelResponse = await restMiddlewareServices.postSearchEcgAccount(
+			data,
+			token
+		);
+		if (hubtelResponse) {
+			if (hubtelResponse.ResponseCode === "0000") {
+				return res.json({
+					success: true,
+					code: 200,
+					message: "Successful",
+					phoneNumber: phoneNumber,
+					data: hubtelResponse.Data,
+				});
+			}
+			return res.json({
+				success: false,
+				code: 400,
+				data: [],
+			});
+		}
+		return res.json({
+			success: false,
+			message: ServiceCode.FAILED,
+		});
+	} catch (error) {
+		return res.json({
+			success: false,
+			error: error.message,
+			message: ServiceCode.ERROR_OCCURED,
+		});
+	}
+}
+
+async function postProcessEcgServices(req, res) {
+	const { phoneNumber } = req.body;
+	let hubtelResponse;
+	const validationError = handleValidationErrors(req, res);
+	if (validationError) {
+		const errorRes = await apiErrors.create(
+			errorMessages.errors.API_MESSAGE_ECG_ACCOUNT_VALIDATION_FAILED,
+			"POST",
+			validationError,
+			undefined
+		);
+		return res.json(errorRes);
+	}
+
+	// req.headers["Authorization"] = `Bearer ${req.cookies.jwt}`;
+
+	try {
+		Log.info(
+			`[ApiController.js][postProcessEcgServices]\t incoming ecg meter search request: ` +
 				req.ip
 		);
 
@@ -234,8 +299,6 @@ async function postServiceSearch(req, res) {
 			message: ServiceCode.ERROR_OCCURED,
 		});
 	}
-
-	const user = req.session.user;
 }
 
 module.exports = {
@@ -249,4 +312,5 @@ module.exports = {
 	getPayBill,
 	getServiceSearch,
 	postServiceSearch,
+	postProcessEcgServices,
 };

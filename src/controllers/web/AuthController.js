@@ -494,9 +494,10 @@ async function postVerifyAccount(req, res) {
 		await removeRedis(`otp_token_${q}`);
 
 		if (user.registration === "COMPLETED") {
-			const authToken = await helpers.createToken(user._id);
 
-			res.cookie("jwt", authToken, {
+			const token = await createJwtToken(user._id);
+
+			res.cookie("jwt", token, {
 				httpOnly: true,
 				secure: true,
 				maxAge: 2 * 60 * 60 * 1000,
@@ -542,6 +543,17 @@ async function postVerifyAccount(req, res) {
 			message: "Invalid code",
 		});
 	}
+}
+
+async function createJwtToken(_id) {
+	const jwtSecret = process.env.JWT_TOKEN;
+	const expiresIn = process.env.JWT_EXPIRES_IN;
+
+	const acccess_token = jwt.sign({ _id }, jwtSecret, {
+		expiresIn,
+		issuer: process.env.APP_NAME,
+	});
+	return { acccess_token, expiresIn };
 }
 
 async function getCompleteRegistration(req, res) {

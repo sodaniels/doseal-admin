@@ -43,8 +43,25 @@ const validateNewsRoom = [
 	body("excerpt").notEmpty().isString().withMessage("Excerpt is required."),
 	body("content").notEmpty().isString().withMessage("Content is required."),
 ];
+const validateAccountSearch = [
+	body("phoneNumber")
+		.notEmpty()
+		.isString()
+		.withMessage("Phone Number is required."),
+];
+
+const validateEcgExecute = [
+	body("meterId").notEmpty().isString().withMessage("Meter ID is required."),
+	body("phoneNumber")
+		.notEmpty()
+		.isString()
+		.withMessage("Phone Number is required."),
+	body("amount").notEmpty().isString().withMessage("Amount is required."),
+];
 
 module.exports = {
 	validateNewsRoom,
 	validateInitialSignup,
+	validateAccountSearch,
+	validateEcgExecute,
 };
