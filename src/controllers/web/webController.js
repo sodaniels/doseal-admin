@@ -255,7 +255,14 @@ async function postServiceSearch(req, res) {
 }
 
 async function postTransactionInitiate(req, res) {
-	const { phoneNumber, meterId, amount, type, meterName } = req.body;
+	const {
+		phoneNumber,
+		meterId = null,
+		amount,
+		type,
+		meterName = null,
+		network = null,
+	} = req.body;
 	let hubtelResponse;
 	const validationError = handleValidationErrors(req, res);
 	if (validationError) {
@@ -279,8 +286,9 @@ async function postTransactionInitiate(req, res) {
 
 		const data = {
 			phoneNumber: phoneNumber,
-			meterId: meterId,
-			meterName: meterName,
+			meterId: meterId ? meterId : undefined,
+			meterName: meterName ? meterName : undefined,
+			network: network ? network : undefined,
 			amount: amount,
 			type: type,
 		};
@@ -292,19 +300,13 @@ async function postTransactionInitiate(req, res) {
 			token
 		);
 		Log.info(
-			`[ApiController.js][postTransactionInitiate]\t hubtelResponse: ` +
+			`[ApiController.js][postTransactionInitiate]\t HubtelResponse: ` +
 				JSON.stringify(hubtelResponse)
 		);
 		if (hubtelResponse) {
 			const q = phoneNumber.substr(-9);
 			const redisKey = `payment_checksum_${q}`;
-			// const request = `payment_request_${q}`;
 			await setRedisWithExpiry(redisKey, 300, hubtelResponse.checksum);
-			// await setRedisWithExpiry(
-			// 	request,
-			// 	300,
-			// 	JSON.stringify(hubtelResponse.result)
-			// );
 
 			if (hubtelResponse.code === 200) {
 				return res.json({

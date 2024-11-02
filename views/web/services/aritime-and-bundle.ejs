@@ -165,7 +165,6 @@
 				class="shop__area space"
 				style="margin-top: 10em">
 				<div class="container">
-
 					<div
 						class="row align-items-center justify-content-end"
 						id="step0">
@@ -188,11 +187,11 @@
 													<div class="radio-item">
 														<input
 															type="radio"
-															id="airtime"
-															name="airtimeOption"
-															value="airtime"
+															id="Airtime"
+															name="serviceOption"
+															value="Airtime"
 															class="form-control style-border" />
-														<label for="airtime">
+														<label for="Airtime">
 															<strong>Airtime</strong><br />
 															<span class="subtitle">Purchase Airtime</span>
 														</label>
@@ -200,11 +199,11 @@
 													<div class="radio-item">
 														<input
 															type="radio"
-															id="data"
-															name="airtimeOption"
-															value="data"
+															id="DATA"
+															name="serviceOption"
+															value="DATA"
 															class="form-control style-border" />
-														<label for="data">
+														<label for="DATA">
 															<strong>Data & Voice Bundle</strong><br />
 															<span class="subtitle"
 																>Purchase Data & Voice Bundle</span
@@ -241,9 +240,7 @@
 							<div class="contact-form-wrap">
 								<div class="title-area mb-30">
 									<h3 class="sec-title">Buy Airtime & Data</h3>
-									<p>
-										Fill the form below
-									</p>
+									<p>Fill the form below</p>
 								</div>
 								<form
 									action=""
@@ -252,7 +249,7 @@
 									class="contact-form ajax-contact">
 									<div class="row">
 										<div class="col-md-12">
-											<label>Amount</label>
+											<label>Amount (GHS)</label>
 											<div class="form-group">
 												<input
 													type="number"
@@ -277,7 +274,10 @@
 
 										<div class="col-md-12">
 											<div class="form-group">
-												<select class="form-control style-border" name="network">
+												<select
+													class="form-control style-border"
+													name="network"
+													id="network">
 													<option value="">Select Network</option>
 													<option value="mtn-gh">MTN Ghana</option>
 													<option value="vodofone-gh">Telecel Ghana</option>
@@ -289,7 +289,7 @@
 									<div class="form-btn col-12">
 										<button
 											type="button"
-											id="resetStep1"
+											id="clearAirtimeBtn"
 											class="btn mt-20 mr-20">
 											<span class="link-effect">
 												<span class="effect-1">CLEAR</span>
@@ -298,7 +298,7 @@
 										</button>
 										<button
 											type="button"
-											id="listServiceButton"
+											id="submitAirtimeBtn"
 											class="btn mt-20">
 											<span class="link-effect">
 												<span class="effect-1">NEXT</span>
@@ -514,10 +514,7 @@
 								<span id="confirmPhoneNumber"></span>
 							</p>
 							<p>
-								<strong>Meter Name:</strong> <span id="confirmMeterName"></span>
-							</p>
-							<p>
-								<strong>Meter ID:</strong> <span id="confirmMeterId"></span>
+								<strong>Name on Account:</strong> <span id="confirmNameOnAccount"></span>
 							</p>
 							<p>
 								<strong>Amount:</strong> GHS <span id="confirmAmount"></span>

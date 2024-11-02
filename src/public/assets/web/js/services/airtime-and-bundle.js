@@ -1,8 +1,6 @@
 $(document).ready(function () {
-
-	
 	$("#step0Button").click(function (e) {
-		const selectedOption = $("input[name='airtimeOption']:checked").val();
+		const selectedOption = $("input[name='serviceOption']:checked").val();
 
 		if (!selectedOption) {
 			// Show a warning message if no option is selected
@@ -14,17 +12,12 @@ $(document).ready(function () {
 			return false;
 		}
 
-		var airtime = localStorage.getItem("airtime");
-		var data = localStorage.getItem("data");
-
-		localStorage.setItem("airtime", airtime);
-		localStorage.setItem("data", data);
+		localStorage.setItem("selectedOption", selectedOption);
 
 		$("#step0").hide();
 		$("#step1").show();
 		$("#step2").hide();
 		$("#step3").hide();
-
 	});
 
 	$("#listServiceButton").click(function (e) {
@@ -172,7 +165,7 @@ $(document).ready(function () {
 		$("#amount").focus();
 	});
 
-	$("#confirmPayment").click(function (e) {
+	$("#submitAirtimeBtn").click(function (e) {
 		e.preventDefault();
 		$.ajaxSetup({
 			headers: {
@@ -182,17 +175,61 @@ $(document).ready(function () {
 
 		var $button = $(this);
 
-		var phoneNumber = localStorage.getItem("phoneNumber");
-		var meterName = localStorage.getItem("meterName");
-		var meterId = localStorage.getItem("meterId");
 		const amount = $("#amount").val();
+		const phoneNumber = $("#phoneNumber").val();
+		const network = $("#network").val();
+		const type = localStorage.getItem("selectedOption");
+
+		if (!amount) {
+			Swal.fire({
+				title: "Enter Amount",
+				text: "Please enter the amount",
+				icon: "warning",
+			});
+			return false;
+		}
+
+		if (amount && isNaN(amount)) {
+			Swal.fire({
+				title: "Invalid Amount",
+				text: "Please enter a valid numeric amount",
+				icon: "warning",
+			});
+			return false;
+		}
+
+		if (!phoneNumber) {
+			Swal.fire({
+				title: "Enter Phone Number",
+				text: "Please entet the phone number",
+				icon: "warning",
+			});
+			return false;
+		}
+
+		if (phoneNumber.length < 12) {
+			Swal.fire({
+				title: "Phone Number Must Include Country Code",
+				text: "The phone number must include a country code",
+				icon: "warning",
+			});
+			return false;
+		}
+
+		if (!network) {
+			Swal.fire({
+				title: "Select Network",
+				text: "Please select the network",
+				icon: "warning",
+			});
+			return false;
+		}
 
 		const userData = {
-			phoneNumber: phoneNumber,
-			meterName: meterName,
-			meterId: meterId,
 			amount: amount,
-			type: "ECG",
+			phoneNumber: phoneNumber,
+			network: network,
+			type: type,
 		};
 
 		$("#loadingOverlay").css("display", "flex");
@@ -222,7 +259,7 @@ $(document).ready(function () {
 					// Populate the modal with the form values
 					$("#confirmServiceType").text(userData.type);
 					$("#confirmPhoneNumber").text(res.phoneNumber);
-					$("#confirmMeterName").text(meterName);
+					$("#confirmNameOnAccount").text(res.verifiedName);
 					$("#confirmMeterId").text(res.meterId);
 					$("#confirmAmount").text(Number(res.amount).toFixed(2));
 					$("#confirmFee").text(Number(res.fee).toFixed(2));
@@ -243,7 +280,7 @@ $(document).ready(function () {
 		});
 	});
 
-	$("#resetStep1").on("click", function () {
+	$("#clearAirtimeBtn").on("click", function () {
 		document.getElementById("step1Form").reset(); // Reset the form
 	});
 	$("#resetStep2").on("click", function () {
@@ -303,11 +340,25 @@ $(document).ready(function () {
 				$button.html('<i class="la la-send"></i> Submit');
 
 				if (result.code === 200) {
-					$("#step1").show();
-					$("#step2").hide();
-					$("#step3").hide();
+					switch (type) {
+						case "ECG":
+							$("#step1").show();
+							$("#step2").hide();
+							$("#step3").hide();
+							document.getElementById("step1Form").reset();
+							break;
+						case "Airtime":
+							$("#step1").show();
+							$("#step2").hide();
+							$("#step3").hide();
+							document.getElementById("step1Form").reset();
+							break;
+
+						default:
+							break;
+					}
+
 					$("#transactionConfirmModal").modal("hide");
-					document.getElementById("step1Form").reset();
 					window.open(result.url, "_blank");
 				} else if (result.code === 400) {
 					const errorMessages = errors
