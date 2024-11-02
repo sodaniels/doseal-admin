@@ -51,7 +51,7 @@ class RestMiddlewareServices {
 		try {
 			const url = `${process.env.DOSEAL_API_BASE_URL}/api/v1/transaction/initiate`;
 			Log.info(
-				`[RestMiddlewareServices.js][postSearchEcgAccount] initiating request to: ${url}`
+				`[RestMiddlewareServices.js][postTransactionInitiate] initiating request to: ${url}`
 			);
 			const response = await axios.post(url, data, {
 				headers: {
@@ -63,24 +63,68 @@ class RestMiddlewareServices {
 			return response.data;
 		} catch (error) {
 			Log.info(
-				`[RestMiddlewareServices.js][postSearchEcgAccount] error validating account: ${error.message}`
+				`[RestMiddlewareServices.js][postTransactionInitiate] error validating account: ${error.message}`
 			);
 			if (error.response) {
 				Log.info(
-					`[RestMiddlewareServices.js][postSearchEcgAccount] response status: ${error.response.status}`
+					`[RestMiddlewareServices.js][postTransactionInitiate] response status: ${error.response.status}`
 				);
 				Log.info(
-					`[RestMiddlewareServices.js][postSearchEcgAccount] response data: ${JSON.stringify(
+					`[RestMiddlewareServices.js][postTransactionInitiate] response data: ${JSON.stringify(
 						error.response.data
 					)}`
 				);
 			} else if (error.request) {
 				Log.info(
-					`[RestMiddlewareServices.js][postSearchEcgAccount] request: ${error.request}`
+					`[RestMiddlewareServices.js][postTransactionInitiate] request: ${error.request}`
 				);
 			} else {
 				Log.info(
-					`[RestMiddlewareServices.js][postSearchEcgAccount] unknown error: ${error.message}`
+					`[RestMiddlewareServices.js][postTransactionInitiate] unknown error: ${error.message}`
+				);
+			}
+			return {
+				success: false,
+				code: 500,
+				message: error.message,
+			};
+		}
+	}
+
+	async postTransactionExecute(data, token) {
+		try {
+			const url = `${process.env.DOSEAL_API_BASE_URL}/api/v1/transaction/execute`;
+			Log.info(
+				`[RestMiddlewareServices.js][postTransactionExecute] initiating request to: ${url}`
+			);
+			const response = await axios.post(url, data, {
+				headers: {
+					Authorization: `Bearer ${token}`, // Use Bearer if required
+					"Content-Type": "application/json",
+				},
+			});
+
+			return response.data;
+		} catch (error) {
+			Log.info(
+				`[RestMiddlewareServices.js][postTransactionExecute] error validating account: ${error.message}`
+			);
+			if (error.response) {
+				Log.info(
+					`[RestMiddlewareServices.js][postTransactionExecute] response status: ${error.response.status}`
+				);
+				Log.info(
+					`[RestMiddlewareServices.js][postTransactionExecute] response data: ${JSON.stringify(
+						error.response.data
+					)}`
+				);
+			} else if (error.request) {
+				Log.info(
+					`[RestMiddlewareServices.js][postTransactionExecute] request: ${error.request}`
+				);
+			} else {
+				Log.info(
+					`[RestMiddlewareServices.js][postTransactionExecute] unknown error: ${error.message}`
 				);
 			}
 			return {

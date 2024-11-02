@@ -16,11 +16,18 @@ router.post(
 	validator.validateAccountSearch,
 	webController.postServiceSearch
 );
-// post process ecg
+// post initiate transaction
 router.post(
 	"/transaction-init",
 	validator.validateTransaction,
 	webController.postTransactionInitiate
 );
+// post execute transaction
+router.post(
+	"/transaction-exec",
+	validator.validateTransaction,
+	webController.postTransactionExecute
+);
+
 
 module.exports = router;

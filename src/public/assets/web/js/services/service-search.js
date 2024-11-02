@@ -155,13 +155,16 @@ $(document).ready(function () {
 		var $button = $(this);
 
 		var phoneNumber = localStorage.getItem("phoneNumber");
+		var meterName = localStorage.getItem("meterName");
 		var meterId = localStorage.getItem("meterId");
 		const amount = $("#amount").val();
 
 		const userData = {
 			phoneNumber: phoneNumber,
+			meterName: meterName,
 			meterId: meterId,
 			amount: amount,
+			type: "ECG"
 		};
 
 		$("#loadingOverlay").css("display", "flex");
@@ -184,10 +187,11 @@ $(document).ready(function () {
 
 				if (result.code === 200) {
 					const res = result.data;
-					
+
 					const meterName = $("#meterName").val();
 
 					// Populate the modal with the form values
+					$("#confirmServiceType").text(userData.type);
 					$("#confirmPhoneNumber").text(res.phoneNumber);
 					$("#confirmMeterName").text(meterName);
 					$("#confirmMeterId").text(res.meterId);

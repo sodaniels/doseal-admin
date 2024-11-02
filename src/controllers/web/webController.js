@@ -275,7 +275,7 @@ async function postTransactionInitiate(req, res) {
 
 	try {
 		Log.info(
-			`[ApiController.js][postProcessEcgServices]\t incoming ecg meter search request: ` +
+			`[ApiController.js][postTransactionInitiate]\t incoming ecg meter search request: ` +
 				req.ip
 		);
 
@@ -290,7 +290,7 @@ async function postTransactionInitiate(req, res) {
 			token
 		);
 		Log.info(
-			`[ApiController.js][postProcessEcgServices]\t hubtelResponse: ` +
+			`[ApiController.js][postTransactionInitiate]\t hubtelResponse: ` +
 				JSON.stringify(hubtelResponse)
 		);
 		if (hubtelResponse) {
@@ -324,6 +324,78 @@ async function postTransactionInitiate(req, res) {
 	}
 }
 
+async function postTransactionExecute(req, res) {
+	const { phoneNumber, meterId, amount, type } = req.body;
+	let hubtelResponse;
+	const validationError = handleValidationErrors(req, res);
+	if (validationError) {
+		const errorRes = await apiErrors.create(
+			errorMessages.errors.API_MESSAGE_ECG_ACCOUNT_VALIDATION_FAILED,
+			"POST",
+			validationError,
+			undefined
+		);
+		return res.json(errorRes);
+	}
+
+	const tokenObject = req.cookies.jwt;
+	const token = tokenObject.acccess_token;
+
+	req.headers["Authorization"] = `Bearer ${token}`;
+
+	try {
+		Log.info(
+			`[ApiController.js][postTransactionExecute]\t incoming ecg meter search request: ` +
+				req.ip
+		);
+
+		const data = {
+			phoneNumber: phoneNumber,
+			meterId: meterId,
+			amount: amount,
+			type: type,
+		};
+
+		hubtelResponse = await restMiddlewareServices.postTransactionExecute(
+			data,
+			token
+		);
+		Log.info(
+			`[ApiController.js][postTransactionExecute]\t hubtelResponse: ` +
+				JSON.stringify(hubtelResponse)
+		);
+		if (hubtelResponse) {
+			const q = phoneNumber.substr(-9);
+			const redisKey = `payment_key_${q}`;
+			await setRedisWithExpiry(redisKey, 300, hubtelResponse.checksum);
+
+			if (hubtelResponse.code === 200) {
+				return res.json({
+					success: true,
+					code: 200,
+					message: "Successful",
+					type: type,
+					data: hubtelResponse.result,
+				});
+			}
+			return res.json({
+				success: false,
+				code: 400,
+			});
+		}
+		return res.json({
+			success: false,
+			message: ServiceCode.FAILED,
+		});
+	} catch (error) {
+		return res.json({
+			success: false,
+			error: error.message,
+			message: ServiceCode.ERROR_OCCURED,
+		});
+	}
+}
+
 module.exports = {
 	getIndex,
 	getContactUs,
@@ -336,4 +408,5 @@ module.exports = {
 	getServiceSearch,
 	postServiceSearch,
 	postTransactionInitiate,
+	postTransactionExecute,
 };
