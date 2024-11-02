@@ -394,6 +394,17 @@ async function postTransactionExecute(req, res) {
 	}
 }
 
+/**airtime and bundle */
+async function getAirtimeAndBundle(req, res) {
+	return res.render("web/services/aritime-and-bundle", {
+		pageTitle: "Doseal Limited | Airtime  and Bundle",
+		path: "/",
+		errors: false,
+		errorMessage: false,
+		csrfToken: req.csrfToken(),
+	});
+}
+
 module.exports = {
 	getIndex,
 	getContactUs,
@@ -407,4 +418,5 @@ module.exports = {
 	postServiceSearch,
 	postTransactionInitiate,
 	postTransactionExecute,
+	getAirtimeAndBundle,
 };

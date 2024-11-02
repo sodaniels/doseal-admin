@@ -25,4 +25,7 @@ router.post(
 // post execute transaction
 router.post("/transaction-exec", webController.postTransactionExecute);
 
+// airtime and bundle
+router.get("/airtime-and-bundle", webController.getAirtimeAndBundle);
+
 module.exports = router;
