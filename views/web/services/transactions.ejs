@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html
+	class="no-js"
+	lang="zxx">
+	<head>
+		<%- include('../../includes/web/google-analytics.ejs') %>
+		<meta charset="utf-8" />
+		<meta
+			http-equiv="x-ua-compatible"
+			content="ie=edge" />
+		<title>Doseal Limited | Transaction</title>
+		<%- include('../../includes/web/meta.ejs') %>
+
+		<!-- Latest jQuery from CDN -->
+		<script
+			src="https://code.jquery.com/jquery-3.6.0.min.js"
+			crossorigin="anonymous"></script>
+
+		<link
+			rel="stylesheet"
+			href="https://cdn.jsdelivr.net/npm/line-awesome/dist/line-awesome/css/line-awesome.min.css" />
+
+		<script
+			src="https://www.google.com/recaptcha/api.js"
+			async
+			defer></script>
+
+		<style>
+			/* Black and white theme for the table */
+			body {
+				background-color: #f8f9fa;
+				color: #212529;
+			}
+			h2 {
+				color: #212529;
+			}
+			.table {
+				background-color: #ffffff;
+			}
+			.table thead th {
+				background-color: #333;
+				color: #ffffff;
+			}
+			.table tbody tr {
+				color: #333;
+			}
+			.btn {
+				color: #fff;
+			}
+			.btn-primary {
+				background-color: #333;
+				border-color: #333;
+			}
+			.btn-danger {
+				background-color: #000;
+				border-color: #000;
+			}
+			.status-completed {
+				color: #000;
+				font-weight: bold;
+			}
+			.status-pending {
+				color: #666;
+				font-weight: bold;
+			}
+		</style>
+
+		<style>
+			#loadingOverlay {
+				position: fixed;
+				top: 0;
+				left: 0;
+				width: 100%;
+				height: 100%;
+				background: rgba(0, 0, 0, 0.6);
+				display: none; /* Initially hidden */
+				justify-content: center;
+				align-items: center;
+				z-index: 1000;
+			}
+			.spinner {
+				display: flex;
+				justify-content: center;
+				align-items: center;
+				position: relative;
+				width: 100px;
+				height: 100px;
+			}
+			.spinner::before,
+			.spinner::after {
+				content: "";
+				position: absolute;
+				border-radius: 50%;
+				animation: pulsate 1.5s infinite ease-in-out;
+			}
+			.spinner::before {
+				width: 60px;
+				height: 60px;
+				border: 6px solid #ff6b6b;
+				animation-delay: 0s;
+			}
+			.spinner::after {
+				width: 80px;
+				height: 80px;
+				border: 6px solid #3498db;
+				animation-delay: 0.75s;
+			}
+			.inner-spinner {
+				width: 40px;
+				height: 40px;
+				border: 5px solid transparent;
+				border-top: 5px solid #fff;
+				border-radius: 50%;
+				animation: spin 1s linear infinite;
+			}
+			@keyframes spin {
+				0% {
+					transform: rotate(0deg);
+				}
+				100% {
+					transform: rotate(360deg);
+				}
+			}
+			@keyframes pulsate {
+				0%,
+				100% {
+					transform: scale(1);
+					opacity: 1;
+				}
+				50% {
+					transform: scale(1.5);
+					opacity: 0.5;
+				}
+			}
+		</style>
+
+		<style>
+			.status-success {
+				color: green;
+				font-weight: bold;
+			}
+			.status-pending-orange {
+				color: orange;
+				font-weight: bold;
+			}
+			.status-pending-blue {
+				color: blue;
+				font-weight: bold;
+			}
+			.status-failed {
+				color: red;
+				font-weight: bold;
+			}
+		</style>
+
+    	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+		<%- include('../../includes/web/head.ejs') %>
+
+		<body>
+			<!--********************************
+   		Code Start From Here
+	******************************** -->
+
+			<!--==============================
+     Preloader
+    ==============================-->
+			<div class="preloader">
+				<div class="preloader-inner">
+					<span></span>
+					<span></span>
+					<span></span>
+					<span></span>
+				</div>
+			</div>
+
+			<div id="loadingOverlay">
+				<div class="spinner">
+					<div class="inner-spinner"></div>
+				</div>
+			</div>
+
+			<%- include('../../includes/web/mobile-menu-and-top.ejs') %>
+			<!--==============================
+	Header Area
+    ==============================-->
+			<header class="nav-header header-layout3 bg-white">
+				<%- include('../../includes/web/header.ejs') %>
+			</header>
+
+			<!--==============================
+    Breadcumb
+    ============================== -->
+	
+
+			<!--==============================
+    Feature Area
+    ==============================-->
+			<div class="feature-area-1 space">
+				<div class="container mt-5">
+					<!-- Header Section -->
+					<div class="row mb-4">
+						<div class="col-md-8">
+							<h1 class="display-4">Transaction History</h1>
+							<p class="lead">View all your transactions in one place.</p>
+						</div>
+					</div>
+				</div>
+				<div class="container">
+					<div class="row gy-4 align-items-center justify-content-center">
+						   <!-- Transactions Table -->
+						<div class="table-responsive">
+							<table class="table table-bordered table-hover">
+								<thead>
+									<tr>
+										<th scope="col">Transaction ID</th>
+										<th scope="col">Service Type</th>
+										<th scope="col">Amount</th>
+										<th scope="col">Fee</th>
+										<th scope="col">Total Amount</th>
+										<th scope="col">Phone</th>
+										<th scope="col">Account No.</th>
+										<th scope="col">Date</th>
+										<th scope="col">Status</th>
+										<th scope="col">Actions</th>
+									</tr>
+								</thead>
+								<% transactions.forEach((transaction, index) => { %>
+								<tbody>
+									<tr>
+										<td><%=transaction._id %></td>
+										<td><%=transaction.type %></td>
+										<td><%= Number(transaction.amount).toFixed(2) %></td>
+										<td><%= Number(transaction.fee).toFixed(2) %></td>
+										<td><%= Number(transaction.totalAmount).toFixed(2) %></td>
+										<td><%=transaction.phoneNumber %></td>
+										<td><%=transaction.accountNumber %></td>
+										<td><%=longDate(transaction.createdAt )%></td>
+										<td>
+											<span class="status-<%= transaction.statusCode === 200 ? 'success' : transaction.statusCode === 411 ? 'pending-orange' : transaction.statusCode === 477 ? 'pending-blue' : 'failed' %>">
+												<%= transaction.statusCode === 200 ? 'Success' : transaction.statusCode === 411 ? 'Pending' : transaction.statusCode === 477 ? 'Pending' : 'Failed' %>
+											</span>
+										</td>
+										<td>
+											<button class="btn btn-dark btn-sm">View</button>
+										</td>
+									</tr>
+								</tbody>
+								<% }) %>
+							</table>
+						</div>
+					</div>
+					</div>
+					</div>
+				</div>
+			</div>
+
+
+			<!--==============================
+        Footer Area
+    ==============================-->
+			<footer class="footer-wrapper footer-layout2 overflow-hidden">
+				<%- include('../../includes/web/footer.ejs') %>
+			</footer>
+
+			<!--********************************
+			Code End  Here
+	******************************** -->
+
+			<!-- Scroll To Top -->
+			<div class="scroll-top">
+				<svg
+					class="progress-circle svg-content"
+					width="100%"
+					height="100%"
+					viewBox="-1 -1 102 102">
+					<path
+						d="M50,1 a49,49 0 0,1 0,98 a49,49 0 0,1 0,-98"
+						style="
+							transition: stroke-dashoffset 10ms linear 0s;
+							stroke-dasharray: 307.919, 307.919;
+							stroke-dashoffset: 307.919;
+						"></path>
+				</svg>
+			</div>
+
+			<!-- Jquery -->
+			 <!-- Bootstrap JS, Popper.js, and jQuery -->
+			<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+			<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+			<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+			<script src="/assets/web/js/engine/process-contact.js"></script>
+			<script src="/assets/web/js/sweetalert2.all.min.js"></script>
+			<%- include('../../includes/web/jsfiles.ejs') %>
+		</body>
+	</head>
+</html>

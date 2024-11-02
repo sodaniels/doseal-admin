@@ -7,7 +7,7 @@ function shortData(data) {
 }
 
 function longDate(data) {
-    return moment(data).format('ddd, MMM DD, YYYY HH:mm:ss');
+    return moment(data).format('DD, MMM DD, YYYY HH:mm');
 }
 
 function transformWord(str) {
@@ -15,7 +15,7 @@ function transformWord(str) {
 }
 
 function cuteDate(data) {
-    return moment(data).format('DD MMM, YYYY');
+    return moment(data).format('DD MMM, YYYY ');
 }
 
 

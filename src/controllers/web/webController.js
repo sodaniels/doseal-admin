@@ -1,11 +1,12 @@
 const axios = require("axios");
 const { validationResult } = require("express-validator");
-
+const Transaction = require("../../models/transaction.model");
 const { Log } = require("../../helpers/Log");
 const Admin = require("../../models/admin.model");
 const ContactUs = require("../../models/contact-us.model");
 const Page = require("../../models/page.model");
 const { handleValidationErrors } = require("../../helpers/validationHelper");
+const { longDate } = require("../../helpers/shortData")
 const apiErrors = require("../../helpers/errors/errors");
 const errorMessages = require("../../helpers/error-messages");
 const ServiceCode = require("../../constants/serviceCode");
@@ -637,6 +638,34 @@ async function postSearchGhanaWater(req, res) {
 		});
 	}
 }
+// transaction
+async function geTransaction(req, res) {
+	const user = req.session.user;
+
+	try {
+		const transactions = await Transaction.find({
+			createdBy: user._id,
+			cr_created: { $ne: true },
+		}).sort({ createdAt: -1 });
+
+		console.log(JSON.stringify(transactions));
+		return res.render("web/services/transactions", {
+			pageTitle: "Doseal Limited | Transactions",
+			path: "/",
+			longDate: longDate,
+			transactions: transactions.length > 0 ? transactions : [],
+			csrfToken: req.csrfToken(),
+		});
+	} catch (error) {
+		return res.render("web/services/transactions", {
+			pageTitle: "Doseal Limited | Transactions",
+			path: "/",
+			longDate: longDate,
+			transactions: [],
+			csrfToken: req.csrfToken(),
+		});
+	}
+}
 
 module.exports = {
 	getIndex,
@@ -657,4 +686,5 @@ module.exports = {
 	postUtilityServiceSearch,
 	getGhanaWater,
 	postSearchGhanaWater,
+	geTransaction,
 };

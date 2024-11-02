@@ -58,4 +58,6 @@ router.post(
 	webController.postSearchGhanaWater
 );
 
+router.get("/transactions", isTokenExist, webController.geTransaction);
+
 module.exports = router;
