@@ -350,7 +350,6 @@ $(document).ready(function () {
 						case "Airtime":
 							document.getElementById("step1Form").reset();
 							break;
-
 						default:
 							break;
 					}
@@ -359,6 +358,7 @@ $(document).ready(function () {
 					$("#step1").hide();
 					$("#step2").hide();
 					$("#step3").hide();
+					$("#step2-1").hide();
 					$("#transactionConfirmModal").modal("hide");
 					window.open(result.url, "_blank");
 				} else if (result.code === 400) {
@@ -461,10 +461,6 @@ $(document).ready(function () {
 					$container.empty();
 					// Loop through each option in result.data and append it to the container
 					$.each(meterOptions, function (index, option) {
-						// localStorage.setItem("bundleName", option.Display);
-						// localStorage.setItem("bundleValue", option.Value);
-						// localStorage.setItem("amount", option.Amount);
-
 						localStorage.setItem("type", userData.type);
 
 						const radioItem = `
