@@ -1,4 +1,12 @@
 $(document).ready(function () {
+	const urlParams = new URLSearchParams(window.location.search);
+	const serviceParam = urlParams.get("service");
+	console.log("serviceParam: " + serviceParam);
+	let type = serviceParam.toUpperCase();
+	localStorage.setItem("type", type);
+
+	$(".sec-title").text(`Pay for ${serviceParam.toUpperCase()}`);
+
 	$("#listServiceButton").click(function (e) {
 		e.preventDefault();
 		$.ajaxSetup({
@@ -23,7 +31,7 @@ $(document).ready(function () {
 
 		const userData = {
 			accountNumber: accountNumber,
-			type: "DSTV",
+			type: type,
 		};
 
 		localStorage.setItem("accountNumber", accountNumber);
@@ -58,11 +66,13 @@ $(document).ready(function () {
 					$container.empty();
 					// Loop through each option in result.data and append it to the container
 
+					const type = localStorage.getItem("type");
+
 					const inputData = {
 						accountName: resultObject[0].Value,
 						amount: resultObject[1].Value,
 						accountNumber: resultObject[2].Value,
-						type: "DSTV",
+						type: type,
 					};
 
 					localStorage.setItem("inputData", JSON.stringify(inputData));
@@ -138,7 +148,6 @@ $(document).ready(function () {
 			return false;
 		}
 		const inputData = JSON.parse(localStorage.getItem("inputData"));
-		
 
 		$("#step1").hide();
 		$("#step2").hide();
@@ -163,6 +172,7 @@ $(document).ready(function () {
 		const inputData = JSON.parse(localStorage.getItem("inputData"));
 
 		const phoneNumber = localStorage.getItem("phoneNumber");
+		const type = localStorage.getItem("type");
 
 		var amount = $("#amount").val();
 
@@ -171,7 +181,7 @@ $(document).ready(function () {
 			accountName: inputData.accountName,
 			accountNumber: inputData.accountNumber,
 			amount: amount,
-			type: "DSTV",
+			type: type,
 		};
 
 		$("#loadingOverlay").css("display", "flex");
@@ -292,14 +302,10 @@ $(document).ready(function () {
 					document.getElementById("step1Form").reset();
 					window.open(result.url, "_blank");
 				} else if (result.code === 400) {
-					const errorMessages = errors
-						.map((error) => `${error.field}: ${error.message}`)
-						.join("\n");
-
 					Swal.fire({
-						title: "Validation Error",
-						text: errorMessages,
-						icon: "error",
+						title: "Something went wrong!", 
+						text: "Please check your account number and try again",
+						icon: "warning",
 					});
 					return false;
 				} else {
