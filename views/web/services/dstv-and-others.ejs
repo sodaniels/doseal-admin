@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html
+	class="no-js"
+	lang="zxx">
+	<head>
+		<script
+			src="https://code.jquery.com/jquery-3.6.0.min.js"
+			crossorigin="anonymous"></script>
+		<%- include('../../includes/web/google-analytics.ejs') %>
+		<meta charset="utf-8" />
+		<meta
+			http-equiv="x-ua-compatible"
+			content="ie=edge" />
+		<meta
+			name="csrf-token"
+			content="<%= csrfToken %>" />
+
+		<title>Doseal Limited | Pay Bill</title>
+		<%- include('../../includes/web/meta.ejs') %> <%-
+		include('../../includes/web/head.ejs') %>
+
+		<style>
+			/* Styles for spacing and alignment */
+			.readOnlyInput {
+				background-color: #e6e3e3 !important; /* Light gray background */
+			}
+			.radio-group {
+				display: flex;
+				flex-direction: column;
+				gap: 20px; /* Spacing between radio items */
+				margin-top: 10px;
+			}
+
+			.radio-item {
+				padding: 15px;
+				border: 1px solid #ccc;
+				border-radius: 8px;
+				display: flex;
+				align-items: flex-start;
+				gap: 15px;
+			}
+
+			.radio-item input[type="radio"] {
+				margin-top: 6px;
+			}
+
+			.radio-item label {
+				display: block;
+				cursor: pointer;
+			}
+
+			.radio-item strong {
+				font-size: 1.1em;
+				display: block;
+				margin-bottom: 5px;
+			}
+
+			.radio-item .subtitle {
+				color: #666;
+				font-size: 0.9em;
+			}
+		</style>
+
+		<style>
+			#loadingOverlay {
+				position: fixed;
+				top: 0;
+				left: 0;
+				width: 100%;
+				height: 100%;
+				background: rgba(0, 0, 0, 0.6);
+				display: none; /* Initially hidden */
+				justify-content: center;
+				align-items: center;
+				z-index: 1000;
+			}
+			.spinner {
+				display: flex;
+				justify-content: center;
+				align-items: center;
+				position: relative;
+				width: 100px;
+				height: 100px;
+			}
+			.spinner::before,
+			.spinner::after {
+				content: "";
+				position: absolute;
+				border-radius: 50%;
+				animation: pulsate 1.5s infinite ease-in-out;
+			}
+			.spinner::before {
+				width: 60px;
+				height: 60px;
+				border: 6px solid #ff6b6b;
+				animation-delay: 0s;
+			}
+			.spinner::after {
+				width: 80px;
+				height: 80px;
+				border: 6px solid #3498db;
+				animation-delay: 0.75s;
+			}
+			.inner-spinner {
+				width: 40px;
+				height: 40px;
+				border: 5px solid transparent;
+				border-top: 5px solid #fff;
+				border-radius: 50%;
+				animation: spin 1s linear infinite;
+			}
+			@keyframes spin {
+				0% {
+					transform: rotate(0deg);
+				}
+				100% {
+					transform: rotate(360deg);
+				}
+			}
+			@keyframes pulsate {
+				0%,
+				100% {
+					transform: scale(1);
+					opacity: 1;
+				}
+				50% {
+					transform: scale(1.5);
+					opacity: 0.5;
+				}
+			}
+		</style>
+
+		<body>
+			<!--********************************
+   		Code Start From Here
+	******************************** -->
+
+			<!--==============================
+     Preloader
+    ==============================-->
+			<div class="preloader">
+				<div class="preloader-inner">
+					<span></span>
+					<span></span>
+					<span></span>
+					<span></span>
+				</div>
+			</div>
+
+			<div id="loadingOverlay">
+				<div class="spinner">
+					<div class="inner-spinner"></div>
+				</div>
+			</div>
+
+			<%- include('../../includes/web/mobile-menu-and-top.ejs') %>
+			<!--==============================
+	Header Area
+    ==============================-->
+			<header class="nav-header header-layout3 bg-white">
+				<%- include('../../includes/web/header.ejs') %>
+			</header>
+
+			<section
+				class="shop__area space"
+				style="margin-top: 10em">
+				<div class="container">
+					<div
+						class="row align-items-center justify-content-end"
+						id="step1">
+						<div class="col-lg-3"></div>
+						<div class="col-lg-6">
+							<div class="contact-form-wrap">
+								<div class="title-area mb-30">
+									<h3 class="sec-title">Pay for DSTV</h3>
+									<p>
+										Search for a the details of your DSTV account by entering
+										the account number.
+									</p>
+								</div>
+								<form
+									action=""
+									method="POST"
+									id="step1Form"
+									class="contact-form ajax-contact">
+									<div class="row">
+										<input type="hidden" name="phoneNumber" id="phoneNumber" value="<%= phoneNumber %>">
+										<div class="col-md-12">
+											<div class="form-group">
+												<input
+													type="tel"
+													class="form-control style-border"
+													name="accountNumber"
+													id="accountNumber"
+													placeholder="Account Number" />
+											</div>
+										</div>
+									</div>
+									<div class="form-btn col-12">
+										<button
+											type="button"
+											id="resetStep1"
+											class="btn mt-20 mr-20">
+											<span class="link-effect">
+												<span class="effect-1">CLEAR</span>
+												<span class="effect-1">CLEAR</span>
+											</span>
+										</button>
+										<button
+											type="button"
+											id="listServiceButton"
+											class="btn mt-20">
+											<span class="link-effect">
+												<span class="effect-1">NEXT</span>
+												<span class="effect-1">NEXT</span>
+											</span>
+										</button>
+									</div>
+								</form>
+							</div>
+						</div>
+						<div class="col-lg-3"></div>
+					</div>
+
+					<div
+						class="row align-items-center justify-content-end"
+						id="step2"
+						style="display: none">
+						<div class="col-lg-3"></div>
+						<div class="col-lg-6">
+							<div class="contact-form-wrap">
+								<div class="title-area mb-30">
+									<h3 class="sec-title">Select account</h3>
+									<p>Choose the DSTV account you wan to make paymennt on.</p>
+								</div>
+								<form
+									action=""
+									method="POST"
+									id="step2Form"
+									class="contact-form ajax-contact">
+									<div class="row">
+										<div class="col-md-6">
+											<div class="form-group">
+												<div class="radio-group">
+													<div
+														class="radio-group"
+														id="meterOptionsContainer"></div>
+												</div>
+											</div>
+										</div>
+									</div>
+									<div class="form-btn col-12">
+										<button
+											type="button"
+											id="resetStep2"
+											class="btn mt-20 mr-20">
+											<span class="link-effect">
+												<span class="effect-1">CLEAR</span>
+												<span class="effect-1">CLEAR</span>
+											</span>
+										</button>
+										<button
+											type="button"
+											id="submitMeterID_number"
+											class="btn mt-20">
+											<span class="link-effect">
+												<span class="effect-1">NEXT</span>
+												<span class="effect-1">NEXT</span>
+											</span>
+										</button>
+									</div>
+								</form>
+							</div>
+						</div>
+						<div class="col-lg-3"></div>
+					</div>
+
+					<div
+						class="row align-items-center justify-content-end"
+						id="step3"
+						style="display: none">
+						<div class="col-lg-3"></div>
+						<div class="col-lg-6">
+							<div class="contact-form-wrap">
+								<div class="title-area mb-30">
+									<h3 class="sec-title">Pay for DSTV</h3>
+									<p>Enter the amount you want to purchase</p>
+								</div>
+								<form
+									action=""
+									method="POST"
+									id="step3Form"
+									class="contact-form ajax-contact">
+									<div class="row">
+										
+
+										<div class="col-md-12">
+											<label>Account Number</label>
+											<div class="form-group readOnlyInput">
+												<input
+													type="tel"
+													class="form-control style-border"
+													name="_accountNumber"
+													id="_accountNumber"
+													placeholder=""
+													readonly />
+											</div>
+										</div>
+										<div class="col-md-12">
+											<label>Account Name</label>
+											<div class="form-group readOnlyInput">
+												<input
+													type="tel"
+													class="form-control style-border"
+													name="accountName"
+													id="accountName"
+													placeholder=""
+													readonly />
+											</div>
+										</div>
+
+										<div class="col-md-12">
+											<label>Amount (GHS)</label>
+											<div class="form-group">
+												<input
+													type="number"
+													class="form-control style-border"
+													name="amount"
+													id="amount"
+													placeholder="" />
+											</div>
+										</div>
+									</div>
+									<div class="form-btn col-12">
+										<button
+											type="button"
+											id="resetStep3"
+											class="btn mt-20 mr-20">
+											<span class="link-effect">
+												<span class="effect-1">BACK</span>
+												<span class="effect-1">BACK</span>
+											</span>
+										</button>
+										<button
+											type="button"
+											id="confirmPayment"
+											class="btn mt-20">
+											<span class="link-effect">
+												<span class="effect-1">NEXT</span>
+												<span class="effect-1">NEXT</span>
+											</span>
+										</button>
+									</div>
+								</form>
+							</div>
+						</div>
+						<div class="col-lg-3"></div>
+					</div>
+				</div>
+			</section>
+
+			<!-- shop-area-end -->
+
+			<footer class="footer-wrapper footer-layout2 overflow-hidden">
+				<%- include('../../includes/web/footer.ejs') %>
+			</footer>
+
+			<!--********************************
+			Code End  Here
+	******************************** -->
+
+			<!-- Scroll To Top -->
+			<div class="scroll-top">
+				<svg
+					class="progress-circle svg-content"
+					width="100%"
+					height="100%"
+					viewBox="-1 -1 102 102">
+					<path
+						d="M50,1 a49,49 0 0,1 0,98 a49,49 0 0,1 0,-98"
+						style="
+							transition: stroke-dashoffset 10ms linear 0s;
+							stroke-dasharray: 307.919, 307.919;
+							stroke-dashoffset: 307.919;
+						"></path>
+				</svg>
+			</div>
+
+			<!-- Bootstrap Modal for Transaction Confirmation -->
+			<div
+				class="modal fade"
+				id="transactionConfirmModal"
+				tabindex="-1"
+				role="dialog"
+				aria-labelledby="transactionConfirmModalLabel"
+				aria-hidden="true">
+				<div
+					class="modal-dialog modal-dialog-centered"
+					role="document">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5
+								class="modal-title"
+								id="transactionConfirmModalLabel">
+								Confirm Transaction
+							</h5>
+						</div>
+						<div class="modal-body">
+							<p>
+								<strong>Service Type:</strong>
+								<span id="confirmServiceType"></span>
+							</p>
+							
+							<p>
+								<strong>Account Name:</strong> <span id="confirmMeterName"></span>
+							</p>
+							<p>
+								<strong>Account Number:</strong> <span id="confirmMeterId"></span>
+							</p>
+							<p>
+								<strong>Amount:</strong> GHS <span id="confirmAmount"></span>
+							</p>
+							<p><strong>Fee:</strong> GHS <span id="confirmFee"></span></p>
+							<p>
+								<strong>Total Amount:</strong> GHS
+								<span id="confirmTotalAmount"></span>
+							</p>
+						</div>
+						<div class="modal-footer">
+							<button
+								id="closeConfirmButton"
+								type="button"
+								class="btn btn-secondary"
+								data-dismiss="modal">
+								Cancel
+							</button>
+							<button
+								type="button"
+								class="btn btn-primary"
+								id="confirmTransactionBtn">
+								Confirm
+							</button>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!-- Jquery -->
+
+			<script src="/assets/web/js/services/dstv-and-others.js"></script>
+			<script src="/assets/web/js/sweetalert2.all.min.js"></script>
+
+			<%- include('../../includes/web/jsfiles.ejs') %>
+		</body>
+	</head>
+</html>

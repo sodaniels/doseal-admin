@@ -134,7 +134,7 @@ class RestMiddlewareServices {
 			};
 		}
 	}
-	
+
 	async postSearchDataBundle(data, token) {
 		try {
 			const url = `${process.env.DOSEAL_API_BASE_URL}/api/v1/search-data-bundle-by-network`;
@@ -169,6 +169,51 @@ class RestMiddlewareServices {
 			} else {
 				Log.info(
 					`[RestMiddlewareServices.js][postSearchEcgAccount] unknown error: ${error.message}`
+				);
+			}
+			return {
+				success: false,
+				code: 500,
+				message: error.message,
+			};
+		}
+	}
+
+	async postUtiltySearch(data, token) {
+		let url;
+		try {
+			url = `${process.env.DOSEAL_API_BASE_URL}/api/v1/search-dstv-account`;
+			Log.info(
+				`[RestMiddlewareServices.js][postUtiltySearch] initiating request to: ${url}`
+			);
+			const response = await axios.post(url, data, {
+				headers: {
+					Authorization: `Bearer ${token}`, // Use Bearer if required
+					"Content-Type": "application/json",
+				},
+			});
+
+			return response.data;
+		} catch (error) {
+			Log.info(
+				`[RestMiddlewareServices.js][postUtiltySearch] error validating account: ${error.message}`
+			);
+			if (error.response) {
+				Log.info(
+					`[RestMiddlewareServices.js][postUtiltySearch] response status: ${error.response.status}`
+				);
+				Log.info(
+					`[RestMiddlewareServices.js][postUtiltySearch] response data: ${JSON.stringify(
+						error.response.data
+					)}`
+				);
+			} else if (error.request) {
+				Log.info(
+					`[RestMiddlewareServices.js][postUtiltySearch] request: ${error.request}`
+				);
+			} else {
+				Log.info(
+					`[RestMiddlewareServices.js][postUtiltySearch] unknown error: ${error.message}`
 				);
 			}
 			return {

@@ -35,6 +35,18 @@ router.post(
 
 // airtime and bundle
 router.get("/airtime-and-bundle", isTokenExist, webController.getAirtime);
-
+// dstv and others
+router.get(
+	"/search-utility-service",
+	isTokenExist,
+	webController.getSearchUtilityService
+);
+// dstv and others
+router.post(
+	"/search-utility-account",
+	isTokenExist,
+	validator.validateUtilitySearch,
+	webController.postUtilityServiceSearch
+);
 
 module.exports = router;

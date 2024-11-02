@@ -207,8 +207,6 @@ async function postServiceSearch(req, res) {
 		return res.json(errorRes);
 	}
 
-	
-
 	const tokenObject = req.cookies.jwt;
 	const token = tokenObject.acccess_token;
 
@@ -288,6 +286,8 @@ async function postTransactionInitiate(req, res) {
 		type,
 		meterName = null,
 		network = null,
+		accountName = null,
+		accountNumber = null,
 	} = req.body;
 	let hubtelResponse;
 	const validationError = handleValidationErrors(req, res);
@@ -315,6 +315,8 @@ async function postTransactionInitiate(req, res) {
 			meterId: meterId ? meterId : undefined,
 			meterName: meterName ? meterName : undefined,
 			network: network ? network : undefined,
+			accountName: accountName ? accountName : undefined,
+			accountNumber: accountNumber ? accountNumber : undefined,
 			amount: amount,
 			type: type,
 		};
@@ -494,6 +496,77 @@ async function postServiceDataSearch(req, res) {
 	}
 }
 
+// dstv and others
+async function getSearchUtilityService(req, res) {
+	const user =  req.session.user
+	return res.render("web/services/dstv-and-others", {
+		pageTitle: "Doseal Limited | Utility Service",
+		path: "/",
+		errors: false,
+		errorMessage: false,
+		phoneNumber: user.phoneNumber,
+		csrfToken: req.csrfToken(),
+	});
+}
+// search for dstv and other services
+async function postUtilityServiceSearch(req, res) {
+	let inputData;
+	const { accountNumber, type = null } = req.body;
+	let hubtelResponse;
+	const validationError = handleValidationErrors(req, res);
+	if (validationError) {
+		const errorRes = await apiErrors.create(
+			errorMessages.errors.API_MESSAGE_ECG_ACCOUNT_VALIDATION_FAILED,
+			"POST",
+			validationError,
+			undefined
+		);
+		return res.json(errorRes);
+	}
+
+	const tokenObject = req.cookies.jwt;
+	const token = tokenObject.acccess_token;
+
+	try {
+		inputData = {
+			accountNumber: accountNumber,
+			type: type,
+		};
+
+		hubtelResponse = await restMiddlewareServices.postUtiltySearch(
+			inputData,
+			token
+		);
+		if (hubtelResponse) {
+			console.log("hubtelResponse: " + JSON.stringify(hubtelResponse));
+			if (hubtelResponse.ResponseCode === "0000") {
+				return res.json({
+					success: true,
+					code: 200,
+					message: "Successful",
+					accountNumber: accountNumber,
+					data: hubtelResponse.Data,
+				});
+			}
+			return res.json({
+				success: false,
+				code: 400,
+				data: [],
+			});
+		}
+		return res.json({
+			success: false,
+			message: ServiceCode.FAILED,
+		});
+	} catch (error) {
+		return res.json({
+			success: false,
+			error: error.message,
+			message: ServiceCode.ERROR_OCCURED,
+		});
+	}
+}
+
 module.exports = {
 	getIndex,
 	getContactUs,
@@ -509,4 +582,6 @@ module.exports = {
 	postTransactionExecute,
 	getAirtime,
 	postServiceDataSearch,
+	getSearchUtilityService,
+	postUtilityServiceSearch,
 };
