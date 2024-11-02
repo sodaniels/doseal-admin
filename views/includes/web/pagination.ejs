@@ -1,0 +1,29 @@
+<div class="mb-5">
+  <ul class="pagination float-right">
+    <% const numTabsToShow = 10; %> <% const startPage = Math.max(1, currentPage
+    - Math.floor(numTabsToShow / 2)); %> <% const endPage = Math.min(totalPages,
+    startPage + numTabsToShow - 1); %> <% const queryString =
+    `?startDate=${startDate}&endDate=${endDate}&page=`; %> <% if (currentPage >
+    1) { %>
+    <li class="page-item">
+      <a class="page-link" href="<%= `${queryString}${currentPage - 1}` %>"
+        >&laquo; Previous</a
+      >
+    </li>
+    <% } %> <% for (let i = startPage; i <= endPage; i++) { %>
+    <li
+      class="page-item <%= i.toString() === currentPage.toString() ? 'active' : '' %>"
+    >
+      <a class="page-link" href="<%= `${queryString}${i}` %>"><%= i %></a>
+    </li>
+    <% } %> <% if (currentPage < totalPages) { %>
+    <li class="page-item">
+      <a
+        class="page-link"
+        href="<%= `${queryString}${parseInt(currentPage) + 1}` %>"
+        >Next &raquo;</a
+      >
+    </li>
+    <% } %>
+  </ul>
+</div>

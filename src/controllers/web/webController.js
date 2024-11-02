@@ -6,7 +6,7 @@ const Admin = require("../../models/admin.model");
 const ContactUs = require("../../models/contact-us.model");
 const Page = require("../../models/page.model");
 const { handleValidationErrors } = require("../../helpers/validationHelper");
-const { longDate } = require("../../helpers/shortData")
+const { longDate } = require("../../helpers/shortData");
 const apiErrors = require("../../helpers/errors/errors");
 const errorMessages = require("../../helpers/error-messages");
 const ServiceCode = require("../../constants/serviceCode");
@@ -641,12 +641,23 @@ async function postSearchGhanaWater(req, res) {
 // transaction
 async function geTransaction(req, res) {
 	const user = req.session.user;
+	const page = req.query.page || 1;
+	const perPage = 15;
+
+	const totalTransactions = await Transaction.find({
+		createdBy: user._id,
+		cr_created: { $ne: true },
+	}).countDocuments();
 
 	try {
 		const transactions = await Transaction.find({
 			createdBy: user._id,
 			cr_created: { $ne: true },
-		}).sort({ createdAt: -1 });
+		})
+			.sort({ createdAt: -1 })
+			.skip((page - 1) * perPage)
+			.limit(perPage)
+			.lean();
 
 		console.log(JSON.stringify(transactions));
 		return res.render("web/services/transactions", {
@@ -654,6 +665,11 @@ async function geTransaction(req, res) {
 			path: "/",
 			longDate: longDate,
 			transactions: transactions.length > 0 ? transactions : [],
+			totalPages: Math.ceil(totalTransactions / perPage),
+			currentPage: page,
+			totalTransactions: totalTransactions,
+			startDate: false,
+			endDate: false,
 			csrfToken: req.csrfToken(),
 		});
 	} catch (error) {
@@ -662,6 +678,11 @@ async function geTransaction(req, res) {
 			path: "/",
 			longDate: longDate,
 			transactions: [],
+			totalPages: Math.ceil(totalTransactions / perPage),
+			currentPage: page,
+			totalTransactions: false,
+			startDate: false,
+			endDate: false,
 			csrfToken: req.csrfToken(),
 		});
 	}

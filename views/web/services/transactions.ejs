@@ -229,11 +229,11 @@
 									<tr>
 										<td><%=transaction._id %></td>
 										<td><%=transaction.type %></td>
-										<td><%= Number(transaction.amount).toFixed(2) %></td>
-										<td><%= Number(transaction.fee).toFixed(2) %></td>
-										<td><%= Number(transaction.totalAmount).toFixed(2) %></td>
-										<td><%=transaction.phoneNumber %></td>
-										<td><%=transaction.accountNumber %></td>
+										<td>GHS <%= Number(transaction.amount).toFixed(2) %></td>
+										<td>GHS <%= Number(transaction.fee).toFixed(2) %></td>
+										<td>GHS <%= Number(transaction.totalAmount).toFixed(2) %></td>
+										<td><%=transaction.phoneNumber  %></td>
+										<td><%=transaction.accountNumber ? transaction.accountNumber :transaction.meterId %></td>
 										<td><%=longDate(transaction.createdAt )%></td>
 										<td>
 											<span class="status-<%= transaction.statusCode === 200 ? 'success' : transaction.statusCode === 411 ? 'pending-orange' : transaction.statusCode === 477 ? 'pending-blue' : 'failed' %>">
@@ -247,11 +247,14 @@
 								</tbody>
 								<% }) %>
 							</table>
+							<%- include("../../includes/web/pagination.ejs") %>
 						</div>
 					</div>
 					</div>
 					</div>
+					
 				</div>
+			
 			</div>
 
 
