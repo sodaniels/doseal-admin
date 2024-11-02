@@ -207,6 +207,8 @@ async function postServiceSearch(req, res) {
 		return res.json(errorRes);
 	}
 
+	
+
 	const tokenObject = req.cookies.jwt;
 	const token = tokenObject.acccess_token;
 
