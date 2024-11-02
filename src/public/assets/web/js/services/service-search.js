@@ -1,5 +1,5 @@
 $(document).ready(function () {
-	$("#signUpBtn").click(function (e) {
+	$("#listServiceButton").click(function (e) {
 		e.preventDefault();
 		$.ajaxSetup({
 			headers: {
@@ -45,7 +45,6 @@ $(document).ready(function () {
 				$button.html('<i class="la la-send"></i> Submit');
 
 				if (result.code === 200) {
-
 					$("#step1").hide();
 					$("#step2").show();
 					$("#step3").hide();
@@ -96,6 +95,13 @@ $(document).ready(function () {
 						icon: "warning",
 					});
 					return false;
+				} else if (result.code === 400) {
+					Swal.fire({
+						title: "Not Found!",
+						text: "We did not find any information for this number",
+						icon: "warning",
+					});
+					return false;
 				} else {
 					$("#loadingOverlay").css("display", "none");
 					Swal.fire({
@@ -120,10 +126,50 @@ $(document).ready(function () {
 		$("#step3").show();
 
 		$("#accountPhoneNumber").val(phoneNumber);
-		$("#meterName").val(meterId);
-		$("#meterId").val(meterName);
+		$("#meterName").val(meterName);
+		$("#meterId").val(meterId);
 		$("#amount").val(amount);
 
 		$("#amount").focus();
 	});
+
+	$("#confirmPayment").on("click", function () {
+		// Get the values from the form inputs
+		const phoneNumber = $("#accountPhoneNumber").val();
+		const meterName = $("#meterName").val();
+		const meterId = $("#meterId").val();
+		const amount = $("#amount").val();
+
+		// Populate the modal with the form values
+		$("#confirmPhoneNumber").text(phoneNumber);
+		$("#confirmMeterName").text(meterName);
+		$("#confirmMeterId").text(meterId);
+		$("#confirmAmount").text(amount);
+
+		// Show the modal
+		$("#transactionConfirmModal").modal("show");
+	});
+
+	// Action for the Confirm button in the modal
+	$("#confirmTransactionBtn").on("click", function () {
+		
+	});
+
+	$("#resetStep1").on("click", function () {
+		document.getElementById("step1Form").reset(); // Reset the form
+	});
+	$("#resetStep2").on("click", function () {
+		$("#step1").show();
+		$("#step2").hide();
+		$("#step3").hide();
+	});
+	$("#resetStep3").on("click", function () {
+		$("#step1").hide();
+		$("#step2").show();
+		$("#step3").hide();
+	});
+	
+	$("#closeConfirmButton").on("click", function () {
+        $("#transactionConfirmModal").modal("hide");
+    });
 });

@@ -105,7 +105,7 @@
 								<form
 									action=""
 									method="POST"
-									id="processSignupForm"
+									id="step1Form"
 									class="contact-form ajax-contact">
 									<div class="row">
 										<div class="col-md-12">
@@ -122,7 +122,16 @@
 									<div class="form-btn col-12">
 										<button
 											type="button"
-											id="signUpBtn"
+											id="resetStep1"
+											class="btn mt-20 mr-20">
+											<span class="link-effect">
+												<span class="effect-1">CLEAR</span>
+												<span class="effect-1">CLEAR</span>
+											</span>
+										</button>
+										<button
+											type="button"
+											id="listServiceButton"
 											class="btn mt-20">
 											<span class="link-effect">
 												<span class="effect-1">NEXT</span>
@@ -150,7 +159,7 @@
 								<form
 									action=""
 									method="POST"
-									id="processSignupForm"
+									id="step2Form"
 									class="contact-form ajax-contact">
 									<div class="row">
 										<div class="col-md-6">
@@ -164,6 +173,15 @@
 										</div>
 									</div>
 									<div class="form-btn col-12">
+										<button
+											type="button"
+											id="resetStep2"
+											class="btn mt-20 mr-20">
+											<span class="link-effect">
+												<span class="effect-1">CLEAR</span>
+												<span class="effect-1">CLEAR</span>
+											</span>
+										</button>
 										<button
 											type="button"
 											id="submitMeterID_number"
@@ -194,7 +212,7 @@
 								<form
 									action=""
 									method="POST"
-									id="processSignupForm"
+									id="step3Form"
 									class="contact-form ajax-contact">
 									<div class="row">
 										<div class="col-md-12">
@@ -248,7 +266,16 @@
 									<div class="form-btn col-12">
 										<button
 											type="button"
-											id="signUpBtn"
+											id="resetStep3"
+											class="btn mt-20 mr-20">
+											<span class="link-effect">
+												<span class="effect-1">BACK</span>
+												<span class="effect-1">BACK</span>
+											</span>
+										</button>
+										<button
+											type="button"
+											id="confirmPayment"
 											class="btn mt-20">
 											<span class="link-effect">
 												<span class="effect-1">NEXT</span>
@@ -291,9 +318,63 @@
 				</svg>
 			</div>
 
+			<!-- Bootstrap Modal for Transaction Confirmation -->
+			<div
+				class="modal fade"
+				id="transactionConfirmModal"
+				tabindex="-1"
+				role="dialog"
+				aria-labelledby="transactionConfirmModalLabel"
+				aria-hidden="true">
+				<div
+					class="modal-dialog modal-dialog-centered"
+					role="document">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5
+								class="modal-title"
+								id="transactionConfirmModalLabel">
+								Confirm Transaction
+							</h5>
+						</div>
+						<div class="modal-body">
+							<p>
+								<strong>Phone Number:</strong>
+								<span id="confirmPhoneNumber"></span>
+							</p>
+							<p>
+								<strong>Meter Name:</strong> <span id="confirmMeterName"></span>
+							</p>
+							<p>
+								<strong>Meter ID:</strong> <span id="confirmMeterId"></span>
+							</p>
+							<p>
+								<strong>Amount:</strong> GHS <span id="confirmAmount"></span>
+							</p>
+						</div>
+						<div class="modal-footer">
+							<button
+								id="closeConfirmButton"
+								type="button"
+								class="btn btn-secondary"
+								data-dismiss="modal">
+								Cancel
+							</button>
+							<button
+								type="button"
+								class="btn btn-primary"
+								id="confirmTransactionBtn">
+								Confirm
+							</button>
+						</div>
+					</div>
+				</div>
+			</div>
 			<!-- Jquery -->
+
 			<script src="/assets/web/js/services/service-search.js"></script>
 			<script src="/assets/web/js/sweetalert2.all.min.js"></script>
+
 			<%- include('../../includes/web/jsfiles.ejs') %>
 		</body>
 	</head>
