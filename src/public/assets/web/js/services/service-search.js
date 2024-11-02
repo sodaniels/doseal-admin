@@ -22,6 +22,7 @@ $(document).ready(function () {
 
 		const userData = {
 			phoneNumber: phoneNumber,
+			type: "ECG"
 		};
 
 		$("#loadingOverlay").css("display", "flex");

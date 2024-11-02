@@ -165,6 +165,7 @@
 				class="shop__area space"
 				style="margin-top: 10em">
 				<div class="container">
+
 					<div
 						class="row align-items-center justify-content-end"
 						id="step0">
@@ -239,7 +240,7 @@
 						<div class="col-lg-4">
 							<div class="contact-form-wrap">
 								<div class="title-area mb-30">
-									<h3 class="sec-title">Buy Airtime & Data</h3>
+									<h3 class="sec-title">Buy Airtime</h3>
 									<p>Fill the form below</p>
 								</div>
 								<form
@@ -314,6 +315,75 @@
 
 					<div
 						class="row align-items-center justify-content-end"
+						id="step1-1"
+						style="display: none">
+						<div class="col-lg-4"></div>
+						<div class="col-lg-4">
+							<div class="contact-form-wrap">
+								<div class="title-area mb-30">
+									<h3 class="sec-title">Buy Data Bundle</h3>
+									<p>Fill the form below</p>
+								</div>
+								<form
+									action=""
+									method="POST"
+									id="step1-1-Form"
+									class="contact-form ajax-contact">
+									<div class="row">
+										<div class="col-md-12">
+											<label>Phone Number</label>
+											<div class="form-group">
+												<input
+													type="tel"
+													class="form-control style-border"
+													name="dataPhoneNumber"
+													id="dataPhoneNumber"
+													placeholder="233244000000" />
+											</div>
+										</div>
+
+										<div class="col-md-12">
+											<div class="form-group">
+												<select
+													class="form-control style-border"
+													name="dataNetwork"
+													id="dataNetwork">
+													<option value="">Select Network</option>
+													<option value="mtn-gh">MTN Ghana</option>
+													<option value="vodofone-gh">Telecel Ghana</option>
+													<option value="tigo-gh">AirtelTigo Ghana</option>
+												</select>
+											</div>
+										</div>
+									</div>
+									<div class="form-btn col-12">
+										<button
+											type="button"
+											id="clearAirtimeBtn"
+											class="btn mt-20 mr-20">
+											<span class="link-effect">
+												<span class="effect-1">CLEAR</span>
+												<span class="effect-1">CLEAR</span>
+											</span>
+										</button>
+										<button
+											type="button"
+											id="submitDataBundleBtn"
+											class="btn mt-20">
+											<span class="link-effect">
+												<span class="effect-1">NEXT</span>
+												<span class="effect-1">NEXT</span>
+											</span>
+										</button>
+									</div>
+								</form>
+							</div>
+						</div>
+						<div class="col-lg-4"></div>
+					</div>
+
+					<div
+						class="row align-items-center justify-content-end"
 						id="step2"
 						style="display: none">
 						<div class="col-lg-3"></div>
@@ -352,6 +422,63 @@
 										<button
 											type="button"
 											id="submitMeterID_number"
+											class="btn mt-20">
+											<span class="link-effect">
+												<span class="effect-1">NEXT</span>
+												<span class="effect-1">NEXT</span>
+											</span>
+										</button>
+									</div>
+								</form>
+							</div>
+						</div>
+						<div class="col-lg-3"></div>
+					</div>
+
+					<div
+						class="row align-items-center justify-content-end"
+						id="step2-1"
+						style="display: none">
+						<div class="col-lg-3"></div>
+						<div class="col-lg-6">
+							<div class="contact-form-wrap">
+								<div class="title-area mb-30">
+									<h3 class="sec-title">Select Data Bundle</h3>
+									<p>Choose one of the data bundles options below:</p>
+								</div>
+								<form
+									action=""
+									method="POST"
+									id="step2Form"
+									class="contact-form ajax-contact">
+									<div class="row">
+										<div class="col-md-6">
+											<div class="form-group">
+												<div class="radio-group">
+													<div
+														id="scrollableContainer"
+														style="max-height: 500px; overflow-y: auto">
+														<div
+															class="radio-group"
+															id="dataBundleOptionsContainerData"></div>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+									<div class="form-btn col-12">
+										<button
+											type="button"
+											id="resetStep2"
+											class="btn mt-20 mr-20">
+											<span class="link-effect">
+												<span class="effect-1">CLEAR</span>
+												<span class="effect-1">CLEAR</span>
+											</span>
+										</button>
+										<button
+											type="button"
+											id="submitData_Bundle_number"
 											class="btn mt-20">
 											<span class="link-effect">
 												<span class="effect-1">NEXT</span>
@@ -514,7 +641,8 @@
 								<span id="confirmPhoneNumber"></span>
 							</p>
 							<p>
-								<strong>Name on Account:</strong> <span id="confirmNameOnAccount"></span>
+								<strong>Name on Account:</strong>
+								<span id="confirmNameOnAccount"></span>
 							</p>
 							<p>
 								<strong>Amount:</strong> GHS <span id="confirmAmount"></span>
@@ -543,6 +671,10 @@
 					</div>
 				</div>
 			</div>
+
+			
+
+			
 			<!-- Jquery -->
 
 			<script src="/assets/web/js/services/airtime-and-bundle.js"></script>

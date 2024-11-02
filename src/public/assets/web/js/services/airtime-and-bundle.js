@@ -14,10 +14,13 @@ $(document).ready(function () {
 
 		localStorage.setItem("selectedOption", selectedOption);
 
-		$("#step0").hide();
-		$("#step1").show();
-		$("#step2").hide();
-		$("#step3").hide();
+		if (selectedOption === "Airtime") {
+			$("#step0").hide();
+			$("#step1").show();
+		} else {
+			$("#step0").hide();
+			$("#step1-1").show();
+		}
 	});
 
 	$("#listServiceButton").click(function (e) {
@@ -342,15 +345,9 @@ $(document).ready(function () {
 				if (result.code === 200) {
 					switch (type) {
 						case "ECG":
-							$("#step1").show();
-							$("#step2").hide();
-							$("#step3").hide();
 							document.getElementById("step1Form").reset();
 							break;
 						case "Airtime":
-							$("#step1").show();
-							$("#step2").hide();
-							$("#step3").hide();
 							document.getElementById("step1Form").reset();
 							break;
 
@@ -358,6 +355,10 @@ $(document).ready(function () {
 							break;
 					}
 
+					$("#step0").show();
+					$("#step1").hide();
+					$("#step2").hide();
+					$("#step3").hide();
 					$("#transactionConfirmModal").modal("hide");
 					window.open(result.url, "_blank");
 				} else if (result.code === 400) {
@@ -371,6 +372,195 @@ $(document).ready(function () {
 						icon: "error",
 					});
 					return false;
+				} else {
+					$("#loadingOverlay").css("display", "none");
+					Swal.fire({
+						title: "An error occurred !!",
+						text: "An error occurred. please try again",
+						icon: "warning",
+					});
+					return false;
+				}
+			},
+		});
+	});
+
+	$("#submitDataBundleBtn").click(function (e) {
+		e.preventDefault();
+		$.ajaxSetup({
+			headers: {
+				"X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content"),
+			},
+		});
+
+		var $button = $(this);
+
+		var phoneNumber = $("#dataPhoneNumber").val();
+		var network = $("#dataNetwork").val();
+
+		if (phoneNumber === "" || phoneNumber === undefined) {
+			Swal.fire({
+				title: "Enter Phone Number",
+				text: "Please enter a phone number",
+				icon: "warning",
+			});
+			return false;
+		}
+
+		if (network === "" || network === undefined) {
+			Swal.fire({
+				title: "Enter The Nework",
+				text: "Please enter the nework",
+				icon: "warning",
+			});
+			return false;
+		}
+
+		const type = localStorage.getItem("selectedOption");
+
+		const userData = {
+			phoneNumber: phoneNumber,
+			network: network,
+			type: type,
+		};
+
+		localStorage.setItem("network", network);
+		localStorage.setItem("phoneNumber", phoneNumber);
+
+		$("#loadingOverlay").css("display", "flex");
+
+		$(this).prop("disabled", true);
+		$(this).text("Please wait...");
+
+		jQuery.ajax({
+			url: "../../search-account",
+			method: "post",
+			data: userData,
+
+			success: function (result) {
+				console.log(result);
+
+				$("#loadingOverlay").css("display", "none");
+
+				$button.prop("disabled", false);
+				$button.html('<i class="la la-send"></i> Submit');
+
+				if (result.code === 200) {
+					$("#step1-1").hide();
+					$("#step1").hide();
+					$("#step2").hide();
+					$("#step2-1").show();
+					$("#step3").hide();
+
+					const meterOptions = result.data;
+					const $container = $("#dataBundleOptionsContainerData");
+
+					localStorage.setItem("bundleData", JSON.stringify(meterOptions));
+
+					// Clear any existing content in the container
+					$container.empty();
+					// Loop through each option in result.data and append it to the container
+					$.each(meterOptions, function (index, option) {
+						// localStorage.setItem("bundleName", option.Display);
+						// localStorage.setItem("bundleValue", option.Value);
+						// localStorage.setItem("amount", option.Amount);
+
+						localStorage.setItem("type", userData.type);
+
+						const radioItem = `
+							<div class="radio-item">
+								<input type="radio" id="${option.Value}" name="dataBundleOption" value="${option.Value}" class="form-control style-border" />
+								<label for="${option.Value}">
+									<strong>${option.Display}</strong><br />
+									<span class="subtitle">GHS ${option.Amount}</span>
+								</label>
+							</div>
+						`;
+						$container.append(radioItem);
+					});
+				} else {
+					$("#loadingOverlay").css("display", "none");
+					Swal.fire({
+						title: "An error occurred !!",
+						text: "An error occurred. please try again",
+						icon: "warning",
+					});
+					return false;
+				}
+			},
+		});
+	});
+
+	$("#submitData_Bundle_number").click(function (e) {
+		e.preventDefault();
+		$.ajaxSetup({
+			headers: {
+				"X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content"),
+			},
+		});
+
+		const selectedOption = $("input[name='dataBundleOption']:checked").val();
+
+		if (!selectedOption) {
+			// Show a warning message if no option is selected
+			Swal.fire({
+				title: "No Bundle Is Selected",
+				text: "Please select a data bundle to proceed",
+				icon: "warning",
+			});
+			return false;
+		}
+
+		const bundleData = JSON.parse(localStorage.getItem("bundleData"));
+
+		const selectedItem = bundleData.find(
+			(item) => item.Value === selectedOption
+		);
+		localStorage.setItem("selectedBundle", selectedItem);
+
+		const phoneNumber = localStorage.getItem("phoneNumber");
+		const type = localStorage.getItem("type");
+		const network = localStorage.getItem("network");
+
+		const userData = {
+			amount: selectedItem.Amount,
+			phoneNumber: phoneNumber,
+			network: network,
+			type: type,
+		};
+
+		var $button = $(this);
+		$("#loadingOverlay").css("display", "flex");
+
+		$(this).prop("disabled", true);
+		$(this).text("Please wait...");
+
+		jQuery.ajax({
+			url: "../../transaction-init",
+			method: "post",
+			data: userData,
+
+			success: function (result) {
+				console.log(result);
+
+				$("#loadingOverlay").css("display", "none");
+
+				$button.prop("disabled", false);
+				$button.html('<i class="la la-send"></i> Next');
+
+				if (result.code === 200) {
+					const res = result.data;
+
+					// Populate the modal with the form values
+					$("#confirmServiceType").text(userData.type);
+					$("#confirmPhoneNumber").text(res.phoneNumber);
+					$("#confirmNameOnAccount").text(res.verifiedName);
+					$("#confirmAmount").text(Number(res.amount).toFixed(2));
+					$("#confirmFee").text(Number(res.fee).toFixed(2));
+					$("#confirmTotalAmount").text(Number(res.totalAmount).toFixed(2));
+
+					// Show the modal
+					$("#transactionConfirmModal").modal("show");
 				} else {
 					$("#loadingOverlay").css("display", "none");
 					Swal.fire({

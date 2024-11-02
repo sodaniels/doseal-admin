@@ -50,6 +50,11 @@ const validateAccountSearch = [
 		.withMessage("Phone Number is required."),
 ];
 
+const validateDataBundleSearch = [
+	body("accountNumber").exists().withMessage("The Account Number is required"),
+	body("network").exists().withMessage("The Network is required"),
+];
+
 const validateEcgExecute = [
 	body("meterId").notEmpty().isString().withMessage("Meter ID is required."),
 	body("phoneNumber")
@@ -90,4 +95,5 @@ module.exports = {
 	validateEcgExecute,
 	validateTransaction,
 	validateExecute,
+	validateDataBundleSearch,
 };

@@ -26,6 +26,12 @@ router.post(
 router.post("/transaction-exec", webController.postTransactionExecute);
 
 // airtime and bundle
-router.get("/airtime-and-bundle", webController.getAirtimeAndBundle);
+router.get("/airtime-and-bundle", webController.getAirtime);
+
+// router.post(
+// 	"/search-data-account",
+// 	validator.validateDataBundleSearch,
+// 	webController.postServiceDataSearch
+// );
 
 module.exports = router;

@@ -193,7 +193,8 @@ async function getServiceSearch(req, res) {
 }
 
 async function postServiceSearch(req, res) {
-	const { phoneNumber } = req.body;
+	let inputData;
+	const { phoneNumber, network = null, type = null } = req.body;
 	let hubtelResponse;
 	const validationError = handleValidationErrors(req, res);
 	if (validationError) {
@@ -209,23 +210,46 @@ async function postServiceSearch(req, res) {
 	const tokenObject = req.cookies.jwt;
 	const token = tokenObject.acccess_token;
 
-	req.headers["Authorization"] = `Bearer ${token}`;
-
 	try {
-		Log.info(
-			`[ApiController.js][postServiceSearch]\t incoming ecg meter search request: ` +
-				req.ip
-		);
+		switch (type) {
+			case "ECG":
+				Log.info(
+					`[ApiController.js][postServiceSearch]\t incoming ecg meter search request: ` +
+						req.ip
+				);
+				inputData = {
+					phoneNumber: phoneNumber,
+					network: network ? network : undefined,
+				};
 
-		const data = {
-			phoneNumber: phoneNumber,
-		};
+				hubtelResponse = await restMiddlewareServices.postSearchEcgAccount(
+					inputData,
+					token
+				);
+				break;
+			case "DATA":
+				Log.info(
+					`[ApiController.js][postServiceSearch]\t incoming data bundle search request: ` +
+						req.ip
+				);
 
-		hubtelResponse = await restMiddlewareServices.postSearchEcgAccount(
-			data,
-			token
-		);
+				inputData = {
+					accountNumber: phoneNumber,
+					network: network ? network : undefined,
+				};
+
+				hubtelResponse = await restMiddlewareServices.postSearchDataBundle(
+					inputData,
+					token
+				);
+				break;
+
+			default:
+				break;
+		}
+
 		if (hubtelResponse) {
+			// console.log("hubtelResponse: " + JSON.stringify(hubtelResponse));
 			if (hubtelResponse.ResponseCode === "0000") {
 				return res.json({
 					success: true,
@@ -397,14 +421,75 @@ async function postTransactionExecute(req, res) {
 }
 
 /**airtime and bundle */
-async function getAirtimeAndBundle(req, res) {
-	return res.render("web/services/aritime-and-bundle", {
-		pageTitle: "Doseal Limited | Airtime  and Bundle",
+async function getAirtime(req, res) {
+	return res.render("web/services/airtime-and-data", {
+		pageTitle: "Doseal Limited | Airtime and Data Bundle",
 		path: "/",
 		errors: false,
 		errorMessage: false,
 		csrfToken: req.csrfToken(),
 	});
+}
+
+async function postServiceDataSearch(req, res) {
+	const { phoneNumber, network } = req.body;
+	let hubtelResponse;
+	const validationError = handleValidationErrors(req, res);
+	if (validationError) {
+		const errorRes = await apiErrors.create(
+			errorMessages.errors.API_MESSAGE_DATA_BUNDLE_FAILED,
+			"POST",
+			validationError,
+			undefined
+		);
+		return res.json(errorRes);
+	}
+
+	const tokenObject = req.cookies.jwt;
+	const token = tokenObject.acccess_token;
+
+	try {
+		Log.info(
+			`[ApiController.js][postServiceDataSearch]\t incoming data bundle account search request: ` +
+				req.ip
+		);
+
+		const data = {
+			accountNumber: phoneNumber,
+			network: network,
+		};
+
+		hubtelResponse = await restMiddlewareServices.postSearchDataBundle(
+			data,
+			token
+		);
+		if (hubtelResponse) {
+			if (hubtelResponse.ResponseCode === "0000") {
+				return res.json({
+					success: true,
+					code: 200,
+					message: "Successful",
+					phoneNumber: phoneNumber,
+					data: hubtelResponse.Data,
+				});
+			}
+			return res.json({
+				success: false,
+				code: 400,
+				data: [],
+			});
+		}
+		return res.json({
+			success: false,
+			message: ServiceCode.FAILED,
+		});
+	} catch (error) {
+		return res.json({
+			success: false,
+			error: error.message,
+			message: ServiceCode.ERROR_OCCURED,
+		});
+	}
 }
 
 module.exports = {
@@ -420,5 +505,6 @@ module.exports = {
 	postServiceSearch,
 	postTransactionInitiate,
 	postTransactionExecute,
-	getAirtimeAndBundle,
+	getAirtime,
+	postServiceDataSearch,
 };
