@@ -100,7 +100,7 @@ app.use((req, res, next) => {
 });
 
 app.use("/auth/", authApiRoutes);
-app.use("/api/v1/", isWhitelisted, callbackRoutes);
+
 
 app.use(
 	"/api/v1/",
@@ -160,6 +160,8 @@ app.use("/", vendorRoutes);
 app.use("/", deskDeskRoutes);
 
 app.use("/", notificationRoutes);
+
+app.use("/api/v1/", isWhitelisted, callbackRoutes);
 
 // error handling middleware
 app.use(errorHandler);
