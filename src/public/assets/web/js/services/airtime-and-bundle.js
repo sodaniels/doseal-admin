@@ -34,6 +34,7 @@ $(document).ready(function () {
 		var $button = $(this);
 
 		var phoneNumber = $("#phoneNumber").val();
+		localStorage.setItem("phoneNumber", phoneNumber);
 
 		if (phoneNumber === "" || phoneNumber === undefined) {
 			Swal.fire({
@@ -60,8 +61,6 @@ $(document).ready(function () {
 
 			success: function (result) {
 				console.log(result);
-
-				localStorage.setItem("phoneNumber", result.phoneNumber);
 
 				$("#loadingOverlay").css("display", "none");
 
@@ -362,14 +361,10 @@ $(document).ready(function () {
 					$("#transactionConfirmModal").modal("hide");
 					window.open(result.url, "_blank");
 				} else if (result.code === 400) {
-					const errorMessages = errors
-						.map((error) => `${error.field}: ${error.message}`)
-						.join("\n");
-
 					Swal.fire({
-						title: "Validation Error",
-						text: errorMessages,
-						icon: "error",
+						title: "Error occurred",
+						text: "An error occurred. Please try again",
+						icon: "warning",
 					});
 					return false;
 				} else {
