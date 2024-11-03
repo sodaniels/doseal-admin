@@ -9,7 +9,7 @@ const session = require("express-session");
 const flash = require("express-flash");
 const MongoDBStore = require("connect-mongodb-session")(session);
 const cookieParser = require("cookie-parser");
-const csrf = require("csurf");
+const csrf = require("@dr.pogodin/csurf");
 
 const dashboardRoutes = require("./routes/dashboard/dashboard.route");
 const authRoutes = require("./routes/dashboard/auth.route");
