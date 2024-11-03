@@ -11,6 +11,7 @@ const MongoDBStore = require("connect-mongodb-session")(session);
 const cookieParser = require("cookie-parser");
 const csrf = require("@dr.pogodin/csurf");
 
+
 const websiteRoutes = require("./routes/web/website.route");
 
 const protectedRoutes = require("./routes/web/protected.route");
@@ -26,6 +27,7 @@ const router = express.Router();
 const app = express();
 
 app.use(cookieParser());
+app.set('trust proxy', true);
 
 app.use(express.static(path.join(__dirname, "public")));
 

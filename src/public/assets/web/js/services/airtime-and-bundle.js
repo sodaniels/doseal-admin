@@ -34,7 +34,7 @@ $(document).ready(function () {
 		var $button = $(this);
 
 		var phoneNumber = $("#phoneNumber").val();
-		localStorage.setItem("phoneNumber", phoneNumber);
+		
 
 		if (phoneNumber === "" || phoneNumber === undefined) {
 			Swal.fire({
@@ -181,6 +181,7 @@ $(document).ready(function () {
 		const phoneNumber = $("#phoneNumber").val();
 		const network = $("#network").val();
 		const type = localStorage.getItem("selectedOption");
+		localStorage.setItem("phoneNumber", phoneNumber);
 
 		if (!amount) {
 			Swal.fire({
@@ -322,6 +323,8 @@ $(document).ready(function () {
 			amount: amount,
 			type: type,
 		};
+
+		console.log(JSON.stringify(userData));
 
 		$("#loadingOverlay").css("display", "flex");
 
