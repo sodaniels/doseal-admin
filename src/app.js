@@ -35,7 +35,7 @@ const apiRoutes = require("./routes/mp/api.route");
 const internalApiRoutes = require("./routes/mp/internal-api.route");
 const externalApiRoutes = require("./routes/mp/external-api.route");
 const callbackRoutes = require("./routes/mp/callback.route");
-// const isWhitelisted = require("./Middleware/is-whitelisted-IP");
+const isWhitelisted = require("./Middleware/is-whitelisted-IP");
 
 const passportJwt = require("./helpers/passport-jwt");
 
@@ -101,7 +101,6 @@ app.use((req, res, next) => {
 
 app.use("/auth/", authApiRoutes);
 
-
 app.use(
 	"/api/v1/",
 	passportJwt.authenticate("jwt", { session: false }),
@@ -161,7 +160,7 @@ app.use("/", deskDeskRoutes);
 
 app.use("/", notificationRoutes);
 
-app.use("/api/v1/", callbackRoutes);
+app.use("/api/v1/", isWhitelisted, callbackRoutes);
 
 // error handling middleware
 app.use(errorHandler);
