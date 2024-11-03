@@ -31,6 +31,9 @@ const { RecaptchaV2 } = require("express-recaptcha");
 var recaptcha = new RecaptchaV2(process.env.SITE_KEY, process.env.SECRET_KEY);
 
 async function getRegistrationPage(req, res) {
+	Log.info(
+		`[AuthController.js][getRegistrationPage]Visitation on Sign Up page ${req.ip}`
+	);
 	return res.render("web/auth/signup", {
 		pageTitle: "Doseal Limited | Signup",
 		path: "/signup",
@@ -43,6 +46,9 @@ async function getRegistrationPage(req, res) {
 }
 
 async function getSigninPage(req, res) {
+	Log.info(
+		`[AuthController.js][getSigninPage] Visitation on Sign In page ${req.ip}`
+	);
 	return res.render("web/auth/signin", {
 		pageTitle: "Doseal Limited | Sign In",
 		path: "/signin",
@@ -57,7 +63,7 @@ async function getSigninPage(req, res) {
 async function postInitiateSigin(req, res) {
 	let codeSentViaEmail, user, storeUser;
 	Log.info(
-		`[AuthController.js][postInitiateSigin][${req.body.email}] \t initiating signin  `
+		`[AuthController.js][postInitiateSigin][${req.body.email}] \t initiating signin  ${req.ip}`
 	);
 	const validationError = handleValidationErrors(req, res);
 	if (validationError) {
@@ -150,7 +156,7 @@ async function postInitiateSigin(req, res) {
 async function processEmail(user, email, res) {
 	try {
 		Log.info(
-			`[AuthController.js][postInitiateSigin][${email}] \t initial registration successful  `
+			`[AuthController.js][postInitiateSigin][${email}] \t initial registration successful`
 		);
 
 		const pin = randId();
@@ -158,7 +164,6 @@ async function processEmail(user, email, res) {
 		const q = phoneNumber.slice(-9);
 		const redisKey = `otp_token_${q}`;
 
-		
 		let message;
 
 		await setRedis(redisKey, pin);
@@ -216,7 +221,7 @@ async function processEmail(user, email, res) {
 async function postInitialSignup(req, res) {
 	let codeSentViaEmail, uncompletedUser, storeUser;
 	Log.info(
-		`[AuthController.js][postInitialSignup][${req.body.email}] \t initiating registration  `
+		`[AuthController.js][postInitialSignup][${req.body.email}] \t initiating registration IP: ${req.ip} `
 	);
 	const validationError = handleValidationErrors(req, res);
 	if (validationError) {
@@ -392,6 +397,9 @@ async function postInitialSignup(req, res) {
 }
 
 async function postSignup(req, res) {
+	Log.info(
+		`[AuthController.js][postSignup] Posting sign up with IP: ${req.ip}`
+	);
 	const captchaResponse = req.body["g-recaptcha-response"];
 	const secret_key = process.env.SECRET_KEY;
 
@@ -469,6 +477,9 @@ async function postSignup(req, res) {
 }
 
 async function getVerifyAccount(req, res) {
+	Log.info(
+		`[AuthController.js][getVerifyAccount] Visitation on Verify Account Page page with IP: ${req.ip}`
+	);
 	return res.render("web/auth/verify-account", {
 		pageTitle: "Doseal Limited | Verify Account",
 		path: "/verify-account",
@@ -480,6 +491,9 @@ async function getVerifyAccount(req, res) {
 }
 
 async function postVerifyAccount(req, res) {
+	Log.info(
+		`[AuthController.js][postVerifyAccount] posting verifying account IP: ${req.ip}`
+	);
 	const { phoneNumber, email, code } = req.body;
 
 	const q = phoneNumber.substr(-9);
@@ -495,7 +509,6 @@ async function postVerifyAccount(req, res) {
 		await removeRedis(`otp_token_${q}`);
 
 		if (user.registration === "COMPLETED") {
-
 			const token = await createJwtToken(user._id);
 
 			res.cookie("jwt", token, {
@@ -558,6 +571,9 @@ async function createJwtToken(_id) {
 }
 
 async function getCompleteRegistration(req, res) {
+	Log.info(
+		`[AuthController.js][getCompleteRegistration] Visitation on complete registration page IP: ${req.ip}`
+	);
 	return res.render("web/auth/complete-registration", {
 		pageTitle: "Doseal Limited | Complete Registration",
 		path: "/complete-registration",
@@ -569,6 +585,9 @@ async function getCompleteRegistration(req, res) {
 }
 
 async function postCompleteRegistration(req, res) {
+	Log.info(
+		`[AuthController.js][postCompleteRegistration] Posting complete registration information IP: ${req.ip}`
+	);
 	const { firstName, lastName, idType, idNumbe, idExpiry, token } = req.body;
 
 	const _id = JSON.parse(decrypt(token));

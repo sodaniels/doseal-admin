@@ -111,9 +111,7 @@ $(document).ready(function () {
 				$button.html('<i class="la la-send"></i> Submit');
 
 				if (result.code === 409) {
-					const errorMessages = errors
-						.map((error) => `${error.field}: ${error.message}`)
-						.join("\n");
+					const errorMessages = displayErrors(result.errors);
 
 					Swal.fire({
 						title: "Validation Error",
@@ -158,3 +156,14 @@ $(document).ready(function () {
 		});
 	});
 });
+
+function displayErrors(errors) {
+	// Collect error messages
+	var errorMessages = errors
+		.map(function (error) {
+			return error.message; // Extract the message from each error object
+		})
+		.join("\n"); // Join messages with a newline
+
+	return errorMessages;
+}

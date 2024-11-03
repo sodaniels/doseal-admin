@@ -16,7 +16,6 @@ const validateInitialSignup = [
 	body("phoneNumber")
 		.notEmpty()
 		.withMessage("Phone Number is required.")
-		.isMobilePhone()
 		.withMessage("Invalid Phone format."),
 	body("email")
 		.notEmpty()
@@ -27,8 +26,8 @@ const validateInitialSignup = [
 		.notEmpty()
 		.withMessage("Password is required.")
 		.isString()
-		.isLength({ min: 8, max: 30 })
-		.withMessage("Password must be at least 8 characters long."),
+		.isLength({ min: 8, max: 30})
+		.withMessage("Password must be minimum of 8 and maximum of 30 Characters."),
 	body("confirmPassword")
 		.notEmpty()
 		.withMessage("Confirm password is required.")

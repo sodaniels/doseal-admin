@@ -69,7 +69,15 @@ $(document).ready(function () {
 						window.location.href = "pay-bills";
 					}, 2000);
 				} else if (result.code === 200) {
-					window.location.href = `complete-registration?token=${result.token}`;
+					Swal.fire({
+						title: "The verification was successful",
+						text: "You entered the right code. Kindly proceed to complete your registration",
+						icon: "success",
+					});
+					setTimeout(function () {
+						window.location.href = `complete-registration?token=${result.token}`;
+					}, 3000);
+				
 				} else if (result.code === 400) {
 					Swal.fire({
 						title: "Invalid Code",
