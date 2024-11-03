@@ -218,6 +218,7 @@ async function processEmail(user, email, res) {
 	}
 }
 
+
 async function postInitialSignup(req, res) {
 	let codeSentViaEmail, uncompletedUser, storeUser;
 	Log.info(
