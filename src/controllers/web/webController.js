@@ -30,6 +30,9 @@ const { RecaptchaV2 } = require("express-recaptcha");
 var recaptcha = new RecaptchaV2(process.env.SITE_KEY, process.env.SECRET_KEY);
 
 async function getIndex(req, res) {
+	Log.info(
+		`[webController.js][getIndex] visitation on Index page IP: ${req.ip}`
+	);
 	return res.render("web/index", {
 		pageTitle: "Doseal Limited | Home Page",
 		path: "/",
@@ -40,6 +43,9 @@ async function getIndex(req, res) {
 }
 
 async function getAboutUs(req, res) {
+	Log.info(
+		`[webController.js][getAboutUs] visitation on About page IP: ${req.ip}`
+	);
 	return res.render("web/about-us", {
 		pageTitle: "Doseal Limited | About Us",
 		path: "/",
@@ -50,6 +56,9 @@ async function getAboutUs(req, res) {
 }
 
 async function getOurServices(req, res) {
+	Log.info(
+		`[webController.js][getOurServices] visitation on Services page IP: ${req.ip}`
+	);
 	return res.render("web/services", {
 		pageTitle: "Doseal Limited | Our Services",
 		path: "/",
@@ -60,6 +69,9 @@ async function getOurServices(req, res) {
 }
 
 async function getContactUs(req, res) {
+	Log.info(
+		`[webController.js][getContactUs] visitation on Contact Us page IP: ${req.ip}`
+	);
 	return res.render("web/contact-us", {
 		pageTitle: "Doseal Limited | Contact Us",
 		path: "/",
@@ -72,6 +84,15 @@ async function getContactUs(req, res) {
 }
 
 async function postContacUs(req, res) {
+	Log.info(
+		`[webController.js][postContacUs][${req.ip}] posting contact information IP: ` +
+			JSON.stringify({
+				fullName: req.body.fullName,
+				email: req.body.email,
+				website: req.body.website,
+				message: req.body.message,
+			})
+	);
 	const captchaResponse = req.body["g-recaptcha-response"];
 	const secret_key = process.env.SECRET_KEY;
 
@@ -146,13 +167,15 @@ async function postContacUs(req, res) {
 }
 
 async function getPages(req, res) {
+	Log.info(
+		`[webController.js][getPages] visitation on ${req.params.category} page IP: ${req.ip}`
+	);
+
 	const category = req.params.category;
 	const slug = req.params.slug;
 	console.log("category: " + category);
 
 	const page = await Page.findOne({ category: category });
-
-	console.log("page: " + JSON.stringify(page));
 
 	return res.render("web/pages", {
 		pageTitle: "Doseal Limited | Pages",
@@ -166,6 +189,9 @@ async function getPages(req, res) {
 }
 
 async function getDownloads(req, res) {
+	Log.info(
+		`[webController.js][getDownloads] visitation on Downloads page IP: ${req.ip}`
+	);
 	return res.render("web/downloads", {
 		pageTitle: "Doseal Limited | Downloads",
 		path: "/",
@@ -176,6 +202,9 @@ async function getDownloads(req, res) {
 }
 
 async function getPayBill(req, res) {
+	Log.info(
+		`[webController.js][getPayBill] visitation on Pay Bill page IP: ${req.ip}`
+	);
 	return res.render("web/services/pay-bill", {
 		pageTitle: "Doseal Limited | Pay Bill",
 		path: "/",
@@ -186,6 +215,9 @@ async function getPayBill(req, res) {
 }
 
 async function getServiceSearch(req, res) {
+	Log.info(
+		`[webController.js][getServiceSearch] visitation on ECG Search page IP: ${req.ip}`
+	);
 	return res.render("web/services/ecg-search", {
 		pageTitle: "Doseal Limited | Pay Bill",
 		path: "/",
@@ -309,7 +341,7 @@ async function postTransactionInitiate(req, res) {
 
 	try {
 		Log.info(
-			`[ApiController.js][postTransactionInitiate]\t incoming ecg meter search request: ` +
+			`[ApiController.js][postTransactionInitiate]\t incoming transaction init request: ` +
 				req.ip
 		);
 
@@ -384,7 +416,7 @@ async function postTransactionExecute(req, res) {
 
 	try {
 		Log.info(
-			`[ApiController.js][postTransactionExecute]\t incoming ecg meter search request: ` +
+			`[ApiController.js][postTransactionExecute]\t incoming transaction exec request: ` +
 				req.ip
 		);
 
@@ -429,6 +461,9 @@ async function postTransactionExecute(req, res) {
 
 /**airtime and bundle */
 async function getAirtime(req, res) {
+	Log.info(
+		`[webController.js][getAirtime] visitation on Airtime page IP: ${req.ip}`
+	);
 	return res.render("web/services/airtime-and-data", {
 		pageTitle: "Doseal Limited | Airtime and Data Bundle",
 		path: "/",
@@ -501,6 +536,9 @@ async function postServiceDataSearch(req, res) {
 
 // dstv and others
 async function getSearchUtilityService(req, res) {
+	Log.info(
+		`[webController.js][getSearchUtilityService] visitation on Utility Service page IP: ${req.ip}`
+	);
 	const user = req.session.user;
 	return res.render("web/services/dstv-and-others", {
 		pageTitle: "Doseal Limited | Utility Service",
@@ -513,6 +551,9 @@ async function getSearchUtilityService(req, res) {
 }
 // search for dstv and other services
 async function postUtilityServiceSearch(req, res) {
+	Log.info(
+		`[webController.js][postUtilityServiceSearch] posting utility service: ${req.ip}`
+	);
 	let inputData;
 	const { accountNumber, type = null } = req.body;
 	let hubtelResponse;
@@ -571,6 +612,9 @@ async function postUtilityServiceSearch(req, res) {
 }
 // get ghana water
 async function getGhanaWater(req, res) {
+	Log.info(
+		`[webController.js][getGhanaWater] visitation on Ghana Water Page page IP: ${req.ip}`
+	);
 	const user = req.session.user;
 	return res.render("web/services/ghana-water-search", {
 		pageTitle: "Doseal Limited | Ghana Water",
@@ -583,6 +627,9 @@ async function getGhanaWater(req, res) {
 }
 // post ghana water
 async function postSearchGhanaWater(req, res) {
+	Log.info(
+		`[webController.js][postSearchGhanaWater] posting Ghana Water request: ${req.ip}`
+	);
 	let inputData;
 	const { accountNumber, type = null, phoneNumber } = req.body;
 	let hubtelResponse;
@@ -642,19 +689,22 @@ async function postSearchGhanaWater(req, res) {
 }
 // transaction
 async function geTransaction(req, res) {
-
 	const user = req.session.user;
+	Log.info(
+		`[webController.js][geTransaction][${user._id}] visiting transaction page with IP: ${req.ip}`
+	);
+
 	const page = req.query.page || 1;
 	const perPage = 15;
 
 	const totalTransactions = await Transaction.find({
-		createdBy: new mongoose.Types.ObjectId(user._id), 
+		createdBy: new mongoose.Types.ObjectId(user._id),
 		cr_created: { $ne: true },
 	}).countDocuments();
 
 	try {
 		const transactions = await Transaction.find({
-			createdBy: new mongoose.Types.ObjectId(user._id), 
+			createdBy: new mongoose.Types.ObjectId(user._id),
 			cr_created: { $ne: true },
 		})
 			.sort({ createdAt: -1 })
