@@ -207,9 +207,13 @@
 				</div>
 				<div class="container">
 					<div class="row gy-4 align-items-center justify-content-center">
+						
 						   <!-- Transactions Table -->
 						<div class="table-responsive">
-							<table class="table table-bordered table-hover">
+							<button class="btn btn-dark" onclick="exportToCSV()">Export to CSV</button>
+							<button class="btn btn-dark"  onclick="exportToExcel()">Export to Excel</button>
+
+							<table class="table table-bordered table-hover mt-10">
 								<thead>
 									<tr>
 										<th scope="col">Transaction ID</th>
@@ -221,7 +225,6 @@
 										<th scope="col">Account No.</th>
 										<th scope="col">Date</th>
 										<th scope="col">Status</th>
-										<th scope="col">Actions</th>
 									</tr>
 								</thead>
 								<% transactions.forEach((transaction, index) => { %>
@@ -235,14 +238,12 @@
 										<td><%=transaction.phoneNumber  %></td>
 										<td><%=transaction.accountNumber ? transaction.accountNumber :transaction.meterId %></td>
 										<td><%=longDate(transaction.createdAt )%></td>
-										<td>
+										<td style="height: 70px;">
 											<span class="status-<%= transaction.statusCode === 200 ? 'success' : transaction.statusCode === 411 ? 'pending-orange' : transaction.statusCode === 477 ? 'pending-blue' : 'failed' %>">
 												<%= transaction.statusCode === 200 ? 'Success' : transaction.statusCode === 411 ? 'Pending' : transaction.statusCode === 477 ? 'Pending' : 'Failed' %>
 											</span>
 										</td>
-										<td>
-											<button class="btn btn-dark btn-sm">View</button>
-										</td>
+										
 									</tr>
 								</tbody>
 								<% }) %>
@@ -295,6 +296,60 @@
 			<script src="/assets/web/js/engine/process-contact.js"></script>
 			<script src="/assets/web/js/sweetalert2.all.min.js"></script>
 			<%- include('../../includes/web/jsfiles.ejs') %>
+
+			<script>
+				$(document).ready(function() {
+					// Hide the loading overlay when the document is ready
+					$('#loadingOverlay').fadeOut();
+					
+					// Excel Export Function
+					function exportToExcel() {
+						const table = document.querySelector('.table');
+						const workbook = XLSX.utils.table_to_book(table, { sheet: "Transactions" });
+						XLSX.writeFile(workbook, 'transaction_history.xlsx');
+					}
+			
+					// CSV Export Function
+					function exportToCSV() {
+						const rows = document.querySelectorAll('.table tr');
+						let csvContent = '';
+			
+						rows.forEach((row, index) => {
+							const cols = row.querySelectorAll('td, th');
+							if (index === 0) {
+								// Skip header if desired
+								return; 
+							}
+							const rowData = Array.from(cols).slice(0, -1).map(col => col.innerText).join(','); // Exclude the last column (View)
+							csvContent += rowData + '\n';
+						});
+						const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+						const link = document.createElement('a');
+						link.href = URL.createObjectURL(blob);
+						link.setAttribute('download', 'transaction_history.csv');
+						document.body.appendChild(link);
+						link.click();
+						document.body.removeChild(link);
+					}
+			
+					// Make the export functions available globally
+					window.exportToExcel = exportToExcel;
+					window.exportToCSV = exportToCSV;
+				});
+			</script>
+			<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.5/xlsx.full.min.js"></script>
+
+			<script>
+				function exportToExcel() {
+					// Get the table data
+					const table = document.querySelector('.table');
+					const workbook = XLSX.utils.table_to_book(table, { sheet: "Transactions" });
+
+					// Export to Excel file
+					XLSX.writeFile(workbook, 'transaction_history.xlsx');
+				}
+
+			</script>
 		</body>
 	</head>
 </html>
