@@ -230,7 +230,7 @@
 								<% transactions.forEach((transaction, index) => { %>
 								<tbody>
 									<tr>
-										<td><%=transaction._id %></td>
+										<td><%=transaction.transactionId %></td>
 										<td><%=transaction.type %></td>
 										<td>GHS <%= Number(transaction.amount).toFixed(2) %></td>
 										<td>GHS <%= Number(transaction.fee).toFixed(2) %></td>

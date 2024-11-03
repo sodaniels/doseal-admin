@@ -1,5 +1,7 @@
 const axios = require("axios");
 const { validationResult } = require("express-validator");
+const mongoose = require("mongoose");
+
 const Transaction = require("../../models/transaction.model");
 const { Log } = require("../../helpers/Log");
 const Admin = require("../../models/admin.model");
@@ -640,18 +642,19 @@ async function postSearchGhanaWater(req, res) {
 }
 // transaction
 async function geTransaction(req, res) {
+
 	const user = req.session.user;
 	const page = req.query.page || 1;
 	const perPage = 15;
 
 	const totalTransactions = await Transaction.find({
-		createdBy: user._id,
+		createdBy: new mongoose.Types.ObjectId(user._id), 
 		cr_created: { $ne: true },
 	}).countDocuments();
 
 	try {
 		const transactions = await Transaction.find({
-			createdBy: user._id,
+			createdBy: new mongoose.Types.ObjectId(user._id), 
 			cr_created: { $ne: true },
 		})
 			.sort({ createdAt: -1 })
@@ -659,7 +662,7 @@ async function geTransaction(req, res) {
 			.limit(perPage)
 			.lean();
 
-		console.log(JSON.stringify(transactions));
+		// console.log(JSON.stringify(transactions));
 		return res.render("web/services/transactions", {
 			pageTitle: "Doseal Limited | Transactions",
 			path: "/",
