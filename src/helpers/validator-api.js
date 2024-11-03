@@ -47,7 +47,6 @@ const validateTransaction = [
 ];
 
 const validateExecute = [
-	body("checksum").notEmpty().trim().withMessage("The checksum is required"),
 	body("type").notEmpty().trim().withMessage("The Type is required"),
 ]
 
