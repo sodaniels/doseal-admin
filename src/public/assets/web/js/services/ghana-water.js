@@ -50,6 +50,17 @@ $(document).ready(function () {
 				$button.prop("disabled", false);
 				$button.html('<i class="la la-send"></i> Submit');
 
+				if (result.errors) {
+					const errorMessages = displayErrors(result.errors);
+					Swal.fire({
+						title: "Validation Error",
+						text: errorMessages,
+						icon: "error",
+					});
+					return false;
+				}
+				
+
 				if (result.code === 200) {
 					$("#step1").hide();
 					$("#step2").show();
@@ -86,17 +97,6 @@ $(document).ready(function () {
 					  </div>
 					  `;
 					$container.append(radioItem);
-				} else if (result.code === 409) {
-					const errorMessages = errors
-						.map((error) => `${error.field}: ${error.message}`)
-						.join("\n");
-
-					Swal.fire({
-						title: "Validation Error",
-						text: errorMessages,
-						icon: "error",
-					});
-					return false;
 				} else if (result.code === 401) {
 					Swal.fire({
 						title: "Security Check !!",
@@ -200,6 +200,16 @@ $(document).ready(function () {
 				$button.prop("disabled", false);
 				$button.html('<i class="la la-send"></i> Next');
 
+				if (result.errors) {
+					const errorMessages = displayErrors(result.errors);
+					Swal.fire({
+						title: "Validation Error",
+						text: errorMessages,
+						icon: "error",
+					});
+					return false;
+				}
+
 				if (result.code === 200) {
 					const res = result.data;
 
@@ -293,6 +303,16 @@ $(document).ready(function () {
 				$button.prop("disabled", false);
 				$button.html('<i class="la la-send"></i> Submit');
 
+				if (result.errors) {
+					const errorMessages = displayErrors(result.errors);
+					Swal.fire({
+						title: "Validation Error",
+						text: errorMessages,
+						icon: "error",
+					});
+					return false;
+				}
+
 				if (result.code === 200) {
 					$("#step1").show();
 					$("#step2").hide();
@@ -320,3 +340,14 @@ $(document).ready(function () {
 		});
 	});
 });
+
+
+function displayErrors(errors) {
+	// Collect error messages
+	var errorMessages = errors
+		.map(function (error) {
+			return error.message;
+		})
+		.join("\n");
+	return errorMessages;
+}

@@ -84,6 +84,17 @@ async function getContactUs(req, res) {
 }
 
 async function postContacUs(req, res) {
+	const validationError = handleValidationErrors(req, res);
+	if (validationError) {
+		const errorRes = await apiErrors.create(
+			errorMessages.errors.API_MESSAGE_CONTACT_FAILED,
+			"POST",
+			validationError,
+			undefined
+		);
+		return res.json(errorRes);
+	}
+
 	Log.info(
 		`[webController.js][postContacUs][${req.ip}] posting contact information IP: ` +
 			JSON.stringify({

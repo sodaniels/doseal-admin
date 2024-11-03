@@ -5,6 +5,7 @@ const express = require("express");
 const router = express.Router();
 
 const webController = require("../../controllers/web/webController");
+const validator = require("../../helpers/validator-processor");
 
 // post device information
 router.get("/", webController.getIndex);
@@ -15,7 +16,11 @@ router.get("/our-services", webController.getOurServices);
 // get contact
 router.get("/contact-us", webController.getContactUs);
 // post contact us
-router.post("/contact-us", webController.postContacUs);
+router.post(
+	"/contact-us",
+	validator.validateContactPage,
+	webController.postContacUs
+);
 // pages
 router.get("/legal/:category/:slug", webController.getPages);
 // downloads link

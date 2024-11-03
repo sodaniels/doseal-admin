@@ -80,6 +80,16 @@ $(document).ready(function () {
 				$button.prop("disabled", false);
 				$button.html('<i class="la la-send"></i> Send');
 
+				if (result.errors) {
+					const errorMessages = displayErrors(result.errors);
+					Swal.fire({
+						title: "Validation Error",
+						text: errorMessages,
+						icon: "error",
+					});
+					return false;
+				}
+
 				if (result.code === 401) {
 					$("#loadingOverlay").css("display", "none");
 					Swal.fire({
@@ -114,3 +124,14 @@ $(document).ready(function () {
 		});
 	});
 });
+
+function displayErrors(errors) {
+	// Collect error messages
+	var errorMessages = errors
+		.map(function (error) {
+			return error.message;
+		})
+		.join("\n");
+
+	return errorMessages;
+}

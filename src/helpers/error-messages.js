@@ -20,6 +20,7 @@ exports.errors = {
 
     API_MESSAGE_HELP_DESK_VALIDATION_FAILED: "Help Desk Request Failed",
     API_MESSAGE_SIGNUP_FAILED: "Sign Up Request Failed",
+    API_MESSAGE_CONTACT_FAILED: "Contact Request Failed",
 
 
 

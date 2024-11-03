@@ -161,9 +161,9 @@ function displayErrors(errors) {
 	// Collect error messages
 	var errorMessages = errors
 		.map(function (error) {
-			return error.message; // Extract the message from each error object
+			return error.message;
 		})
-		.join("\n"); // Join messages with a newline
+		.join("\n");
 
 	return errorMessages;
 }

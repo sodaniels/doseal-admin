@@ -99,6 +99,12 @@ const validateExecute = [
 	body("type").notEmpty().trim().withMessage("The Type is required"),
 ]
 
+const validateContactPage = [
+    body("fullName").notEmpty().isString().withMessage("Full name is required."),
+    body("email").notEmpty().isEmail().withMessage("A valid email is required."),
+    body("message").notEmpty().isString().withMessage("Message is required."),
+];
+
 module.exports = {
 	validateNewsRoom,
 	validateInitialSignup,
@@ -109,4 +115,5 @@ module.exports = {
 	validateDataBundleSearch,
 	validateUtilitySearch,
 	validateGhaaWaterSearch,
+	validateContactPage,
 };
