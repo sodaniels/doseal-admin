@@ -77,6 +77,12 @@ const validateEcgSearch = [
 const validateUtilitySearch = [
 	body("accountNumber").exists().withMessage("The Account Number is required"),
 ];
+
+const validateGhanaWaterSearch = [
+	body("accountNumber").exists().withMessage("The Account Number is required"),
+	body("phoneNumber").exists().withMessage("The Phone Number is required"),
+];
+
 const validateDataBundleSearch = [
 	body("accountNumber").exists().withMessage("The Account Number is required"),
 	body("network").exists().withMessage("The Network is required"),
@@ -127,5 +133,6 @@ module.exports = {
 	validateDataBundleSearch,
 	validateReportFault,
 	validatePhoneRequest,
-	validateExecute
+	validateExecute,
+	validateGhanaWaterSearch,
 };

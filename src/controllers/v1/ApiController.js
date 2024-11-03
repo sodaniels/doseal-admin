@@ -427,16 +427,20 @@ async function postTransactionInitiate(req, res) {
 		req.body.fee = fee;
 
 		totalAmount = Number(req.body.amount) + Number(fee);
+
 		req.body.totalAmount = totalAmount;
 
 		let currentDate = new Date();
+
 		req.body["transaction_time"] = currentDate;
+
+		req.body["accountName"] = req.body.accountName ? req.body.accountName : undefined;
+		req.body["accountNumber"] = req.body.accountNumber ? req.body.accountNumber : undefined;
 
 		if (req.body.network) {
 			const hubtelResponse = await restServices.postHubtelMSISDNSearchService(
 				req.body.phoneNumber
 			);
-			// console.log("hubtel Response: " + JSON.stringify(hubtelResponse));
 
 			if (hubtelResponse && hubtelResponse.ResponseCode === "0000") {
 				const data = hubtelResponse.Data[0];
@@ -448,7 +452,7 @@ async function postTransactionInitiate(req, res) {
 
 		req.body["verifiedName"] = verifiedName;
 
-		// console.log("Before encryption: " + JSON.stringify(req.body));
+		console.log("Before encryption: " + JSON.stringify(req.body));
 
 		const transactionHash = hashTransaction(req.body);
 

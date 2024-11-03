@@ -168,10 +168,8 @@ async function postHubtelUtilityCallbackServices(req, res) {
 	transactionId = Data.ClientReference;
 
 	let transaction = await getTransactionByTransactionId(transactionId);
-	
 
 	if (transaction && transaction.statusCode === 411) {
-
 		transaction.statusCode = req.body.code;
 		transaction.status = req.body.status;
 		transaction.statusMessage = req.body.message;
@@ -195,7 +193,7 @@ async function postHubtelUtilityCallbackServices(req, res) {
 				transaction.status = "Successful";
 				transaction.statusCode = 200;
 				transaction.statusMessage = "Transaction was successful";
-				
+
 				break;
 			case "4080":
 				transaction.status = "Failed";
@@ -817,6 +815,7 @@ async function commitCreditTransaction(transaction) {
 				);
 				break;
 			case "GOtv":
+			case "GOTV":
 				Log.info(
 					`[CallbackController.js][postHubtelPaymentCallback][commitCreditTransaction][${creditUniqueId}]\t initiating request to GOtv: `
 				);
@@ -832,6 +831,7 @@ async function commitCreditTransaction(transaction) {
 				);
 				break;
 			case "StarTimesTv":
+			case "STARTIMESTV":
 				Log.info(
 					`[CallbackController.js][postHubtelPaymentCallback][commitCreditTransaction][${creditUniqueId}]\t initiating request to StarTimesTv: `
 				);

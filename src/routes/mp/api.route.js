@@ -84,7 +84,7 @@ router.post(
 // hubtel ghana water account search
 router.post(
 	"/search-ghana-water-account",
-	validator.validateUtilitySearch,
+	validator.validateGhanaWaterSearch,
 	apiController.postHubtelGhanaWaterAccountSearch
 );
 // get stored ecg meters
