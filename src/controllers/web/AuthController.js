@@ -158,6 +158,7 @@ async function processEmail(user, email, res) {
 		const q = phoneNumber.slice(-9);
 		const redisKey = `otp_token_${q}`;
 
+		
 		let message;
 
 		await setRedis(redisKey, pin);
