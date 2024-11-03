@@ -49,7 +49,7 @@ const app = express();
 
 app.use(bodyParser.json());
 app.use(cookieParser());
-app.set('trust proxy', true);
+// app.set('trust proxy', true);
 
 app.use(express.static(path.join(__dirname, "public")));
 
