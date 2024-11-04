@@ -279,6 +279,11 @@ const validateCountryISO3Code = [
 	body("country").notEmpty().isString().withMessage("Counry is required."),
 ];
 
+const validateGen4Login= [
+	body('phoneNumber').notEmpty().withMessage('Phone Number is required'),
+	body("countryCode").notEmpty().isString().withMessage("Counry code is required."),
+];
 
 module.exports = {
+	validateGen4Login
 };

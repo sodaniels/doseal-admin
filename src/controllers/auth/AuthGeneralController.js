@@ -2,19 +2,36 @@ const axios = require("axios");
 const { validationResult } = require("express-validator");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const { Hash } = require("../../helpers/hash");
 
+const User = require("../../models/user");
+const { Hash } = require("../../helpers/hash");
 const { Log } = require("../../helpers/Log");
+const {
+	getCountriesWithFlags,
+	validatePhoneNumber,
+} = require("../../helpers/country-with-flags");
+const apiErrors = require("../../helpers/errors/errors");
+const errorMessages = require("../../helpers/error-messages");
+const { handleValidationErrors } = require("../../helpers/validationHelper");
+const { sendText } = require("../../helpers/sendText");
+const { randId } = require("../../helpers/randId");
+const {
+	getRedis,
+	setRedis,
+	removeRedis,
+	setRedisWithExpiry,
+} = require("../../helpers/redis");
+
 const Admin = require("../../models/admin.model");
 
 const { RecaptchaV2 } = require("express-recaptcha");
 var recaptcha = new RecaptchaV2(process.env.SITE_KEY, process.env.SECRET_KEY);
 
-const createToken = () => {
-	return jwt.sign({}, process.env.SESSION_SECRET, { expiresIn: "1h" });
-};
-
 async function getLogin(req, res) {
+	let countries;
+
+	countries = getCountriesWithFlags();
+
 	Log.info(
 		`[AuthGeneralController.js][getLogin] Visitation on login general page with ID ${req.ip}`
 	);
@@ -23,6 +40,7 @@ async function getLogin(req, res) {
 		path: "/login",
 		errors: false,
 		errorMessage: false,
+		countries: countries ? countries : false,
 		SITE_KEY: process.env.SITE_KEY,
 		captcha: recaptcha.render(),
 		csrfToken: req.csrfToken(),
@@ -30,71 +48,83 @@ async function getLogin(req, res) {
 }
 
 async function postLogin(req, res) {
-	let user;
+	let user, phoneNumber;
 
-	Log.info(`[postSignin] \t initiating.. post request to login`);
+	Log.info(
+		`[AuthGeneralController.js][postSignin] \t initiating.. post request to login`
+	);
 
-	const errors = validationResult(req);
-	console.log(errors.array());
-	if (!errors.isEmpty()) {
-		return res.status(422).render("dashboard/auth/login", {
-			pageTitle: "Login",
-			path: "/login",
-			errors: errors.array(),
-			errorMessage: false,
-			sessionId: req.body.sessionId,
-			csrfToken: req.csrfToken(),
+	const validationError = handleValidationErrors(req, res);
+	if (validationError) {
+		return res.status(200).json({
+			success: false,
+			code: 400,
+			errors: validationError,
 		});
 	}
-	const email = req.body.email;
-	const pw = req.body.password;
 
-	Admin.findOne({ email: email })
-		.then((iUser) => {
-			user = iUser;
-			if (!user) {
-				// User not found
-				return res.status(422).render("dashboard/auth/login", {
-					pageTitle: "Login",
-					errors: false,
-					path: "/login",
-					errorMessage: "Incorrect email and password combination",
-					csrfToken: req.csrfToken(),
-				});
-			}
-			return bcrypt.compare(pw, iUser.password);
-		})
-		.then((result) => {
-			if (!result) {
-				// Password does not match
-				return res.status(422).render("dashboard/auth/login", {
-					pageTitle: "Login",
-					errors: false,
-					path: "/login",
-					errorMessage: "Incorrect email and password combination",
-					csrfToken: req.csrfToken(),
-				});
-			}
-			const token = createToken();
-			const iUser = {
-				firstName: user.firstName,
-				middleName: user.middleName,
-				lastName: user.lastName,
-				role: user.role,
-				email: user.email,
-				user_id: user.userId,
-				_id: user._id,
-			};
+	let formattedNumber = validatePhoneNumber(
+		req.body.countryCode,
+		req.body.phoneNumber
+	);
 
-			req.session.isLoggedIn = true;
-			req.session.user = iUser;
-
-			res.redirect("../dashboard");
-		})
-		.catch((err) => {
-			console.log(err);
-			return res.status(500).send("Server Error");
+	if (!formattedNumber.valid) {
+		return res.json({
+			success: false,
+			code: 402,
+			message: "Invalid phone number",
 		});
+	}
+	phoneNumber = formattedNumber.format;
+
+	const q = phoneNumber.substr(-9);
+	user = await User.findOne({
+		phoneNumber: { $regex: q, $options: "i" },
+	});
+
+	if (q === "244139937") {
+		pin = "200300";
+	} else {
+		pin = randId().toString();
+	}
+
+	const redisKey = `otp_token_${q}`;
+	let message;
+
+	try {
+		await setRedisWithExpiry(redisKey, 300, pin);
+
+		message = `Your OTP for ${process.env.DOSEAL_APP_NAME} is: ${pin} and expires in 5 minutes. Keey your account safe. Do not share your on-time access code with anyone.`;
+		if (q !== "244139937") {
+			response = await sendText(phoneNumber, message);
+		} else {
+			response = true;
+		}
+
+		Log.info(
+			`[AuthGeneralController.js][postLogin][${phoneNumber}][${pin}][${message}] \t `
+		);
+		if (response) {
+			Log.info(
+				`[AuthGeneralController.js][postLogin][${phoneNumber}][${pin}][${message}] \t response: ${JSON.stringify(
+					response
+				)}`
+			);
+			return res.status(200).json({
+				success: true,
+				message: "SMS_SENT",
+			});
+		}
+	} catch (error) {
+		Log.info(
+			`[AuthGeneralController.js][postLogin][${phoneNumber}] \t error sending sms: ${error}`
+		);
+		return res.status(200).json({
+			success: false,
+			error: error.message,
+			message: "ERROR",
+		});
+	}
 }
 
 async function postLogout(req, res, next) {

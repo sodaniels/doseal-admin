@@ -1,204 +1,208 @@
 <!DOCTYPE html>
-<html
-	data-capo=""
-	style="
-		--custom-bg-lighter: #ccf3ef;
-		--custom-primary: #0d70a9;
-		--custom-hover-state: #06527e;
-	">
+<html lang="en">
 	<head>
-		<meta
-			http-equiv="Content-Type"
-			content="text/html; charset=UTF-8" />
+		<meta charset="UTF-8" />
 		<meta
 			name="viewport"
-			content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
-		<script
-			async=""
-			src="/assets/gen4-login/js/clarity.js"></script>
-		<script
-			async=""
-			src="/assets/gen4-login/js/npsenaek33"></script>
-	
-		<script
-			src="/assets/gen4-login/js/jquery-3.6.0.min.js"
-			integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
-			crossorigin="anonymous"></script>
-		<script src="/assets/gen4-login/js/bootstrap.bundle.min.js"></script>
-		<script src="/assets/gen4-login/js/main.js"></script>
-		<script src="/assets/gen4-login/js/socket.io.js"></script>
+			content="width=device-width, initial-scale=1.0" />
+		<title>Login Page</title>
 		<link
-			rel="stylesheet"
-			href="/assets/gen4-login/css/main.css" />
-	
+			href="/assets/gen4-login/css/select2.min.css"
+			rel="stylesheet" />
 		<link
-			rel="stylesheet"
-			href="/assets/gen4-login/css/entry.BWm3kwKd.css" />
-		<link
-			rel="modulepreload"
-			as="script"
-			crossorigin=""
-			href="/assets/gen4-login/css/DoeWTjIO.js" />
-		<script
-			src="/assets/gen4-login/js/new-relic.js"
-			defer=""
-			type="text/javascript"
-			data-hid="6887851"></script>
-		<link
-			rel="prefetch"
-			as="style"
-			href="/assets/gen4-login/css/default.B4Lk5Euy.css" />
-	
-		<script
-			type="module"
-			src="/assets/gen4-login/js/DoeWTjIO.js"
-			crossorigin=""></script>
-	
-		<title>Doseal - Login</title>
-		<script
-			src="/assets/gen4-login/js/api.js"
-			async=""></script>
-		<script
-			type="text/javascript"
-			charset="UTF-8"
-			src="/assets/gen4-login/js/common.js"></script>
-		<script
-			type="text/javascript"
-			charset="UTF-8"
-			src="/assets/gen4-login/js/util.js"></script>
+			href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+			rel="stylesheet" />
 
-			<script
+		<script
 			src="https://www.google.com/recaptcha/api.js"
 			async
 			defer></script>
 
-			<style>
-				.g-recaptcha {
-					float: left;
-				}
-			</style>
-			<meta
-				name="csrf-token"
-				content="<%= csrfToken %>" />
+		<style>
+			.g-recaptcha {
+				float: left;
+			}
+		</style>
+		<meta
+			name="csrf-token"
+			content="<%= csrfToken %>" />
+		<style>
+			body {
+				display: flex;
+				justify-content: center;
+				align-items: center;
+				height: 100vh;
+				margin: 0;
+				background-color: white;
+			}
+			.container {
+				text-align: center;
+				max-width: 400px; /* Limit container width */
+				width: 100%; /* Full width on smaller screens */
+			}
+			.logo {
+				margin-bottom: 20px;
+			}
+			.phone-input {
+				width: 100%; /* Full width for the input */
+			}
+			.country-code {
+				width: 35%; /* Adjusted width for the country code dropdown */
+			}
+			.form-row {
+				margin-bottom: 15px; /* Space between rows */
+			}
+		
+            .btn-enabled {
+                background-color: #362a9f;
+                color: white; /* Adjust text color for visibility */
+            }
+            .btn {
+                background-color: transparent; /* Default button color when disabled */
+                color: black; /* Default text color */
+                transition: background-color 0.3s ease, color 0.3s ease; /* Smooth transition */
+            }
+
+            .btn-enabled {
+                background-color: #362a9f; /* Color when enabled */
+                color: white; /* Text color when enabled */
+            }
+
+            .btn-enabled:hover {
+                background-color: #493cc1; /* Darker blue on hover */
+                color: white; /* Maintain text color */
+            }
+                        
+		</style>
+
+        <style>
+            #loadingOverlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.6);
+                display: none; /* Initially hidden */
+                justify-content: center;
+                align-items: center;
+                z-index: 1000;
+            }
+            .spinner {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                position: relative;
+                width: 100px;
+                height: 100px;
+            }
+            .spinner::before,
+            .spinner::after {
+                content: "";
+                position: absolute;
+                border-radius: 50%;
+                animation: pulsate 1.5s infinite ease-in-out;
+            }
+            .spinner::before {
+                width: 60px;
+                height: 60px;
+                border: 6px solid #ff6b6b;
+                animation-delay: 0s;
+            }
+            .spinner::after {
+                width: 80px;
+                height: 80px;
+                border: 6px solid #3498db;
+                animation-delay: 0.75s;
+            }
+            .inner-spinner {
+                width: 40px;
+                height: 40px;
+                border: 5px solid transparent;
+                border-top: 5px solid #fff;
+                border-radius: 50%;
+                animation: spin 1s linear infinite;
+            }
+            @keyframes spin {
+                0% {
+                    transform: rotate(0deg);
+                }
+                100% {
+                    transform: rotate(360deg);
+                }
+            }
+            @keyframes pulsate {
+                0%,
+                100% {
+                    transform: scale(1);
+                    opacity: 1;
+                }
+                50% {
+                    transform: scale(1.5);
+                    opacity: 0.5;
+                }
+            }
+        </style>
+
 	</head>
-	<body
-		data-new-gr-c-s-check-loaded="14.1205.0"
-		data-gr-ext-installed="">
-		<div
-			id="__nuxt"
-			data-v-app="">
-			<div>
-				<div
-					class="nuxt-loading-indicator"
-					style="
-						position: fixed;
-						top: 0px;
-						right: 0px;
-						left: 0px;
-						pointer-events: none;
-						width: auto;
-						height: 3px;
-						opacity: 0;
-						background: repeating-linear-gradient(
-							to right,
-							rgb(0, 220, 130) 0%,
-							rgb(52, 205, 254) 50%,
-							rgb(0, 71, 225) 100%
-						);
-						transform: scaleX(0);
-						transform-origin: left center;
-						transition: transform 0.1s, height 0.4s, opacity 0.4s;
-						z-index: 999999;
-					"></div>
-				<div
-					class="wrap"
-					role="document">
-					<div class="content">
-						<main class="main">
-							<div class="bg-white">
-								<div class="login-central flex-column px-3 px-md-0">
-									<div
-										class="row w-100 align-items-center justify-content-center h-100">
-										<div
-											class="col-12 col-lg-5 col-md-7 col-xl-4"
-											style="max-width: 450px">
-											<div class="text-center mb-4 pb-2">
-												<img
-													src="/assets/gen4-login/images/doseal-web-logo.webp"
-													alt="logo"
-													class=""
-													width="20%" />
-													<h3>Doseal Limited</h3>
-											</div>
-											
-											<div
-												class="inner login-phonenumber border-muted rounded-0">
-												<div class="text-center">
-													<div class="row align-items-center">
-														<div class="col-12">
-															<!---->
-															<div id="regular-login">
-																<div id="enter-phone">
-																	<div class="">
-																		<div class="">
-																			<div class="mb-4 text-start">
-																				<label for="phone-number" class="text-black mb-2">Enter your phone number</label>
-																				<div style="display: flex; align-items: center; border: 1px solid #ccc; border-radius: 4px; padding: 4px;">
-																					<select
-																						id="country-code"
-																						style="height: calc(1.8em + 9px + 0.75rem); font-size: 16px; margin-right: 8px; padding: 0 8px; border: none; outline: none;">
-																						<option value="+233">🇬🇭 +233 Ghana</option>
-																						<option value="+1">🇺🇸 +1 USA</option>
-																						<option value="+44">🇬🇧 +44 UK</option>
-																						<option value="+61">🇦🇺 +61 Australia</option>
-																						<option value="+91">🇮🇳 +91 India</option>
-																					</select>
-																					<input
-																						type="tel"
-																						autocomplete="on"
-																						class="vti__input"
-																						id="phoneNumber"
-																						maxlength="25"
-																						name="phoneNumber"
-																						placeholder="Enter a phone number"
-																						style="flex-grow: 1; height: calc(1.8em + 9px + 0.75rem); font-size: 16px; border: none; outline: none;" />
-																				</div>
-																			</div>
-																			<div class="mb-3 position-relative w-fit mx-auto">
-																				<div>
-																					<div class="g-recaptcha" data-sitekey="<%= SITE_KEY %>"></div>
-																				</div>
-																			</div>
-																			<br /><br />
-																			<div class="text-start" style="margin-top: 5em;">
-																				<button
-																					class="btn px-5 btn-light bg-light w-100 d-block fw-bold"
-																					id="doseal-submit-btn"
-																					type="submit"
-																					disabled="">
-																					Continue
-																				</button>
-																			</div>
-																		</div>
-																	</div>
-																</div>
-															</div>
-															
-															<!----><!----><!---->
-														</div>
-													</div>
-												</div>
-											</div>
-											<!----><!----><!----><!---->
-										</div>
-									</div>
-								</div>
-							</div>
-						</main>
-					</div>
+	<body>
+
+        <div id="loadingOverlay">
+            <div class="spinner">
+                <div class="inner-spinner"></div>
+            </div>
+        </div>
+
+		<div class="container">
+			<div class="logo">
+				<div class="text-center mb-4 pb-2">
+					<img
+						src="/assets/gen4-login/images/doseal-web-logo.webp"
+						alt="logo"
+						class=""
+						width="15%" />
+					<h3>Doseal Limited</h3>
 				</div>
 			</div>
+			<div class="form-row align-items-center mb-3" style="margin-top: 4em;">
+				<div
+					class="col-md-4"
+					style="margin-right: -0.7em">
+					<select class="form-control" style="height: 50px !important" id="countryCode">
+                        <% countries.forEach(country => { %>
+                            <option value="<%= country.code %>" <%= country.code === '+233' ? 'selected' : '' %>>
+                                <%= country.flag %> <%= country.code %> <%= country.name %>
+                            </option>
+                        <% }) %>
+                    </select>
+				</div>
+				<div class="col-md-8">
+					<input
+						style="height: 50px"
+						type="tel"
+                        id="phoneNumber"
+						class="form-control phone-input"
+						placeholder="Phone Number"
+						required />
+				</div>
+			</div>
+			<div style="text-align: center;" >
+                <div class="g-recaptcha mb-3" data-sitekey="<%= SITE_KEY %>" style="display: inline-block;"></div>
+            </div>
+            <button
+                class="btn px-5 w-100 d-block fw-bold"
+                id="loginButton"
+                type="submit"
+                disabled="">
+                Continue
+            </button>
 		</div>
-		<div id="teleports"></div>
-		
+
+		<script src="/assets/gen4-login/js/jquery-3.6.0.min.js"></script>
+		<script src="/assets/gen4-login/js/select2.min.js"></script>
+		<script src="/assets/gen4-login/js/sweetalert2.all.min.js"></script>
+		<script src="/assets/gen4-login/js/process-login.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+		<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+	</body>
 </html>
