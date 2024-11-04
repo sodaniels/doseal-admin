@@ -179,6 +179,7 @@ async function confirmCode(req, res) {
 				Log.info(
 					`[AuthApiController.js][confirmCode][${req.body.phoneNumber}] \t  error query MSISDN: ${error}  `
 				);
+				
 			}
 			try {
 				const userData = new User({
@@ -522,6 +523,8 @@ async function getPageCategory(req, res) {
 		});
 	}
 }
+
+
 
 module.exports = {
 	postDeviceData,

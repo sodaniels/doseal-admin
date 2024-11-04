@@ -3,6 +3,7 @@ const express = require("express");
 const router = express.Router();
 
 const authApiController = require("../../controllers/v1/auth/AuthApiController");
+const authEmailController = require("../../controllers/v1/auth/AuthEmailController");
 
 /**Auth */
 // store device information
@@ -22,5 +23,11 @@ router.post("/complete-registration", authApiController.completeRegistration);
 // get information
 router.get("/pages/:pageCategory", authApiController.getPageCategory);
 /**Auth */
+
+
+/**auth using email */
+
+router.post("/email/signin", authEmailController.postSigin);
+
 
 module.exports = router;

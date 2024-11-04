@@ -1,6 +1,7 @@
 const Page = require("../../models/page.model");
 const User = require("../../models/user");
 const NewsRoom = require("../../models/news-room.model");
+const Notification = require("../../models/notification.model");
 const Wallet = require("../../models/wallet.model");
 const Transaction = require("../../models/transaction.model");
 const ReportIssue = require("../../models/report-issue.model");
@@ -62,6 +63,40 @@ async function getNews(req, res) {
 	}
 }
 
+// get notifications
+async function getNotificaitons(req, res) {
+	Log.info(
+		`[InternalApiController.js][getNotificaitons]\t getting notifications`
+	);
+	try {
+		const notification = await Notification.find({}).select('_id title excerpt message createdAt').sort({ _id: -1 });
+		if (notification) {
+			return res.json({
+				success: true,
+				code: 200,
+				data: notification,
+			});
+		} else {
+			return res.json({
+				success: false,
+				code: 404,
+				message: "No data found for category",
+			});
+		}
+	} catch (error) {
+		Log.error(
+			"[InternalApiController.js][getNotificaitons]..error retrieving notifications",
+			error
+		);
+		return res.json({
+			success: false,
+			code: 500,
+			message: "An error occurred while retrieving data",
+		});
+	}
+}
+
 module.exports = {
 	getNews,
+	getNotificaitons,
 };
