@@ -83,7 +83,7 @@ $(document).ready(function () {
 					});
 					return false;
 				}
-                if (result.code === 402) {
+				if (result.code === 402) {
 					Swal.fire({
 						title: "Check phone number",
 						text: result.message,
@@ -135,20 +135,42 @@ $(document).ready(function () {
 		});
 	});
 
-	$("#phoneNumber").on("input", function () {
-		// Get the current value of the input
-		const phoneNumber = $(this).val().trim();
+	const submitButton = document.getElementById("confirmationButton");
+	const inputs = document.querySelectorAll(".verification-inputs input");
 
-		if (phoneNumber.length >= 9) {
-			$("#loginButton")
-				.prop("disabled", false) // Enable the button
-				.addClass("btn-enabled"); // Add enabled class
+	// Function to check if total input length is 6
+	function checkInputLength() {
+		const totalLength = Array.from(inputs).reduce((acc, input) => acc + input.value.length, 0);
+		
+		if (totalLength === 6) {
+			submitButton.disabled = false; // Enable button
+			submitButton.classList.add("btn-enabled"); // Add btn-enabled class
 		} else {
-			$("#loginButton")
-				.prop("disabled", true) // Disable the button
-				.removeClass("btn-enabled"); // Remove enabled class
+			submitButton.disabled = true; // Disable button
+			submitButton.classList.remove("btn-enabled"); // Remove btn-enabled class
 		}
+	}
+
+	inputs.forEach((input, index) => {
+		input.addEventListener("input", () => {
+			// Move to the next input if this one has a character
+			if (input.value.length === 1 && index < inputs.length - 1) {
+				inputs[index + 1].focus();
+			}
+			checkInputLength(); // Check input length on every input event
+		});
+
+		input.addEventListener("keydown", (e) => {
+			// Handle backspace to move back to the previous input
+			if (e.key === "Backspace" && input.value === "" && index > 0) {
+				inputs[index - 1].focus();
+			}
+			checkInputLength(); // Check input length on every keydown event
+		});
 	});
+
+	// Initialize button state on page load
+	checkInputLength();
 });
 
 function displayErrors(errors) {
@@ -159,4 +181,14 @@ function displayErrors(errors) {
 		})
 		.join("\n");
 	return errorMessages;
+}
+
+if (phoneNumber.length >= 9) {
+	$("#loginButton")
+		.prop("disabled", false) // Enable the button
+		.addClass("btn-enabled"); // Add enabled class
+} else {
+	$("#loginButton")
+		.prop("disabled", true) // Disable the button
+		.removeClass("btn-enabled"); // Remove enabled class
 }

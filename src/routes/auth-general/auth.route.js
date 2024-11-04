@@ -9,15 +9,15 @@ const authGeneralController = require("../../controllers/auth/AuthGeneralControl
 const validator = require("../../helpers/validator-auth");
 
 // get login gen4 login
-router.get("/login/:token", authGeneralController.getLogin);
+router.get("/auth/login", authGeneralController.getLogin);
 // post gen4 login
 router.post(
-	"/gen4-login",
+	"/authentate/login",
 	validator.validateGen4Login,
 	authGeneralController.postLogin
 );
 // confirm gen4 code
-router.get("/confirm-code/:token", authGeneralController.getConfirmCode);
+router.get("/auth/confirm-code", authGeneralController.getConfirmCode);
 router.post("/logout", authGeneralController.postLogout);
 
 module.exports = router;

@@ -52,106 +52,115 @@
 			.form-row {
 				margin-bottom: 15px; /* Space between rows */
 			}
-		
-            .btn-enabled {
-                background-color: #362a9f;
-                color: white; /* Adjust text color for visibility */
-            }
-            .btn {
-                background-color: transparent; /* Default button color when disabled */
-                color: black; /* Default text color */
-                transition: background-color 0.3s ease, color 0.3s ease; /* Smooth transition */
-            }
 
-            .btn-enabled {
-                background-color: #362a9f; /* Color when enabled */
-                color: white; /* Text color when enabled */
-            }
+			.btn-enabled {
+				background-color: #362a9f;
+				color: white; /* Adjust text color for visibility */
+			}
+			.btn {
+				background-color: transparent; /* Default button color when disabled */
+				color: black; /* Default text color */
+				transition: background-color 0.3s ease, color 0.3s ease; /* Smooth transition */
+			}
 
-            .btn-enabled:hover {
-                background-color: #493cc1; /* Darker blue on hover */
-                color: white; /* Maintain text color */
-            }
-                        
+			.btn-enabled {
+				background-color: #362a9f; /* Color when enabled */
+				color: white; /* Text color when enabled */
+			}
+
+			.btn-enabled:hover {
+				background-color: #493cc1; /* Darker blue on hover */
+				color: white; /* Maintain text color */
+			}
+
+			/* Hide spinners in WebKit browsers (Chrome, Safari) */
+			input[type="number"]::-webkit-inner-spin-button,
+			input[type="number"]::-webkit-outer-spin-button {
+				-webkit-appearance: none; /* Remove default styling */
+				margin: 0; /* Remove margin */
+			}
+
+			/* Hide spinners in Firefox */
+			input[type="number"] {
+				-moz-appearance: textfield; /* Remove default styling */
+			}
 		</style>
 
-        <style>
-            #loadingOverlay {
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                background: rgba(0, 0, 0, 0.6);
-                display: none; /* Initially hidden */
-                justify-content: center;
-                align-items: center;
-                z-index: 1000;
-            }
-            .spinner {
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                position: relative;
-                width: 100px;
-                height: 100px;
-            }
-            .spinner::before,
-            .spinner::after {
-                content: "";
-                position: absolute;
-                border-radius: 50%;
-                animation: pulsate 1.5s infinite ease-in-out;
-            }
-            .spinner::before {
-                width: 60px;
-                height: 60px;
-                border: 6px solid #ff6b6b;
-                animation-delay: 0s;
-            }
-            .spinner::after {
-                width: 80px;
-                height: 80px;
-                border: 6px solid #3498db;
-                animation-delay: 0.75s;
-            }
-            .inner-spinner {
-                width: 40px;
-                height: 40px;
-                border: 5px solid transparent;
-                border-top: 5px solid #fff;
-                border-radius: 50%;
-                animation: spin 1s linear infinite;
-            }
-            @keyframes spin {
-                0% {
-                    transform: rotate(0deg);
-                }
-                100% {
-                    transform: rotate(360deg);
-                }
-            }
-            @keyframes pulsate {
-                0%,
-                100% {
-                    transform: scale(1);
-                    opacity: 1;
-                }
-                50% {
-                    transform: scale(1.5);
-                    opacity: 0.5;
-                }
-            }
-        </style>
-
+		<style>
+			#loadingOverlay {
+				position: fixed;
+				top: 0;
+				left: 0;
+				width: 100%;
+				height: 100%;
+				background: rgba(0, 0, 0, 0.6);
+				display: none; /* Initially hidden */
+				justify-content: center;
+				align-items: center;
+				z-index: 1000;
+			}
+			.spinner {
+				display: flex;
+				justify-content: center;
+				align-items: center;
+				position: relative;
+				width: 100px;
+				height: 100px;
+			}
+			.spinner::before,
+			.spinner::after {
+				content: "";
+				position: absolute;
+				border-radius: 50%;
+				animation: pulsate 1.5s infinite ease-in-out;
+			}
+			.spinner::before {
+				width: 60px;
+				height: 60px;
+				border: 6px solid #ff6b6b;
+				animation-delay: 0s;
+			}
+			.spinner::after {
+				width: 80px;
+				height: 80px;
+				border: 6px solid #3498db;
+				animation-delay: 0.75s;
+			}
+			.inner-spinner {
+				width: 40px;
+				height: 40px;
+				border: 5px solid transparent;
+				border-top: 5px solid #fff;
+				border-radius: 50%;
+				animation: spin 1s linear infinite;
+			}
+			@keyframes spin {
+				0% {
+					transform: rotate(0deg);
+				}
+				100% {
+					transform: rotate(360deg);
+				}
+			}
+			@keyframes pulsate {
+				0%,
+				100% {
+					transform: scale(1);
+					opacity: 1;
+				}
+				50% {
+					transform: scale(1.5);
+					opacity: 0.5;
+				}
+			}
+		</style>
 	</head>
 	<body>
-
-        <div id="loadingOverlay">
-            <div class="spinner">
-                <div class="inner-spinner"></div>
-            </div>
-        </div>
+		<div id="loadingOverlay">
+			<div class="spinner">
+				<div class="inner-spinner"></div>
+			</div>
+		</div>
 
 		<div class="container">
 			<div class="logo">
@@ -164,44 +173,98 @@
 					<h3>Doseal Limited</h3>
 				</div>
 			</div>
-			<div class="form-row align-items-center mb-3" style="margin-top: 4em;">
-				<div
-					class="col-md-4"
-					style="margin-right: -0.7em">
-					<select class="form-control" style="height: 50px !important" id="countryCode">
-                        <% countries.forEach(country => { %>
-                            <option value="<%= country.code %>" <%= country.code === '+233' ? 'selected' : '' %>>
-                                <%= country.flag %> <%= country.code %> <%= country.name %>
-                            </option>
-                        <% }) %>
-                    </select>
-				</div>
-				<div class="col-md-8">
-					<input
-						style="height: 50px"
-						type="tel"
-                        id="phoneNumber"
-						class="form-control phone-input"
-						placeholder="Phone Number"
-						required />
+			<div
+				class="form-row align-items-center mb-3"
+				style="margin-top: 4em">
+				<div class="contact-form-wrap">
+					<div class="title-area mb-30">
+						<h2 class="sec-title">Verify Account</h2>
+						<p>
+							We sent a verification code to your email address. Provide it in
+							the space below.
+						</p>
+					</div>
+					<form
+						action=""
+						method="POST"
+						id="processSignupForm"
+						class="contact-form ajax-contact">
+						<div class="row">
+							<div class="col-md-12">
+								<div class="form-group verification-inputs">
+									<!-- 6 individual input fields for each digit -->
+									<input
+										type="number"
+										class="form-control style-border"
+										maxlength="1"
+										id="code1"
+										required />
+									<input
+										type="number"
+										class="form-control style-border"
+										maxlength="1"
+										id="code2"
+										required />
+									<input
+										type="number"
+										class="form-control style-border"
+										maxlength="1"
+										id="code3"
+										required />
+									<input
+										type="number"
+										class="form-control style-border"
+										maxlength="1"
+										id="code4"
+										required />
+									<input
+										type="number"
+										class="form-control style-border"
+										maxlength="1"
+										id="code5"
+										required />
+									<input
+										type="number"
+										class="form-control style-border"
+										maxlength="1"
+										id="code6"
+										required />
+								</div>
+							</div>
+						</div>
+						<div class="form-btn col-12">
+							<button
+								class="btn px-5 w-100 d-block fw-bold"
+								id="confirmationButton"
+								type="submit"
+								disabled="">
+								Continue
+							</button>
+						</div>
+					</form>
+
+					<style>
+						.verification-inputs {
+							display: flex;
+							gap: 10px;
+						}
+						.verification-inputs input {
+							width: 60px;
+							height: 60px;
+							text-align: center;
+							font-size: 1.5em; /* Increased font size */
+							border-radius: 5px;
+							border: 1px solid #ccc;
+						}
+					</style>
 				</div>
 			</div>
-			<div style="text-align: center;" >
-                <div class="g-recaptcha mb-3" data-sitekey="<%= SITE_KEY %>" style="display: inline-block;"></div>
-            </div>
-            <button
-                class="btn px-5 w-100 d-block fw-bold"
-                id="loginButton"
-                type="submit"
-                disabled="">
-                Continue
-            </button>
 		</div>
 
 		<script src="/assets/gen4-login/js/jquery-3.6.0.min.js"></script>
 		<script src="/assets/gen4-login/js/select2.min.js"></script>
 		<script src="/assets/gen4-login/js/sweetalert2.all.min.js"></script>
-		<script src="/assets/gen4-login/js/process-login.js"></script>
+		<script src="/assets/gen4-login/js/process-confirm-code.js"></script>
 		<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
 		<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 	</body>

@@ -21,6 +21,7 @@ const {
 	removeRedis,
 	setRedisWithExpiry,
 } = require("../../helpers/redis");
+const { decrypt, encrypt } = require("../../helpers/crypt");
 
 const Admin = require("../../models/admin.model");
 
@@ -112,6 +113,7 @@ async function postLogin(req, res) {
 			);
 			return res.status(200).json({
 				success: true,
+				code: 200,
 				phoneNumber: phoneNumber,
 				message: "SMS_SENT",
 			});
@@ -132,8 +134,8 @@ async function getConfirmCode(req, res) {
 	Log.info(
 		`[AuthGeneralController.js][getConfirmCode] Visitation on confirm code general page with ID ${req.ip}`
 	);
-	return res.render("gen-auth/login", {
-		pageTitle: "Login | Doseal",
+	return res.render("gen-auth/confirm-code", {
+		pageTitle: "Login | Confirm Code",
 		path: "/login",
 		errors: false,
 		errorMessage: false,
