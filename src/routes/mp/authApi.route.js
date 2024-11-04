@@ -26,8 +26,10 @@ router.get("/pages/:pageCategory", authApiController.getPageCategory);
 
 
 /**auth using email */
-
+// post signin
 router.post("/email/signin", authEmailController.postSigin);
+// post email verfication
+router.post("/email/verify-code", authEmailController.postVerifyAccount);
 
 
 module.exports = router;

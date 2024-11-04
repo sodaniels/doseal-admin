@@ -28,8 +28,9 @@ const helpers = new Helpers();
 
 async function postSigin(req, res) {
 	let user;
+	const { email, password } = req.body;
 	Log.info(
-		`[AuthEmailController.js][postSigin][${req.body.email}] \t initiating signin  ${req.ip}`
+		`[AuthEmailController.js][postSigin][${email}] \t initiating signin  ${req.ip}`
 	);
 	const validationError = handleValidationErrors(req, res);
 	if (validationError) {
@@ -40,7 +41,14 @@ async function postSigin(req, res) {
 		});
 	}
 
-	const { email, password } = req.body;
+	let initialCheck = await User.findOne({ email: email });
+	if (!initialCheck) {
+		return res.json({
+			success: false,
+			code: 404,
+			message: "Account not found",
+		});
+	}
 
 	User.findOne({ email: email, registration: "COMPLETED" })
 		.then((iUser) => {
@@ -137,6 +145,199 @@ async function processEmail(user, email, res) {
 			success: false,
 			code: 500,
 			message: "An error has occurred",
+		});
+	}
+}
+
+async function postVerifyAccount(req, res) {
+	const { phoneNumber, email, code } = req.body;
+	Log.info(
+		`[AuthEmailController.js][postVerifyAccount][${email}] posting verifying account IP: ${req.ip}`
+	);
+
+	let initialCheck = await User.findOne({ email: email });
+	if (initialCheck && initialCheck.registration !== "COMPLETED") {
+		return res.json({
+			success: false,
+			code: 405,
+			message: "Account not completed",
+		});
+	}
+
+	const q = phoneNumber.substr(-9);
+
+	const redisCode = await getRedis(`otp_token_${q}`);
+	if (!redisCode) {
+		return res.status(200).json({
+			success: false,
+			code: 401,
+			message: "CODE_EXPIRED",
+		});
+	}
+
+	if (redisCode && redisCode.toString() === code.toString()) {
+		let user = await User.findOne({
+			$or: [{ email: email }, { phoneNumber: { $regex: q, $options: "i" } }],
+		});
+
+		// remove redis code after verification
+		await removeRedis(`otp_token_${q}`);
+
+		return res.json({
+			success: true,
+			userId: user._id,
+			firstName: user.firstName,
+			lastName: user.lastName,
+			phoneNumber: user.phoneNumber,
+			status: user.registration,
+			balance: user.balance,
+			token: await createJwtToken(user._id),
+		});
+	} else {
+		Log.info(
+			`[AuthEmailController.js][postVerifyAccount][${email}]${code}]\t .. wrong code`
+		);
+		return res.json({
+			success: false,
+			code: 400,
+			message: "Invalid code",
+		});
+	}
+}
+async function postVerifyAccount__(req, res) {
+	const { email } = req.body;
+	let hubtelMSISDNResponse,
+		registeredFirstName,
+		registeredLastName,
+		registeredName,
+		nameFromTelco;
+	let AcountStatus = "INITIAL";
+	try {
+		Log.info(
+			`[AuthApiController.js][postVerifyAccount][${email} \t ****** initiate confirm code  `
+		);
+		const q = req.body.phoneNumber.substr(-9);
+
+		let user = await User.findOne({
+			phoneNumber: { $regex: q, $options: "i" },
+		});
+
+		if (!user) {
+			try {
+				Log.info(
+					`[AuthApiController.js][confirmCode][${email}] \t  quering MSISDN ********************************  `
+				);
+				hubtelMSISDNResponse = await restServices.postHubtelMSISDNSearchService(
+					req.body.phoneNumber
+				);
+				if (
+					hubtelMSISDNResponse &&
+					hubtelMSISDNResponse.ResponseCode === "0000"
+				) {
+					const responseData = hubtelMSISDNResponse.Data[0];
+					const splitNames = stringFunctions.split_name(responseData.Value);
+					registeredFirstName = splitNames[0];
+					registeredLastName = splitNames[1];
+					registeredName =
+						registeredFirstName || registeredLastName
+							? registeredFirstName + " " + registeredLastName
+							: undefined;
+					nameFromTelco =
+						registeredFirstName || registeredLastName ? true : false;
+				}
+
+				Log.info(
+					`[AuthApiController.js][confirmCode][${
+						req.body.phoneNumber
+					}] \t  MSISDN Response: ${JSON.stringify(hubtelMSISDNResponse)} `
+				);
+			} catch (error) {
+				Log.info(
+					`[AuthApiController.js][confirmCode][${req.body.phoneNumber}] \t  error query MSISDN: ${error}  `
+				);
+			}
+			try {
+				const userData = new User({
+					phoneNumber: req.body.phoneNumber,
+					firstName: registeredFirstName ? registeredFirstName : undefined,
+					lastName: registeredLastName ? registeredLastName : undefined,
+					nameFromTelco:
+						registeredLastName || registeredLastName ? true : false,
+					registration: AcountStatus,
+					role: "Subscriber",
+					status: "Inactive",
+				});
+				const storeUser = await userData.save();
+				if (storeUser) {
+					Log.info(
+						`[AuthApiController.js][confirmCode][${req.body.phoneNumber}] \t initial registration successful  `
+					);
+				}
+			} catch (error) {
+				Log.info(
+					`[AuthApiController.js][confirmCode][${req.body.phoneNumber}] \t error saving initial registration  ${error}`
+				);
+			}
+		}
+
+		if (user && user.registration === "COMPLETED") {
+			AcountStatus = "COMPLETED";
+		}
+
+		const redisCode = await getRedis(`otp_token_${q}`);
+		if (!redisCode) {
+			return res.status(200).json({
+				success: false,
+				message: "CODE_EXPIRED",
+			});
+		}
+		if (redisCode.toString() === req.body.code.toString()) {
+			const registration_code = randId().toString();
+
+			const encryptedCode = encrypt(registration_code);
+			console.log("encryptedCode: " + encryptedCode);
+
+			// remove redis code after verification
+			await removeRedis(`otp_token_${q}`);
+
+			if (user && user.registration === "COMPLETED") {
+				return res.json({
+					success: true,
+					userId: user._id,
+					firstName: user.firstName,
+					lastName: user.lastName,
+					phoneNumber: user.phoneNumber,
+					status: user.registration,
+					balance: user.balance,
+					nameFromTelco: user.nameFromTelco,
+					token: await createJwtToken(user._id),
+				});
+			} else {
+				const redisKey = `registration_token_${q}`;
+				await setRedis(redisKey, registration_code);
+				return res.status(200).json({
+					success: true,
+					message: "SUCCESS",
+					status: AcountStatus,
+					accessCode: encryptedCode,
+					registeredName: registeredName ? registeredName : undefined,
+					nameFromTelco: nameFromTelco ? nameFromTelco : undefined,
+				});
+			}
+		}
+		Log.info(
+			`[AuthApiController.js][confirmCode][${req.body.phoneNumber}]${req.body.code}]\t .. wrong code`
+		);
+		return res.status(200).json({
+			success: false,
+			message: "WRONG_CODE",
+			status: AcountStatus,
+		});
+	} catch (error) {
+		return res.status(500).json({
+			success: false,
+			error: error.message,
+			message: "ERROR_OCCURRED",
 		});
 	}
 }
@@ -399,75 +600,6 @@ async function postSignup(req, res) {
 	}
 }
 
-async function postVerifyAccount(req, res) {
-	Log.info(
-		`[AuthEmailController.js][postVerifyAccount] posting verifying account IP: ${req.ip}`
-	);
-	const { phoneNumber, email, code } = req.body;
-
-	const q = phoneNumber.substr(-9);
-
-	const redisCode = await getRedis(`otp_token_${q}`);
-
-	if (redisCode && redisCode.toString() === code.toString()) {
-		let user = await User.findOne({
-			$or: [{ email: email }, { phoneNumber: { $regex: q, $options: "i" } }],
-		});
-
-		// remove redis code after verification
-		await removeRedis(`otp_token_${q}`);
-
-		if (user.registration === "COMPLETED") {
-			const token = await createJwtToken(user._id);
-
-			res.cookie("jwt", token, {
-				httpOnly: true,
-				secure: true,
-				maxAge: 2 * 60 * 60 * 1000,
-			});
-
-			const iUser = {
-				_id: user._id,
-				firstName: user.firstName,
-				middlename: user.middleName ? agent.middleName : undefined,
-				lastName: user.lastName,
-				phoneNumber: user.phoneNumber,
-				type: user.role,
-				email: user.email,
-			};
-
-			req.session.isLoggedIn = true;
-			req.session.user = iUser;
-			req.session.lastloggedIn = Date.now();
-
-			const timeOfLogin = Date.now();
-			user.isLoggedIn = timeOfLogin;
-			await user.save();
-
-			return res.json({
-				success: true,
-				code: 2000,
-			});
-		} else {
-			const token = encrypt(JSON.stringify(user._id));
-			return res.json({
-				success: true,
-				code: 200,
-				token: token,
-			});
-		}
-	} else {
-		Log.info(
-			`[AuthEmailController.js][postVerifyAccount][${phoneNumber}]${code}]\t .. wrong code`
-		);
-		return res.json({
-			success: false,
-			code: 400,
-			message: "Invalid code",
-		});
-	}
-}
-
 async function createJwtToken(_id) {
 	const jwtSecret = process.env.JWT_TOKEN;
 	const expiresIn = process.env.JWT_EXPIRES_IN;
@@ -538,6 +670,17 @@ async function postCompleteRegistration(req, res) {
 			token: token,
 		});
 	}
+}
+
+async function createToken(_id) {
+	const jwtSecret = process.env.JWT_TOKEN;
+	const expiresIn = process.env.EXPIRES_IN;
+
+	const acccess_token = jwt.sign({ _id }, jwtSecret, {
+		expiresIn,
+		issuer: process.env.APP_NAME,
+	});
+	return { acccess_token, expiresIn };
 }
 
 module.exports = {
