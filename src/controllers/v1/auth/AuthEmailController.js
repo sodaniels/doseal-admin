@@ -204,148 +204,20 @@ async function postVerifyAccount(req, res) {
 		});
 	}
 }
-async function postVerifyAccount__(req, res) {
-	const { email } = req.body;
-	let hubtelMSISDNResponse,
-		registeredFirstName,
-		registeredLastName,
-		registeredName,
-		nameFromTelco;
-	let AcountStatus = "INITIAL";
-	try {
-		Log.info(
-			`[AuthApiController.js][postVerifyAccount][${email} \t ****** initiate confirm code  `
-		);
-		const q = req.body.phoneNumber.substr(-9);
 
-		let user = await User.findOne({
-			phoneNumber: { $regex: q, $options: "i" },
-		});
-
-		if (!user) {
-			try {
-				Log.info(
-					`[AuthApiController.js][confirmCode][${email}] \t  quering MSISDN ********************************  `
-				);
-				hubtelMSISDNResponse = await restServices.postHubtelMSISDNSearchService(
-					req.body.phoneNumber
-				);
-				if (
-					hubtelMSISDNResponse &&
-					hubtelMSISDNResponse.ResponseCode === "0000"
-				) {
-					const responseData = hubtelMSISDNResponse.Data[0];
-					const splitNames = stringFunctions.split_name(responseData.Value);
-					registeredFirstName = splitNames[0];
-					registeredLastName = splitNames[1];
-					registeredName =
-						registeredFirstName || registeredLastName
-							? registeredFirstName + " " + registeredLastName
-							: undefined;
-					nameFromTelco =
-						registeredFirstName || registeredLastName ? true : false;
-				}
-
-				Log.info(
-					`[AuthApiController.js][confirmCode][${
-						req.body.phoneNumber
-					}] \t  MSISDN Response: ${JSON.stringify(hubtelMSISDNResponse)} `
-				);
-			} catch (error) {
-				Log.info(
-					`[AuthApiController.js][confirmCode][${req.body.phoneNumber}] \t  error query MSISDN: ${error}  `
-				);
-			}
-			try {
-				const userData = new User({
-					phoneNumber: req.body.phoneNumber,
-					firstName: registeredFirstName ? registeredFirstName : undefined,
-					lastName: registeredLastName ? registeredLastName : undefined,
-					nameFromTelco:
-						registeredLastName || registeredLastName ? true : false,
-					registration: AcountStatus,
-					role: "Subscriber",
-					status: "Inactive",
-				});
-				const storeUser = await userData.save();
-				if (storeUser) {
-					Log.info(
-						`[AuthApiController.js][confirmCode][${req.body.phoneNumber}] \t initial registration successful  `
-					);
-				}
-			} catch (error) {
-				Log.info(
-					`[AuthApiController.js][confirmCode][${req.body.phoneNumber}] \t error saving initial registration  ${error}`
-				);
-			}
-		}
-
-		if (user && user.registration === "COMPLETED") {
-			AcountStatus = "COMPLETED";
-		}
-
-		const redisCode = await getRedis(`otp_token_${q}`);
-		if (!redisCode) {
-			return res.status(200).json({
-				success: false,
-				message: "CODE_EXPIRED",
-			});
-		}
-		if (redisCode.toString() === req.body.code.toString()) {
-			const registration_code = randId().toString();
-
-			const encryptedCode = encrypt(registration_code);
-			console.log("encryptedCode: " + encryptedCode);
-
-			// remove redis code after verification
-			await removeRedis(`otp_token_${q}`);
-
-			if (user && user.registration === "COMPLETED") {
-				return res.json({
-					success: true,
-					userId: user._id,
-					firstName: user.firstName,
-					lastName: user.lastName,
-					phoneNumber: user.phoneNumber,
-					status: user.registration,
-					balance: user.balance,
-					nameFromTelco: user.nameFromTelco,
-					token: await createJwtToken(user._id),
-				});
-			} else {
-				const redisKey = `registration_token_${q}`;
-				await setRedis(redisKey, registration_code);
-				return res.status(200).json({
-					success: true,
-					message: "SUCCESS",
-					status: AcountStatus,
-					accessCode: encryptedCode,
-					registeredName: registeredName ? registeredName : undefined,
-					nameFromTelco: nameFromTelco ? nameFromTelco : undefined,
-				});
-			}
-		}
-		Log.info(
-			`[AuthApiController.js][confirmCode][${req.body.phoneNumber}]${req.body.code}]\t .. wrong code`
-		);
-		return res.status(200).json({
-			success: false,
-			message: "WRONG_CODE",
-			status: AcountStatus,
-		});
-	} catch (error) {
-		return res.status(500).json({
-			success: false,
-			error: error.message,
-			message: "ERROR_OCCURRED",
-		});
-	}
-}
-
-async function postInitialSignup(req, res) {
+async function postSignup(req, res) {
 	let codeSentViaEmail, uncompletedUser, storeUser;
+
+	const {
+		firstName,
+		lastName,
+		phoneNumber,
+		email,
+		password,
+	} = req.body;
+
 	Log.info(
-		`[AuthEmailController.js][postInitialSignup][${req.body.email}] \t initiating registration IP: ${req.ip} `
+		`[AuthEmailController.js][postSignup][${email}] \t initiating registration IP: ${req.ip} `
 	);
 	const validationError = handleValidationErrors(req, res);
 	if (validationError) {
@@ -355,49 +227,6 @@ async function postInitialSignup(req, res) {
 			errors: validationError,
 		});
 	}
-
-	const captchaResponse = req.body["g-recaptcha-response"];
-	const secret_key = process.env.SECRET_KEY;
-
-	if (!req.body["g-recaptcha-response"]) {
-		return res.json({
-			success: false,
-			code: 401,
-			message: "Please select the security check",
-		});
-	}
-
-	try {
-		const url = `https://www.google.com/recaptcha/api/siteverify?secret=${secret_key}&response=${captchaResponse}`;
-		const requestOptions = {
-			method: "POST",
-			headers: { "Content-Type": "application/json" },
-			body: JSON.stringify({
-				secret: secret_key,
-				response: captchaResponse,
-			}),
-		};
-		const response = await fetch(url, requestOptions);
-		const googleResponse = await response.json();
-		if (!googleResponse.success) {
-			return res.json({
-				success: false,
-				code: 401,
-				message: "reCAPTCHA verification failed. Please try again.",
-			});
-		}
-	} catch (error) {
-		Log.info(`[webController.js][postContacUs] error: ${error}`);
-		if (!req.body["g-recaptcha-response"]) {
-			return res.json({
-				success: false,
-				code: 401,
-				message: "reCAPTCHA verification failed. Please try again.",
-			});
-		}
-	}
-
-	const { email, phoneNumber, password } = req.body;
 
 	const q = phoneNumber.slice(-9);
 
@@ -415,7 +244,7 @@ async function postInitialSignup(req, res) {
 		}
 	} catch (error) {
 		Log.info(
-			`[AuthEmailController.js][postInitialSignup][${email}] \t error: ${error}  `
+			`[AuthEmailController.js][postSignup][${email}] \t error: ${error}  `
 		);
 		return res.json({
 			success: false,
@@ -451,7 +280,7 @@ async function postInitialSignup(req, res) {
 
 		if (storeUser) {
 			Log.info(
-				`[AuthEmailController.js][postInitialSignup][${email}] \t initial registration successful  `
+				`[AuthEmailController.js][postSignup][${email}] \t initial registration successful  `
 			);
 
 			const pin = randId();
@@ -462,7 +291,7 @@ async function postInitialSignup(req, res) {
 
 			await setRedis(redisKey, pin);
 
-			Log.info(`[AuthEmailController.js][postInitialSignup][${pin}] \t`);
+			Log.info(`[AuthEmailController.js][postSignup][${pin}] \t`);
 
 			message = `Your Doseal verification code is ${pin}. 
 					It will expire in 5 minutes. If you did not request this code, 
@@ -470,7 +299,7 @@ async function postInitialSignup(req, res) {
 
 			try {
 				Log.info(
-					`[AuthEmailController.js][postInitialSignup] \t sending OTP via email`
+					`[AuthEmailController.js][postSignup] \t sending OTP via email`
 				);
 				codeSentViaEmail = await postEmail(email, message);
 
@@ -492,7 +321,7 @@ async function postInitialSignup(req, res) {
 				}
 			} catch (error) {
 				Log.info(
-					`[AuthEmailController.js][postInitialSignup] \t sending OTP via email: ${error}`
+					`[AuthEmailController.js][postSignup] \t sending OTP via email: ${error}`
 				);
 			}
 
@@ -510,92 +339,12 @@ async function postInitialSignup(req, res) {
 		}
 	} catch (error) {
 		Log.info(
-			`[AuthEmailController.js][postInitialSignup][${req.body.email}] \t error saving initial registration  ${error}`
+			`[AuthEmailController.js][postSignup][${req.body.email}] \t error saving initial registration  ${error}`
 		);
 		return res.json({
 			success: false,
 			code: 500,
 			message: "An error has occurred",
-		});
-	}
-}
-
-async function postSignup(req, res) {
-	Log.info(
-		`[AuthEmailController.js][postSignup] Posting sign up with IP: ${req.ip}`
-	);
-	const captchaResponse = req.body["g-recaptcha-response"];
-	const secret_key = process.env.SECRET_KEY;
-
-	if (!req.body["g-recaptcha-response"]) {
-		return res.json({
-			success: false,
-			code: 401,
-			message: "Please select the security check",
-		});
-	}
-
-	try {
-		const url = `https://www.google.com/recaptcha/api/siteverify?secret=${secret_key}&response=${captchaResponse}`;
-		const requestOptions = {
-			method: "POST",
-			headers: { "Content-Type": "application/json" },
-			body: JSON.stringify({
-				secret: secret_key,
-				response: captchaResponse,
-			}),
-		};
-		const response = await fetch(url, requestOptions);
-		const googleResponse = await response.json();
-		if (!googleResponse.success) {
-			return res.json({
-				success: false,
-				code: 401,
-				message: "reCAPTCHA verification failed. Please try again.",
-			});
-		}
-	} catch (error) {
-		Log.info(`[webController.js][postContacUs] error: ${error}`);
-		if (!req.body["g-recaptcha-response"]) {
-			return res.json({
-				success: false,
-				code: 401,
-				message: "reCAPTCHA verification failed. Please try again.",
-			});
-		}
-	}
-
-	try {
-		const contactObject = new ContactUs({
-			firstName: firstName,
-			lastName: lastName,
-			phoneNumber: phoneNumber,
-			email: email,
-			idType: idType,
-			idNumber: idNumber,
-			idExpiry: idExpiry,
-		});
-
-		const storeContactUs = await contactObject.save();
-		if (storeContactUs) {
-			return res.json({
-				success: true,
-				code: 200,
-				message: "We have received your message. Thank you for choosing Doseal",
-			});
-		} else {
-			return res.json({
-				success: false,
-				code: 400,
-				message: "An error occurred while storing your information",
-			});
-		}
-	} catch (error) {
-		Log.info(`[webController.js][postContacUs] error: ${error}`);
-		return res.json({
-			success: false,
-			code: 500,
-			message: "An error occurred while storing your information",
 		});
 	}
 }
@@ -685,7 +434,6 @@ async function createToken(_id) {
 
 module.exports = {
 	postSignup,
-	postInitialSignup,
 	postVerifyAccount,
 	postCompleteRegistration,
 	postSigin,

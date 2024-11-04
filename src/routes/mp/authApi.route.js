@@ -4,6 +4,7 @@ const router = express.Router();
 
 const authApiController = require("../../controllers/v1/auth/AuthApiController");
 const authEmailController = require("../../controllers/v1/auth/AuthEmailController");
+const validator = require("../../helpers/validator-processor")
 
 /**Auth */
 // store device information
@@ -24,12 +25,12 @@ router.post("/complete-registration", authApiController.completeRegistration);
 router.get("/pages/:pageCategory", authApiController.getPageCategory);
 /**Auth */
 
-
 /**auth using email */
 // post signin
 router.post("/email/signin", authEmailController.postSigin);
 // post email verfication
 router.post("/email/verify-code", authEmailController.postVerifyAccount);
-
+// post signup
+router.post("/email/signup", authEmailController.postSignup);
 
 module.exports = router;

@@ -25,14 +25,17 @@ const validateNewsRoom = [
 	body("content").notEmpty().isString().withMessage("Content is required."),
 ];
 
-const validateNotification = [
-	body("title").notEmpty().isString().withMessage("Title is required."),
-	body("image").notEmpty().isString().withMessage("Image is required."),
-	body("excerpt").notEmpty().isString().withMessage("Excerpt is required."),
-	body("content").notEmpty().isString().withMessage("Content is required."),
+
+const validateSignUpWithEmail = [
+	body("firstName").notEmpty().isString().withMessage("First name is required."),
+	body("lastName").notEmpty().isString().withMessage("Last name is required."),
+	body("email").notEmpty().isString().isEmail().withMessage("Email is required is required."),
+	body("phoneNumber").notEmpty().isString().withMessage("Phone number is required."),
 ];
+
 
 module.exports = {
 	validateHelpDesk,
 	validateNewsRoom,
+	validateSignUpWithEmail,
 };
