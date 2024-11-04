@@ -18,6 +18,9 @@ router.post(
 );
 // confirm gen4 code
 router.get("/auth/confirm-code", authGeneralController.getConfirmCode);
+// post confirmation code
+router.post("/auth/confirm-code", authGeneralController.postConfirmCode);
+// post logout
 router.post("/logout", authGeneralController.postLogout);
 
 module.exports = router;

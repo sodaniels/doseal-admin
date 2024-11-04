@@ -12,24 +12,27 @@ const io = require("../../socket");
 
 async function connectAndStartCron() {
 	cron.schedule("*/60 * * * *", async () => {
-		// Check transactions every one hour and check the status after  1 hour
-		Log.info(
-			`[cronJobs.crons.js][connectAndStartCron]\t checking for pending transactions and balance transfer`
-		);
-		try {
-			await getPendingTransactions();
-		} catch (error) {
+		if (process.env.ENVIRONMENT !== "development") {
+			
+			// Check transactions every one hour and check the status after  1 hour
 			Log.info(
-				`[cronJobs.crons.js][connectAndStartCron]\t error getting pending transactions`
+				`[cronJobs.crons.js][connectAndStartCron]\t checking for pending transactions and balance transfer`
 			);
-		}
+			try {
+				await getPendingTransactions();
+			} catch (error) {
+				Log.info(
+					`[cronJobs.crons.js][connectAndStartCron]\t error getting pending transactions`
+				);
+			}
 
-		try {
-			await apiController.postTransferBalance();
-		} catch (error) {
-			Log.info(
-				`[cronJobs.crons.js][connectAndStartCron]\t error getting calling postTransferBalance`
-			);
+			try {
+				await apiController.postTransferBalance();
+			} catch (error) {
+				Log.info(
+					`[cronJobs.crons.js][connectAndStartCron]\t error getting calling postTransferBalance`
+				);
+			}
 		}
 	});
 }

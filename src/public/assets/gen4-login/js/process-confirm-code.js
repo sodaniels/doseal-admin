@@ -1,5 +1,5 @@
 $(document).ready(function () {
-	$("#loginButton").click(function (e) {
+	$("#confirmationButton").click(function (e) {
 		e.preventDefault();
 		$.ajaxSetup({
 			headers: {
@@ -9,54 +9,17 @@ $(document).ready(function () {
 
 		var $button = $(this);
 
-		var countryCode = $("#countryCode").val();
-		var phoneNumber = $("#phoneNumber").val();
+		let code = "";
+		$(".verification-inputs input").each(function () {
+			code += $(this).val();
+		});
 
-		let captchaResponse = grecaptcha.getResponse();
-
-		if (countryCode === "" || countryCode === undefined) {
-			Swal.fire({
-				title: "Select Country",
-				text: "Please select a country",
-				icon: "warning",
-			});
-			return false;
-		}
-
-		if (phoneNumber === "" || phoneNumber === undefined) {
-			Swal.fire({
-				title: "Enter phone number",
-				text: "Please enter the phone number",
-				icon: "warning",
-			});
-			return false;
-		}
-
-		if (phoneNumber.length > 10) {
-			Swal.fire({
-				title: "Check phone number",
-				text: "The phone number must not include the country code",
-				icon: "warning",
-			});
-			return false;
-		}
-
-		if (captchaResponse === "" || captchaResponse === undefined) {
-			Swal.fire({
-				title: "Missing Security Response",
-				text: "Please select the checkbox to indicate you are a human",
-				icon: "warning",
-			});
-			return false;
-		}
+		var phoneNumber = localStorage.getItem("phoneNumber");
 
 		const userData = {
-			countryCode: countryCode,
+			code: code,
 			phoneNumber: phoneNumber,
-			"g-recaptcha-response": captchaResponse,
 		};
-
-		console.log(userData);
 
 		$("#loadingOverlay").css("display", "flex");
 
@@ -64,7 +27,7 @@ $(document).ready(function () {
 		$(this).text("Authenticating...");
 
 		jQuery.ajax({
-			url: "../../authentate/login",
+			url: "../../auth/confirm-code",
 			method: "post",
 			data: userData,
 
@@ -94,16 +57,8 @@ $(document).ready(function () {
 
 				if (result.code === 401) {
 					Swal.fire({
-						title: "Security Check !!",
-						text: "Please click the 'I'm not a robot checkbox' to proceed",
-						icon: "warning",
-					});
-					return false;
-				}
-				if (result.code === 403) {
-					Swal.fire({
-						title: "Invalid Credential !!",
-						text: "Invlide email and password combination",
+						title: "Code expired !!",
+						text: "IThe code has expired. Please try signing in again.",
 						icon: "warning",
 					});
 					return false;
@@ -121,15 +76,13 @@ $(document).ready(function () {
 					localStorage.setItem("phoneNumber", result.phoneNumber);
 					window.location.href = "../../auth/confirm-code";
 				} else {
-					if (result.code === 406) {
-						$("#loadingOverlay").css("display", "none");
-						Swal.fire({
-							title: "An error occurred !!",
-							text: "An error occurred. please try again",
-							icon: "warning",
-						});
-						return false;
-					}
+					$("#loadingOverlay").css("display", "none");
+					Swal.fire({
+						title: "An error occurred !!",
+						text: "An error occurred. please try again",
+						icon: "warning",
+					});
+					return false;
 				}
 			},
 		});
@@ -140,8 +93,11 @@ $(document).ready(function () {
 
 	// Function to check if total input length is 6
 	function checkInputLength() {
-		const totalLength = Array.from(inputs).reduce((acc, input) => acc + input.value.length, 0);
-		
+		const totalLength = Array.from(inputs).reduce(
+			(acc, input) => acc + input.value.length,
+			0
+		);
+
 		if (totalLength === 6) {
 			submitButton.disabled = false; // Enable button
 			submitButton.classList.add("btn-enabled"); // Add btn-enabled class
