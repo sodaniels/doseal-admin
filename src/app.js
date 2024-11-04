@@ -28,6 +28,8 @@ const deskDeskRoutes = require("./routes/dashboard/help-desk.route");
 const newsRoomRoutes = require("./routes/dashboard/news-room.route");
 const notificationRoutes = require("./routes/dashboard/notification.route");
 
+const authGeneralRoutes = require("./routes/auth-general/auth.route");
+
 const { connectAndStartCron } = require("./CRONS/cronJobs.crons");
 connectAndStartCron();
 
@@ -133,6 +135,8 @@ app.use((req, res, next) => {
 });
 
 app.use("/", authRoutes);
+
+app.use("/", authGeneralRoutes);
 
 app.use(isAuth);
 
