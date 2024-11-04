@@ -284,6 +284,12 @@ const validateGen4Login= [
 	body("countryCode").notEmpty().isString().withMessage("Counry code is required."),
 ];
 
+const validateGen4ConfirmCode= [
+	body('phoneNumber').notEmpty().withMessage('Phone Number is required'),
+	body('code').notEmpty().withMessage('Code is required'),
+];
+
 module.exports = {
-	validateGen4Login
+	validateGen4Login,
+	validateGen4ConfirmCode,
 };

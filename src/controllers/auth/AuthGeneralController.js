@@ -112,6 +112,7 @@ async function postLogin(req, res) {
 			);
 			return res.status(200).json({
 				success: true,
+				phoneNumber: phoneNumber,
 				message: "SMS_SENT",
 			});
 		}
@@ -127,6 +128,19 @@ async function postLogin(req, res) {
 	}
 }
 
+async function getConfirmCode(req, res) {
+	Log.info(
+		`[AuthGeneralController.js][getConfirmCode] Visitation on confirm code general page with ID ${req.ip}`
+	);
+	return res.render("gen-auth/login", {
+		pageTitle: "Login | Doseal",
+		path: "/login",
+		errors: false,
+		errorMessage: false,
+		csrfToken: req.csrfToken(),
+	});
+}
+
 async function postLogout(req, res, next) {
 	req.session.destroy((err) => {
 		console.log(err);
@@ -137,5 +151,6 @@ async function postLogout(req, res, next) {
 module.exports = {
 	getLogin,
 	postLogin,
+	getConfirmCode,
 	postLogout,
 };
