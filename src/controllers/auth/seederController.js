@@ -30,10 +30,11 @@ const apiUserArray = [
 		total_available: 0,
 		active: true,
 	},
+	
 ];
 
 async function seedApiUserData() {
-	console.log(clientSecret)
+	console.log(clientSecret);
 	try {
 		// Hash the clientSecret for each user in apiUserArray
 		const salt = await bcrypt.genSalt(10);

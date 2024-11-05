@@ -65,8 +65,8 @@ const sessionStore = new MongoDBStore({
 	collection: "sessions",
 });
 
-app.use(oauthSetting);
 
+app.use(oauthSetting);
 
 
 app.use(express.urlencoded({ extended: true }));

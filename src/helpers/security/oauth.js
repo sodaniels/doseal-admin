@@ -8,12 +8,14 @@ require("dotenv").config();
 
 const User = require("../../models/user");
 const ApiUser = require("../../models/apiUser");
+const { Log } = require("../../helpers/Log");
 const {
 	getRedis,
 	setRedis,
 	removeRedis,
 	setRedisWithExpiry,
 } = require("../../helpers/redis");
+const ServiceCode = require("../../constants/serviceCode");
 
 router.use(bodyParser.urlencoded({ extended: false }));
 router.use(bodyParser.json());
@@ -21,9 +23,33 @@ const { decrypt, encrypt } = require("../../helpers/crypt");
 
 // Define the route handler for token generation
 router.post("/oauth/token", async (req, res) => {
-	const { clientId, clientSecret, authCode } = req.body;
-	const decryptAuthCode = decrypt(authCode);
+	let clientSecret, clientId, decryptAuthCode;
+	const { authCode, accessMode } = req.body;
+
+	console.log("req.body: ", req.body);
+
 	try {
+		decryptAuthCode = decrypt(authCode);
+		Log.info(
+			`[oauth.js][accedMode; ${accessMode}][]code decoded ${decryptAuthCode}`
+		);
+	} catch (error) {
+		Log.info(`[oauth.js][accedMode; ${accessMode}] error decoding ${authCode}`);
+		return res.status(500).json({ error: "Server error " + error });
+	}
+
+	Log.info(`[oauth.js][accedMode; ${accessMode}] ${req.ip}`);
+
+	try {
+		if (accessMode === "WEBSITE") {
+			clientSecret = process.env.DOSEAL_WEP_APP_CLIENT_SECRET;
+			clientId = process.env.DOSEAL_WEB_APP_CLIENT_ID;
+		}
+		if (accessMode === "MOBILE_APP") {
+			clientSecret = process.env.DOSEAL_MOBILE_APP_CLIENT_SECRET;
+			clientId = process.env.DOSEAL_MOBILE_APP_CLIENT_ID;
+		}
+
 		const api_user = await ApiUser.findOne({ clientId });
 
 		if (!api_user || !bcrypt.compareSync(clientSecret, api_user.clientSecret)) {
@@ -34,6 +60,8 @@ router.post("/oauth/token", async (req, res) => {
 		if (!user) {
 			return res.status(400).json({ error: "Invalid authorization code" });
 		}
+
+		// console.log("user: " + user)
 
 		// Generate access token
 		const accessToken = jwt.sign({ _id: user._id }, process.env.JWT_TOKEN, {
@@ -52,16 +80,30 @@ router.post("/oauth/token", async (req, res) => {
 			await user.save();
 		}
 
-		res.json({
-			success: true,
-			_id: user._id,
-			firstName: user.firstName ? user.firstName : undefined,
-			lastName: user.lastName ? user.lastName : undefined,
-			phoneNumber: user.phoneNumber ? user.phoneNumber : undefined,
-			status: user.registration ? user.registration.status : undefined,
-			access_token: accessToken,
-		});
+		if (accessMode === "WEBSITE") {
+			res.json({
+				success: true,
+				_id: user._id,
+				firstName: user.firstName ? user.firstName : undefined,
+				lastName: user.lastName ? user.lastName : undefined,
+				phoneNumber: user.phoneNumber ? user.phoneNumber : undefined,
+				status: user.registration ? user.registration.status : undefined,
+				access_token: accessToken,
+			});
+		}
+		if (accessMode === "MOBILE_APP") {
+			return res.json({
+				success: true,
+				_id: user._id,
+				firstName: user.firstName ? user.firstName : undefined,
+				lastName: user.lastName ? user.lastName : undefined,
+				phoneNumber: user.phoneNumber ? user.phoneNumber : undefined,
+				status: user.registration ? user.registration.status : undefined,
+				access_token: accessToken,
+			});
+		}
 	} catch (error) {
+		Log.info(`[oauth.js][accedMode; ${accessMode}] error: ${error}`);
 		return res.status(500).json({ error: "Server error " + error });
 	}
 });

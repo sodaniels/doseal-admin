@@ -95,6 +95,10 @@ const userSchema = new Schema({
 		type: String,
 		required: false,
 	},
+	accessMode: {
+		type: String,
+		required: false,
+	},
 	createdAt: { type: Date, default: Date.now },
 	updatedAt: { type: Date, default: Date.now },
 });

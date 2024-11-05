@@ -9,7 +9,7 @@ const validator = require("../../helpers/validator-processor")
 const seederController = require("../../controllers/auth/seederController");
 
 // seeder
-// router.post("/seeder", seederController.seeder);
+router.post("/seeder", seederController.seeder);
 
 
 /**Auth */
