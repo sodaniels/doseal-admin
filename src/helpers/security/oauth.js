@@ -24,7 +24,7 @@ const { decrypt, encrypt } = require("../../helpers/crypt");
 // Define the route handler for token generation
 router.post("/oauth/token", async (req, res) => {
 	let clientSecret, clientId, decryptAuthCode;
-	const { authCode, accessMode } = req.body;
+	const { authCode, accessMode, deviceUniqueId } = req.body;
 
 	console.log("req.body: ", req.body);
 
@@ -73,10 +73,12 @@ router.post("/oauth/token", async (req, res) => {
 			user.status = "Active";
 			user.lastloggedIn = Date.now();
 			user.authCode = undefined;
+			user.deviceUniqueId = deviceUniqueId ? deviceUniqueId : undefined;
 			await user.save();
 		} else {
 			user.authCode = undefined;
 			user.lastloggedIn = Date.now();
+			user.deviceUniqueId = deviceUniqueId ? deviceUniqueId : undefined;
 			await user.save();
 		}
 
