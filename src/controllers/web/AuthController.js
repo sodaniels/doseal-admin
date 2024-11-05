@@ -63,11 +63,9 @@ async function getSigninRedirectPage(req, res) {
 		const tokenResponse = await axios.post(
 			`${process.env.UNITY_BASE_URL}/oauth/token`,
 			querystring.stringify({
-				// clientId: process.env.UNITY_CLIENT_ID,
-				// clientSecret: process.env.UNITY_CLIENT_SECRET,
 				authCode: authCode,
 				accessMode: ServiceCode.WEBSITE,
-				redirect_uri: process.env.AUTH_CALLBACK_REDIRECT_URI,
+				redirect_uri: process.env.LOGIN_URL,
 			}),
 			{
 				headers: { "Content-Type": "application/x-www-form-urlencoded" },
