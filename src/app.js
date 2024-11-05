@@ -175,7 +175,7 @@ app.use("/", deskDeskRoutes);
 
 app.use("/", notificationRoutes);
 
-app.use("/api/v1/", isWhitelisted, callbackRoutes);
+app.use("/api/v1/", /* isWhitelisted ,*/ callbackRoutes);
 
 
 

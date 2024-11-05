@@ -61,12 +61,14 @@ router.post("/oauth/token", async (req, res) => {
 			return res.status(400).json({ error: "Invalid authorization code" });
 		}
 
-		// console.log("user: " + user)
+		
 
 		// Generate access token
 		const accessToken = jwt.sign({ _id: user._id }, process.env.JWT_TOKEN, {
 			expiresIn: "1h",
 		});
+
+		console.log("accessToken: " + accessToken);
 
 		if (user.registration === "INITIAL") {
 			user.registration = "COMPLETED";
@@ -83,25 +85,26 @@ router.post("/oauth/token", async (req, res) => {
 		}
 
 		if (accessMode === "WEBSITE") {
-			res.json({
-				success: true,
-				_id: user._id,
-				firstName: user.firstName ? user.firstName : undefined,
-				lastName: user.lastName ? user.lastName : undefined,
-				phoneNumber: user.phoneNumber ? user.phoneNumber : undefined,
-				status: user.registration ? user.registration.status : undefined,
-				access_token: accessToken,
-			});
-		}
-		if (accessMode === "MOBILE_APP") {
 			return res.json({
 				success: true,
 				_id: user._id,
 				firstName: user.firstName ? user.firstName : undefined,
 				lastName: user.lastName ? user.lastName : undefined,
 				phoneNumber: user.phoneNumber ? user.phoneNumber : undefined,
-				status: user.registration ? user.registration.status : undefined,
+				status: user.registration ? user.registration : undefined,
 				access_token: accessToken,
+			});
+		}
+		if (accessMode === "MOBILE_APP") {
+			return res.json({
+				success: true,
+				acccess_token: accessToken,
+				_id: user._id,
+				firstName: user.firstName ? user.firstName : undefined,
+				lastName: user.lastName ? user.lastName : undefined,
+				phoneNumber: user.phoneNumber ? user.phoneNumber : undefined,
+				status: user.registration ? user.registration : undefined,
+				nameFromTelco: user.nameFromTelco ? user.nameFromTelco : undefined,
 			});
 		}
 	} catch (error) {
