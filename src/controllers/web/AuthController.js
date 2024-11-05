@@ -104,7 +104,7 @@ async function getSigninRedirectPage(req, res) {
 			req.session.user = iUser;
 			req.session.lastloggedIn = Date.now();
 
-			return res.redirect("pay-bills");
+			return res.redirect("../pay-bills");
 		} else {
 			return res.json({
 				success: false,

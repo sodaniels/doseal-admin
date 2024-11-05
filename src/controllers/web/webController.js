@@ -254,7 +254,9 @@ async function postServiceSearch(req, res) {
 	}
 
 	const tokenObject = req.cookies.jwt;
-	const token = tokenObject.acccess_token;
+	const token = tokenObject;
+
+	console.log("tokenObject: " + tokenObject);
 
 	try {
 		switch (type) {
@@ -348,7 +350,7 @@ async function postTransactionInitiate(req, res) {
 	}
 
 	const tokenObject = req.cookies.jwt;
-	const token = tokenObject.acccess_token;
+	const token = tokenObject;
 
 	try {
 		Log.info(
@@ -423,7 +425,7 @@ async function postTransactionExecute(req, res) {
 	}
 
 	const tokenObject = req.cookies.jwt;
-	const token = tokenObject.acccess_token;
+	const token = tokenObject;
 
 	try {
 		Log.info(
@@ -499,7 +501,7 @@ async function postServiceDataSearch(req, res) {
 	}
 
 	const tokenObject = req.cookies.jwt;
-	const token = tokenObject.acccess_token;
+	const token = tokenObject;
 
 	try {
 		Log.info(
@@ -580,7 +582,7 @@ async function postUtilityServiceSearch(req, res) {
 	}
 
 	const tokenObject = req.cookies.jwt;
-	const token = tokenObject.acccess_token;
+	const token = tokenObject;
 
 	try {
 		inputData = {
@@ -656,7 +658,7 @@ async function postSearchGhanaWater(req, res) {
 	}
 
 	const tokenObject = req.cookies.jwt;
-	const token = tokenObject.acccess_token;
+	const token = tokenObject;
 
 	try {
 		inputData = {
