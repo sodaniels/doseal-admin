@@ -255,7 +255,7 @@ async function postConfirmCode(req, res) {
 			await removeRedis(`otp_token_${q}`);
 
 			const authCode = crypto.randomBytes(20).toString("hex");
-			
+
 			Log.info(
 				`[AuthGeneralController.js][postConfirmCode]${authCode}]\t .. systeUser: ${authCode}`
 			);
@@ -264,11 +264,10 @@ async function postConfirmCode(req, res) {
 			if (user.isModified()) {
 				await user.save();
 			}
-
 			return res.json({
 				success: true,
 				code: 200,
-				authCode: authCode,
+				authCode: encrypt(authCode),
 			});
 		} else {
 			Log.info(

@@ -17,10 +17,12 @@ const {
 
 router.use(bodyParser.urlencoded({ extended: false }));
 router.use(bodyParser.json());
+const { decrypt, encrypt } = require("../../helpers/crypt");
 
 // Define the route handler for token generation
 router.post("/oauth/token", async (req, res) => {
 	const { clientId, clientSecret, authCode } = req.body;
+	const decryptAuthCode = decrypt(authCode);
 	try {
 		const api_user = await ApiUser.findOne({ clientId });
 
@@ -28,7 +30,7 @@ router.post("/oauth/token", async (req, res) => {
 			return res.status(200).json({ code: 401, message: "Unauthorized" });
 		}
 
-		let user = await User.findOne({ authCode: authCode });
+		let user = await User.findOne({ authCode: decryptAuthCode });
 		if (!user) {
 			return res.status(400).json({ error: "Invalid authorization code" });
 		}
