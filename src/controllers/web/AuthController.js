@@ -65,18 +65,19 @@ async function getSigninRedirectPage(req, res) {
 			querystring.stringify({
 				authCode: authCode,
 				accessMode: ServiceCode.WEBSITE,
-				redirect_uri: process.env.LOGIN_URL,
+				redirect_uri: process.env.AUTH_CALLBACK_REDIRECT_URI,
 			}),
 			{
 				headers: { "Content-Type": "application/x-www-form-urlencoded" },
 			}
 		);
 
-
 		const response = tokenResponse.data;
-	
 
 		if (response.success) {
+			Log.info(
+				`[AuthController.js][getSigninRedirectPage] login successful ${req.ip}`
+			);
 			res.cookie("jwt", response.access_token, {
 				httpOnly: true,
 				secure: true,
@@ -97,6 +98,11 @@ async function getSigninRedirectPage(req, res) {
 
 			return res.redirect("../pay-bills");
 		} else {
+			Log.info(
+				`[AuthController.js][getSigninRedirectPage] login failed ${JSON.stringify(
+					response
+				)}`
+			);
 			return res.redirect(`${process.env.LOGIN_URL}`);
 		}
 	} catch (error) {}
