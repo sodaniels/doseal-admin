@@ -74,7 +74,7 @@ async function getSigninRedirectPage(req, res) {
 			querystring.stringify({
 				clientId: process.env.UNITY_CLIENT_ID,
 				clientSecret: process.env.UNITY_CLIENT_SECRET,
-				code: authCode,
+				authCode: authCode,
 				redirect_uri: process.env.AUTH_CALLBACK_REDIRECT_URI,
 			}),
 			{
