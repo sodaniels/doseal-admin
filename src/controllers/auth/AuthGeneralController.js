@@ -174,7 +174,7 @@ async function postConfirmCode(req, res) {
 				`[AuthGeneralController.js][postConfirmCode][${phoneNumber}]${code}]\t .. code confirmed`
 			);
 			// remove redis code after verification
-			// await removeRedis(`otp_token_${q}`);
+			await removeRedis(`otp_token_${q}`);
 
 			const authCode = crypto.randomBytes(20).toString("hex");
 

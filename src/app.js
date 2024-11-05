@@ -51,7 +51,6 @@ const ensureAuthenticated = require("./Middleware/ensureAuthenticated");
 
 
 
-
 const router = express.Router();
 const app = express();
 
@@ -68,7 +67,7 @@ const sessionStore = new MongoDBStore({
 
 app.use(oauthSetting);
 
-const csrfProtection = csrf();
+
 
 app.use(express.urlencoded({ extended: true }));
 
@@ -130,7 +129,7 @@ app.use(
 app.use("/", newsRoomRoutes);
 app.use("/", expensesRoutes);
 
-app.use(csrfProtection);
+
 
 app.use((req, res, next) => {
 	res.setHeader("Access-Control-Allow-Origin", "*");
@@ -141,6 +140,10 @@ app.use((req, res, next) => {
 	res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
 	next();
 });
+
+
+const csrfProtection = csrf();
+app.use(csrfProtection);
 
 app.use("/", authRoutes);
 
