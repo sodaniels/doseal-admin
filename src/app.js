@@ -104,10 +104,10 @@ app.get("/logout", (req, res) => {
 	req.session.destroy((err) => {
 		if (err) {
 			console.error(err);
-			return res.redirect("/pay-bills");
+			return res.redirect("../pay-bills");
 		}
 		res.clearCookie("connect.sid");
-		res.redirect("/login");
+		res.redirect("../pay-bills");
 	});
 });
 

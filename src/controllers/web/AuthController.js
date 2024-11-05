@@ -14,6 +14,7 @@ const { Hash } = require("../../helpers/hash");
 const apiErrors = require("../../helpers/errors/errors");
 const errorMessages = require("../../helpers/error-messages");
 const { handleValidationErrors } = require("../../helpers/validationHelper");
+const ServiceCode = require("../../constants/serviceCode");
 const {
 	postEmail,
 } = require("../../services/mailers/sendEmailForLoginService");
@@ -50,17 +51,7 @@ async function getSigninPage(req, res) {
 	Log.info(
 		`[AuthController.js][getSigninPage] Visitation on Sign In page ${req.ip}`
 	);
-
 	return res.redirect(process.env.LOGIN_URL);
-	// return res.render("web/auth/signin", {
-	// 	pageTitle: "Doseal Limited | Sign In",
-	// 	path: "/signin",
-	// 	errors: false,
-	// 	errorMessage: false,
-	// 	SITE_KEY: process.env.SITE_KEY,
-	// 	captcha: recaptcha.render(),
-	// 	csrfToken: req.csrfToken(),
-	// });
 }
 async function getSigninRedirectPage(req, res) {
 	Log.info(
@@ -72,9 +63,10 @@ async function getSigninRedirectPage(req, res) {
 		const tokenResponse = await axios.post(
 			`${process.env.UNITY_BASE_URL}/oauth/token`,
 			querystring.stringify({
-				clientId: process.env.UNITY_CLIENT_ID,
-				clientSecret: process.env.UNITY_CLIENT_SECRET,
+				// clientId: process.env.UNITY_CLIENT_ID,
+				// clientSecret: process.env.UNITY_CLIENT_SECRET,
 				authCode: authCode,
+				accessMode: ServiceCode.WEBSITE,
 				redirect_uri: process.env.AUTH_CALLBACK_REDIRECT_URI,
 			}),
 			{
@@ -83,7 +75,7 @@ async function getSigninRedirectPage(req, res) {
 		);
 
 		const response = tokenResponse.data;
-		console.log("tokenResponse: ", response);
+		// console.log("tokenResponse: ", response);
 
 		if (response.success) {
 			res.cookie("jwt", response.access_token, {
@@ -106,10 +98,7 @@ async function getSigninRedirectPage(req, res) {
 
 			return res.redirect("../pay-bills");
 		} else {
-			return res.json({
-				success: false,
-				code: 500,
-			});
+			return res.redirect(`${process.env.LOGIN_URL}`);
 		}
 	} catch (error) {}
 }
