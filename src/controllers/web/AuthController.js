@@ -105,7 +105,13 @@ async function getSigninRedirectPage(req, res) {
 			);
 			return res.redirect(`${process.env.LOGIN_URL}`);
 		}
-	} catch (error) {}
+	} catch (error) {
+		Log.info(
+			`[AuthController.js][getSigninRedirectPage] login failed ${JSON.stringify(
+				error
+			)}`
+		);
+	}
 }
 async function postInitiateSigin(req, res) {
 	let codeSentViaEmail, user, storeUser;

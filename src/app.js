@@ -49,9 +49,9 @@ app.use(
 		resave: false,
 		saveUninitialized: false,
 		store: sessionStore,
-		cookie: {
-			secure: process.env.ENVIRONMENT === "development" ? false : true,
-		},
+		// cookie: {
+		// 	secure: process.env.ENVIRONMENT === "development" ? false : true,
+		// },
 	})
 );
 
