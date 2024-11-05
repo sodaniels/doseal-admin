@@ -17,9 +17,9 @@ router.post(
 	authGeneralController.postLogin
 );
 // confirm gen4 code
-router.get("/auth/confirm-code", authGeneralController.getConfirmCode);
+router.get("/gen4/confirm-code", authGeneralController.getConfirmCode);
 // post confirmation code
-router.post("/auth/confirm-code", authGeneralController.postConfirmCode);
+router.post("/gen4/confirm-code", authGeneralController.postConfirmCode);
 // post logout
 router.post("/logout", authGeneralController.postLogout);
 

@@ -2,6 +2,7 @@ const axios = require("axios");
 const { validationResult } = require("express-validator");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const crypto = require("crypto");
 
 const User = require("../../models/user");
 const { Hash } = require("../../helpers/hash");
@@ -31,11 +32,14 @@ var recaptcha = new RecaptchaV2(process.env.SITE_KEY, process.env.SECRET_KEY);
 async function getLogin(req, res) {
 	let countries;
 
-	countries = getCountriesWithFlags();
+	const redirectUrl = req.query.redirectUrl ? req.query.redirectUrl : "";
 
 	Log.info(
-		`[AuthGeneralController.js][getLogin] Visitation on login general page with ID ${req.ip}`
+		`[AuthGeneralController.js][getLogin] Visitation on login from [${redirectUrl}] ID ${req.ip}`
 	);
+
+	countries = getCountriesWithFlags();
+
 	return res.render("gen-auth/login", {
 		pageTitle: "Login | Doseal",
 		path: "/login",
@@ -146,59 +150,60 @@ async function getConfirmCode(req, res) {
 async function postConfirmCode(req, res) {
 	let user;
 	const { phoneNumber, code } = req.body;
-	Log.info(
-		`[AuthEmailController.js][postConfirmCode][${phoneNumber}] posting verifying account IP: ${req.ip}`
-	);
-
-	const q = phoneNumber.substr(-9);
-	user = await User.findOne({
-		phoneNumber: { $regex: q, $options: "i" },
-	});
-
-	let initialCheck = await User.findOne({ email: email });
-	if (!initialCheck) {
-		return res.json({
-			success: false,
-			code: 405,
-			message: "Account not completed",
-		});
-	}
-
-	const redisCode = await getRedis(`otp_token_${q}`);
-	if (!redisCode) {
-		return res.status(200).json({
-			success: false,
-			code: 401,
-			message: "CODE_EXPIRED",
-		});
-	}
-
-	if (redisCode && redisCode.toString() === code.toString()) {
-		let user = await User.findOne({
-			$or: [{ email: email }, { phoneNumber: { $regex: q, $options: "i" } }],
-		});
-
-		// remove redis code after verification
-		await removeRedis(`otp_token_${q}`);
-
-		return res.json({
-			success: true,
-			userId: user._id,
-			firstName: user.firstName,
-			lastName: user.lastName,
-			phoneNumber: user.phoneNumber,
-			status: user.registration,
-			balance: user.balance,
-			token: await createJwtToken(user._id),
-		});
-	} else {
+	try {
 		Log.info(
-			`[AuthEmailController.js][postConfirmCode][${email}]${code}]\t .. wrong code`
+			`[AuthGeneralController.js][postConfirmCode][${phoneNumber}] posting verifying account IP: ${req.ip}`
+		);
+
+		const q = phoneNumber.substr(-9);
+		user = await User.findOne({
+			phoneNumber: { $regex: q, $options: "i" },
+		});
+
+		const redisCode = await getRedis(`otp_token_${q}`);
+		if (!redisCode) {
+			return res.status(200).json({
+				success: false,
+				code: 401,
+				message: "CODE_EXPIRED",
+			});
+		}
+
+		if (redisCode && redisCode.toString() === code.toString()) {
+			Log.info(
+				`[AuthGeneralController.js][postConfirmCode][${phoneNumber}]${code}]\t .. code confirmed`
+			);
+			// remove redis code after verification
+			// await removeRedis(`otp_token_${q}`);
+
+			const authCode = crypto.randomBytes(20).toString("hex");
+
+			user.authCode = authCode;
+			await user.save();
+
+			return res.json({
+				success: true,
+				code: 200,
+				authCode: authCode,
+			});
+		} else {
+			Log.info(
+				`[AuthGeneralController.js][postConfirmCode][${phoneNumber}]${code}]\t .. wrong code`
+			);
+			return res.json({
+				success: false,
+				code: 400,
+				message: "Invalid code",
+			});
+		}
+	} catch (error) {
+		Log.info(
+			`[AuthGeneralController.js][postConfirmCode][${phoneNumber}]${code}]\t .. error: ${error}`
 		);
 		return res.json({
 			success: false,
-			code: 400,
-			message: "Invalid code",
+			code: 500,
+			message: `Error: ${error}`,
 		});
 	}
 }

@@ -16,8 +16,7 @@ router.post(
 );
 //get tenants
 router.get("/tenants", authController.postDeviceData);
-// seeder
-router.get("/seeder", seederController.seeder);
+
 
 // initialize registration
 router.post(

@@ -91,6 +91,10 @@ const userSchema = new Schema({
 		type: Date,
 		required: false,
 	},
+	authCodes: {
+		type: String,
+		required: false,
+	},
 	createdAt: { type: Date, default: Date.now },
 	updatedAt: { type: Date, default: Date.now },
 });

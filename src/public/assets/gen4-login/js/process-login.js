@@ -50,11 +50,18 @@ $(document).ready(function () {
 			return false;
 		}
 
+		var urlParams = new URLSearchParams(window.location.search);
+		var redirectUrl = urlParams.get('redirectUrl');
+
 		const userData = {
 			countryCode: countryCode,
 			phoneNumber: phoneNumber,
+			redirectUrl: redirectUrl,
 			"g-recaptcha-response": captchaResponse,
 		};
+
+		localStorage.setItem("phoneNumber", userData.phoneNumber);
+		localStorage.setItem("redirectUrl", redirectUrl);
 
 		console.log(userData);
 
@@ -119,7 +126,7 @@ $(document).ready(function () {
 
 				if (result.code === 200) {
 					localStorage.setItem("phoneNumber", result.phoneNumber);
-					window.location.href = "../../auth/confirm-code";
+					window.location.href = "../../gen4/confirm-code";
 				} else {
 					if (result.code === 406) {
 						$("#loadingOverlay").css("display", "none");

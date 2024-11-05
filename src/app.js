@@ -30,6 +30,8 @@ const notificationRoutes = require("./routes/dashboard/notification.route");
 
 const authGeneralRoutes = require("./routes/auth-general/auth.route");
 
+const oauthSetting = require("./helpers/security/oauth");
+
 const { connectAndStartCron } = require("./CRONS/cronJobs.crons");
 connectAndStartCron();
 
@@ -41,10 +43,14 @@ const isWhitelisted = require("./Middleware/is-whitelisted-IP");
 
 const passportJwt = require("./helpers/passport-jwt");
 
+
 const isAuth = require("./Middleware/is-auth");
 const errorHandler = require("./Middleware/errorMiddleware");
 const { Log } = require("./helpers/Log");
 const ensureAuthenticated = require("./Middleware/ensureAuthenticated");
+
+
+
 
 const router = express.Router();
 const app = express();
@@ -59,6 +65,8 @@ const sessionStore = new MongoDBStore({
 	uri: `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@${process.env.DB_CLUSTER}.mongodb.net/${process.env.DB_NAME}?retryWrites=true&w=majority`,
 	collection: "sessions",
 });
+
+app.use(oauthSetting);
 
 const csrfProtection = csrf();
 
@@ -165,6 +173,8 @@ app.use("/", deskDeskRoutes);
 app.use("/", notificationRoutes);
 
 app.use("/api/v1/", isWhitelisted, callbackRoutes);
+
+
 
 // error handling middleware
 app.use(errorHandler);

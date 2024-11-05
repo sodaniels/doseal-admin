@@ -27,7 +27,7 @@ $(document).ready(function () {
 		$(this).text("Authenticating...");
 
 		jQuery.ajax({
-			url: "../../auth/confirm-code",
+			url: "../../gen4/confirm-code",
 			method: "post",
 			data: userData,
 
@@ -54,11 +54,20 @@ $(document).ready(function () {
 					});
 					return false;
 				}
+				if (result.code === 400) {
+					Swal.fire({
+						title: "Invalid Code !!",
+						text: "The code you entered is not valid. Please check for the right code.",
+						icon: "warning",
+					});
+					document.getElementById("processSignupForm").reset();
+					return false;
+				}
 
 				if (result.code === 401) {
 					Swal.fire({
 						title: "Code expired !!",
-						text: "IThe code has expired. Please try signing in again.",
+						text: "The code has expired. Please try signing in again.",
 						icon: "warning",
 					});
 					return false;
@@ -73,8 +82,13 @@ $(document).ready(function () {
 				}
 
 				if (result.code === 200) {
-					localStorage.setItem("phoneNumber", result.phoneNumber);
-					window.location.href = "../../auth/confirm-code";
+					console.log(JSON.stringify(result));
+					const redirectUrl = localStorage.getItem("redirectUrl");
+
+					localStorage.removeItem("phoneNumber");
+					localStorage.removeItem("redirectUrl");
+
+					window.location.href = `${redirectUrl}?code=${result.authCode}`;
 				} else {
 					$("#loadingOverlay").css("display", "none");
 					Swal.fire({
@@ -137,14 +151,4 @@ function displayErrors(errors) {
 		})
 		.join("\n");
 	return errorMessages;
-}
-
-if (phoneNumber.length >= 9) {
-	$("#loginButton")
-		.prop("disabled", false) // Enable the button
-		.addClass("btn-enabled"); // Add enabled class
-} else {
-	$("#loginButton")
-		.prop("disabled", true) // Disable the button
-		.removeClass("btn-enabled"); // Remove enabled class
 }

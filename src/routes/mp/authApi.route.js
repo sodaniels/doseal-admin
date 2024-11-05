@@ -6,6 +6,12 @@ const authApiController = require("../../controllers/v1/auth/AuthApiController")
 const authEmailController = require("../../controllers/v1/auth/AuthEmailController");
 const validator = require("../../helpers/validator-processor")
 
+const seederController = require("../../controllers/auth/seederController");
+
+// seeder
+// router.post("/seeder", seederController.seeder);
+
+
 /**Auth */
 // store device information
 router.post("/device/information/store", authApiController.postDeviceData);
