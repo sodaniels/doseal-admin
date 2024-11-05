@@ -12,6 +12,8 @@ const validator = require("../../helpers/validator-processor");
 router.get("/signup", authController.getRegistrationPage);
 //sign in
 router.get("/signin", authController.getSigninPage);
+//get login redirect page
+router.get("/login/redirect", authController.getSigninRedirectPage);
 //post initiate signin
 router.post("/initiate-signin", authController.postInitiateSigin);
 router.post(

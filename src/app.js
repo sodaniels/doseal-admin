@@ -11,7 +11,6 @@ const MongoDBStore = require("connect-mongodb-session")(session);
 const cookieParser = require("cookie-parser");
 const csrf = require("@dr.pogodin/csurf");
 
-
 const websiteRoutes = require("./routes/web/website.route");
 
 const protectedRoutes = require("./routes/web/protected.route");
@@ -27,7 +26,7 @@ const router = express.Router();
 const app = express();
 
 app.use(cookieParser());
-app.set('trust proxy', true);
+app.set("trust proxy", true);
 
 app.use(express.static(path.join(__dirname, "public")));
 
@@ -64,9 +63,9 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use((req, res, next) => {
 	res.locals.isAuthenticated = req.session.isLoggedIn;
+	res.locals.loginUrl = process.env.LOGIN_URL;;
 	next();
 });
-
 
 // Auto logout middleware
 app.use((req, res, next) => {
@@ -107,8 +106,8 @@ app.get("/logout", (req, res) => {
 			console.error(err);
 			return res.redirect("/pay-bills");
 		}
-		res.clearCookie("connect.sid"); 
-		res.redirect("/login"); 
+		res.clearCookie("connect.sid");
+		res.redirect("/login");
 	});
 });
 

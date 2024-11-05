@@ -3,6 +3,7 @@ const { validationResult } = require("express-validator");
 const { has, result } = require("lodash");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const querystring = require("querystring");
 
 const { Log } = require("../../helpers/Log");
 const User = require("../../models/user");
@@ -31,35 +32,87 @@ const { RecaptchaV2 } = require("express-recaptcha");
 var recaptcha = new RecaptchaV2(process.env.SITE_KEY, process.env.SECRET_KEY);
 
 async function getRegistrationPage(req, res) {
-	Log.info(
-		`[AuthController.js][getRegistrationPage]Visitation on Sign Up page ${req.ip}`
-	);
-	return res.render("web/auth/signup", {
-		pageTitle: "Doseal Limited | Signup",
-		path: "/signup",
-		errors: false,
-		errorMessage: false,
-		SITE_KEY: process.env.SITE_KEY,
-		captcha: recaptcha.render(),
-		csrfToken: req.csrfToken(),
-	});
+	// Log.info(
+	// 	`[AuthController.js][getRegistrationPage]Visitation on Sign Up page ${req.ip}`
+	// );
+	// return res.render("web/auth/signup", {
+	// 	pageTitle: "Doseal Limited | Signup",
+	// 	path: "/signup",
+	// 	errors: false,
+	// 	errorMessage: false,
+	// 	SITE_KEY: process.env.SITE_KEY,
+	// 	captcha: recaptcha.render(),
+	// 	csrfToken: req.csrfToken(),
+	// });
 }
 
 async function getSigninPage(req, res) {
 	Log.info(
 		`[AuthController.js][getSigninPage] Visitation on Sign In page ${req.ip}`
 	);
-	return res.render("web/auth/signin", {
-		pageTitle: "Doseal Limited | Sign In",
-		path: "/signin",
-		errors: false,
-		errorMessage: false,
-		SITE_KEY: process.env.SITE_KEY,
-		captcha: recaptcha.render(),
-		csrfToken: req.csrfToken(),
-	});
-}
 
+	return res.redirect(process.env.LOGIN_URL);
+	// return res.render("web/auth/signin", {
+	// 	pageTitle: "Doseal Limited | Sign In",
+	// 	path: "/signin",
+	// 	errors: false,
+	// 	errorMessage: false,
+	// 	SITE_KEY: process.env.SITE_KEY,
+	// 	captcha: recaptcha.render(),
+	// 	csrfToken: req.csrfToken(),
+	// });
+}
+async function getSigninRedirectPage(req, res) {
+	Log.info(
+		`[AuthController.js][getSigninRedirectPage] on the way to get token e ${req.ip}`
+	);
+	const authCode = req.query.code;
+
+	try {
+		const tokenResponse = await axios.post(
+			`${process.env.UNITY_BASE_URL}/oauth/token`,
+			querystring.stringify({
+				clientId: process.env.UNITY_CLIENT_ID,
+				clientSecret: process.env.UNITY_CLIENT_SECRET,
+				code: authCode,
+				redirect_uri: process.env.AUTH_CALLBACK_REDIRECT_URI,
+			}),
+			{
+				headers: { "Content-Type": "application/x-www-form-urlencoded" },
+			}
+		);
+
+		const response = tokenResponse.data;
+		console.log("tokenResponse: ", response);
+
+		if (response.success) {
+			res.cookie("jwt", response.access_token, {
+				httpOnly: true,
+				secure: true,
+				maxAge: 2 * 60 * 60 * 1000,
+			});
+
+			const iUser = {
+				_id: response._id,
+				firstName: response.firstName,
+				lastName: response.lastName,
+				phoneNumber: response.phoneNumber,
+				email: response.email,
+			};
+
+			req.session.isLoggedIn = true;
+			req.session.user = iUser;
+			req.session.lastloggedIn = Date.now();
+
+			return res.redirect("pay-bills");
+		} else {
+			return res.json({
+				success: false,
+				code: 500,
+			});
+		}
+	} catch (error) {}
+}
 async function postInitiateSigin(req, res) {
 	let codeSentViaEmail, user, storeUser;
 	Log.info(
@@ -217,7 +270,6 @@ async function processEmail(user, email, res) {
 		});
 	}
 }
-
 
 async function postInitialSignup(req, res) {
 	let codeSentViaEmail, uncompletedUser, storeUser;
@@ -656,4 +708,5 @@ module.exports = {
 	postCompleteRegistration,
 	getSigninPage,
 	postInitiateSigin,
+	getSigninRedirectPage,
 };
