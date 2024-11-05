@@ -72,8 +72,9 @@ async function getSigninRedirectPage(req, res) {
 			}
 		);
 
+
 		const response = tokenResponse.data;
-		// console.log("tokenResponse: ", response);
+	
 
 		if (response.success) {
 			res.cookie("jwt", response.access_token, {
