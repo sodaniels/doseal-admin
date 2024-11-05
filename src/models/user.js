@@ -91,7 +91,7 @@ const userSchema = new Schema({
 		type: Date,
 		required: false,
 	},
-	authCodes: {
+	authCode: {
 		type: String,
 		required: false,
 	},

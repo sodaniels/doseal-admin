@@ -60,7 +60,6 @@ $(document).ready(function () {
 			"g-recaptcha-response": captchaResponse,
 		};
 
-		localStorage.setItem("phoneNumber", userData.phoneNumber);
 		localStorage.setItem("redirectUrl", redirectUrl);
 
 		console.log(userData);

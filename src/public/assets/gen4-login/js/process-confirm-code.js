@@ -84,11 +84,13 @@ $(document).ready(function () {
 				if (result.code === 200) {
 					console.log(JSON.stringify(result));
 					const redirectUrl = localStorage.getItem("redirectUrl");
+					const url = `${redirectUrl}?code=${result.authCode}`;
+					console.log("going to " + url);
+					
+					window.location.href = url;
 
-					localStorage.removeItem("phoneNumber");
 					localStorage.removeItem("redirectUrl");
-
-					window.location.href = `${redirectUrl}?code=${result.authCode}`;
+					localStorage.removeItem("phoneNumber");
 				} else {
 					$("#loadingOverlay").css("display", "none");
 					Swal.fire({

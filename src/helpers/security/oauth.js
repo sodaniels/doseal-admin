@@ -34,14 +34,21 @@ router.post("/oauth/token", async (req, res) => {
 		}
 
 		// Generate access token
-		const accessToken = jwt.sign(
-			{ _id: user._id },
-			process.env.JWT_TOKEN,
-			{ expiresIn: "1h" }
-		);
+		const accessToken = jwt.sign({ _id: user._id }, process.env.JWT_TOKEN, {
+			expiresIn: "1h",
+		});
 
-		user.lastloggedIn = Date.now();
-		await user.save();
+		if (user.registration === "INITIAL") {
+			user.registration = "COMPLETED";
+			user.status = "Active";
+			user.lastloggedIn = Date.now();
+			user.authCode = undefined;
+			await user.save();
+		} else {
+			user.authCode = undefined;
+			user.lastloggedIn = Date.now();
+			await user.save();
+		}
 
 		res.json({
 			success: true,

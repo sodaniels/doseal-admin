@@ -23,6 +23,10 @@ const {
 	setRedisWithExpiry,
 } = require("../../helpers/redis");
 const { decrypt, encrypt } = require("../../helpers/crypt");
+const StringFunctions = require("../../helpers/stringFunctions");
+const stringFunctions = new StringFunctions();
+const RestServices = require("../../services/api/RestServices");
+const restServices = new RestServices();
 
 const Admin = require("../../models/admin.model");
 
@@ -53,7 +57,14 @@ async function getLogin(req, res) {
 }
 
 async function postLogin(req, res) {
-	let user, phoneNumber;
+	let hubtelMSISDNResponse,
+		registeredFirstName,
+		registeredLastName,
+		registeredName,
+		nameFromTelco,
+		AcountStatus,
+		user,
+		phoneNumber;
 
 	Log.info(
 		`[AuthGeneralController.js][postSignin] \t initiating.. post request to login`
@@ -86,6 +97,67 @@ async function postLogin(req, res) {
 	user = await User.findOne({
 		phoneNumber: { $regex: q, $options: "i" },
 	});
+
+	if (!user) {
+		try {
+			Log.info(
+				`[AuthGeneralController.js][postLogin][${phoneNumber}] \t  quering MSISDN ********************************  `
+			);
+			hubtelMSISDNResponse = await restServices.postHubtelMSISDNSearchService(
+				phoneNumber
+			);
+			if (
+				hubtelMSISDNResponse &&
+				hubtelMSISDNResponse.ResponseCode === "0000"
+			) {
+				const responseData = hubtelMSISDNResponse.Data[0];
+				const splitNames = stringFunctions.split_name(responseData.Value);
+				registeredFirstName = splitNames[0];
+				registeredLastName = splitNames[1];
+				registeredName =
+					registeredFirstName || registeredLastName
+						? registeredFirstName + " " + registeredLastName
+						: undefined;
+				nameFromTelco =
+					registeredFirstName || registeredLastName ? true : false;
+			}
+
+			Log.info(
+				`[AuthGeneralController.js][postSignin][${phoneNumber}] \t  MSISDN Response: ${JSON.stringify(
+					hubtelMSISDNResponse
+				)} `
+			);
+		} catch (error) {
+			Log.info(
+				`[AuthGeneralController.js][postSignin][${phoneNumber}] \t  error query MSISDN: ${error}  `
+			);
+		}
+		try {
+			const currentTimeStamp = new Date().getTime();
+			const passwd = await Hash(currentTimeStamp.toString());
+
+			const userData = new User({
+				phoneNumber: phoneNumber,
+				firstName: registeredFirstName ? registeredFirstName : undefined,
+				lastName: registeredLastName ? registeredLastName : undefined,
+				nameFromTelco: registeredLastName || registeredLastName ? true : false,
+				registration: AcountStatus,
+				password: passwd,
+				role: "Subscriber",
+				status: "Inactive",
+			});
+			const storeUser = await userData.save();
+			if (storeUser) {
+				Log.info(
+					`[AuthGeneralController.js][postSignin][${phoneNumber}] \t initial registration successful  `
+				);
+			}
+		} catch (error) {
+			Log.info(
+				`[AuthGeneralController.js][postSignin][${phoneNumber}] \t error saving initial registration  ${error}`
+			);
+		}
+	}
 
 	if (q === "244139937") {
 		pin = "200300";
@@ -150,12 +222,18 @@ async function getConfirmCode(req, res) {
 async function postConfirmCode(req, res) {
 	let user;
 	const { phoneNumber, code } = req.body;
+
+	const q = phoneNumber.substr(-9);
 	try {
 		Log.info(
 			`[AuthGeneralController.js][postConfirmCode][${phoneNumber}] posting verifying account IP: ${req.ip}`
 		);
+		Log.info(
+			`[AuthGeneralController.js][postConfirmCode][${phoneNumber}][${code}] request body: ${JSON.stringify(
+				req.body
+			)}`
+		);
 
-		const q = phoneNumber.substr(-9);
 		user = await User.findOne({
 			phoneNumber: { $regex: q, $options: "i" },
 		});
@@ -177,9 +255,15 @@ async function postConfirmCode(req, res) {
 			await removeRedis(`otp_token_${q}`);
 
 			const authCode = crypto.randomBytes(20).toString("hex");
+			
+			Log.info(
+				`[AuthGeneralController.js][postConfirmCode]${authCode}]\t .. systeUser: ${authCode}`
+			);
 
-			user.authCode = authCode;
-			await user.save();
+			user.authCode = authCode.toString();
+			if (user.isModified()) {
+				await user.save();
+			}
 
 			return res.json({
 				success: true,
