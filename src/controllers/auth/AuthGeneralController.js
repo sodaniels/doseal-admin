@@ -264,6 +264,15 @@ async function postConfirmCode(req, res) {
 			if (user.isModified()) {
 				await user.save();
 			}
+			Log.info(
+				`[AuthGeneralController.js][postConfirmCode][${phoneNumber}]${code}]\t .. response: ${JSON.stringify(
+					{
+						success: true,
+						code: 200,
+						authCode: `********************************************`,
+					}
+				)}`
+			);
 			return res.json({
 				success: true,
 				code: 200,
