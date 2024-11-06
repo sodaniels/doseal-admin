@@ -529,6 +529,7 @@ async function postSignup(req, res) {
 	}
 }
 
+
 async function getVerifyAccount(req, res) {
 	Log.info(
 		`[AuthController.js][getVerifyAccount] Visitation on Verify Account Page page with IP: ${req.ip}`
