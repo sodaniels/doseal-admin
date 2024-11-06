@@ -61,8 +61,6 @@ router.post("/oauth/token", async (req, res) => {
 			return res.status(400).json({ error: "Invalid authorization code" });
 		}
 
-		
-
 		// Generate access token
 		const accessToken = jwt.sign({ _id: user._id }, process.env.JWT_TOKEN, {
 			expiresIn: "1h",
@@ -85,7 +83,20 @@ router.post("/oauth/token", async (req, res) => {
 		}
 
 		if (accessMode === "WEBSITE") {
-			return res.json({
+			Log.info(
+				`[oauth.js][accedMode; ${accessMode}]\ website registration worked \t ${JSON.stringify(
+					{
+						success: true,
+						_id: user._id,
+						firstName: user.firstName ? user.firstName : undefined,
+						lastName: user.lastName ? user.lastName : undefined,
+						phoneNumber: user.phoneNumber ? user.phoneNumber : undefined,
+						status: user.registration ? user.registration : undefined,
+						access_token: `***********************************************`,
+					}
+				)}`
+			);
+			res.json({
 				success: true,
 				_id: user._id,
 				firstName: user.firstName ? user.firstName : undefined,
