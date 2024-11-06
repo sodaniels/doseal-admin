@@ -84,7 +84,7 @@ router.post("/oauth/token", async (req, res) => {
 
 		if (accessMode === "WEBSITE") {
 			Log.info(
-				`[oauth.js][accedMode; ${accessMode}][${deviceUniqueId}]\ website registration worked \t ${JSON.stringify(
+				`[oauth.js][accedMode; ${accessMode}][${deviceUniqueId}]\ website signin worked \t ${JSON.stringify(
 					{
 						success: true,
 						_id: user._id,
@@ -108,7 +108,7 @@ router.post("/oauth/token", async (req, res) => {
 		}
 		if (accessMode === "MOBILE_APP") {
 			Log.info(
-				`[oauth.js][accedMode; ${accessMode}]\ website registration worked \t ${JSON.stringify(
+				`[oauth.js][accedMode; ${accessMode}]\ mobile app signin worked \t ${JSON.stringify(
 					{
 						success: true,
 						_id: user._id,
