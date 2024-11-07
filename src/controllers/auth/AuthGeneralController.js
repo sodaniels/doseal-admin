@@ -105,19 +105,23 @@ async function postLogin(req, res) {
 		});
 	}
 
-	let formattedNumber = validatePhoneNumber(
+	let formattedNumber_raw = validatePhoneNumber(
 		req.body.countryCode,
 		req.body.phoneNumber
 	);
 
-	if (!formattedNumber.valid) {
+	if (!formattedNumber_raw.valid) {
 		return res.json({
 			success: false,
 			code: 402,
 			message: "Invalid phone number",
 		});
 	}
-	phoneNumber = formattedNumber.format;
+
+	let formattedNumber_ = removePlusFromPhoneNumber(formattedNumber_raw.format);
+
+	phoneNumber = "00" + formattedNumber_;
+	console.log("phoneNumber: " + phoneNumber)
 
 	const q = phoneNumber.substr(-9);
 	user = await User.findOne({
@@ -201,13 +205,13 @@ async function postLogin(req, res) {
 		if (q !== "244139937") {
 			response = await sendText(phoneNumber, message);
 		} else {
-			response = true;
+			response = await sendText(phoneNumber, message);
 		}
 
 		Log.info(
 			`[AuthGeneralController.js][postLogin][${phoneNumber}][${pin}][${message}] \t `
 		);
-		if (response) {
+		if (response && response.statusDescription === "request submitted successfully") {
 			Log.info(
 				`[AuthGeneralController.js][postLogin][${phoneNumber}][${pin}][${message}] \t response: ${JSON.stringify(
 					response
@@ -220,6 +224,11 @@ async function postLogin(req, res) {
 				message: "SMS_SENT",
 			});
 		}
+		return res.status(200).json({
+			success: false,
+			code: 400,
+			message: "Error occurred",
+		});
 	} catch (error) {
 		Log.info(
 			`[AuthGeneralController.js][postLogin][${phoneNumber}] \t error sending sms: ${error}`
@@ -331,6 +340,13 @@ async function postLogout(req, res, next) {
 		console.log(err);
 		res.redirect("/login");
 	});
+}
+
+function removePlusFromPhoneNumber(phoneNumber) {
+	if (phoneNumber.startsWith("+")) {
+		return phoneNumber.slice(1);
+	}
+	return phoneNumber;
 }
 
 module.exports = {

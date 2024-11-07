@@ -32,14 +32,14 @@ $(document).ready(function () {
 			return false;
 		}
 
-		if (phoneNumber.length > 10) {
-			Swal.fire({
-				title: "Check phone number",
-				text: "The phone number must not include the country code",
-				icon: "warning",
-			});
-			return false;
-		}
+		// if (phoneNumber.length > 10) {
+		// 	Swal.fire({
+		// 		title: "Check phone number",
+		// 		text: "The phone number must not include the country code",
+		// 		icon: "warning",
+		// 	});
+		// 	return false;
+		// }
 
 		if (captchaResponse === "" || captchaResponse === undefined) {
 			Swal.fire({
