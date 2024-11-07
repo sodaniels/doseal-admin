@@ -14,6 +14,8 @@ router.get("/signup", authController.getRegistrationPage);
 router.get("/signin", authController.getSigninPage);
 //get login redirect page
 router.get("/login/redirect", authController.getSigninRedirectPage);
+// get mobile login redirect page
+router.get("/mobile/redirect", authController.getMobileAppRedirect);
 //post initiate signin
 router.post("/initiate-signin", authController.postInitiateSigin);
 router.post(

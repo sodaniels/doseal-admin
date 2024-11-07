@@ -113,6 +113,24 @@ async function getSigninRedirectPage(req, res) {
 		);
 	}
 }
+
+async function getMobileAppRedirect(req, res) {
+	Log.info(
+		`[AuthController.js][getMobileAppRedirect] making mobile app redirect ${req.ip}`
+	);
+	Log.info(
+		`[AuthController.js][getMobileAppRedirect] redirecting to dosealpay://`
+	);
+	return res.render("web/auth/mobile-redirect", {
+		pageTitle: "Doseal Limited | Redirect",
+		path: "/signup",
+		errors: false,
+		errorMessage: false,
+		SITE_KEY: process.env.SITE_KEY,
+		captcha: recaptcha.render(),
+		csrfToken: req.csrfToken(),
+	});
+}
 async function postInitiateSigin(req, res) {
 	let codeSentViaEmail, user, storeUser;
 	Log.info(
@@ -529,7 +547,6 @@ async function postSignup(req, res) {
 	}
 }
 
-
 async function getVerifyAccount(req, res) {
 	Log.info(
 		`[AuthController.js][getVerifyAccount] Visitation on Verify Account Page page with IP: ${req.ip}`
@@ -710,4 +727,5 @@ module.exports = {
 	getSigninPage,
 	postInitiateSigin,
 	getSigninRedirectPage,
+	getMobileAppRedirect,
 };
