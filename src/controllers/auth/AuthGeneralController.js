@@ -121,7 +121,7 @@ async function postLogin(req, res) {
 	let formattedNumber_ = removePlusFromPhoneNumber(formattedNumber_raw.format);
 
 	phoneNumber = "00" + formattedNumber_;
-	console.log("phoneNumber: " + phoneNumber)
+	console.log("phoneNumber: " + phoneNumber);
 
 	const q = phoneNumber.substr(-9);
 	user = await User.findOne({
@@ -205,13 +205,19 @@ async function postLogin(req, res) {
 		if (q !== "244139937") {
 			response = await sendText(phoneNumber, message);
 		} else {
-			response = true;
+			response = {
+				statusDescription: "request submitted successfully",
+			};
 		}
+		
 
 		Log.info(
 			`[AuthGeneralController.js][postLogin][${phoneNumber}][${pin}][${message}] \t `
 		);
-		if (response && response.statusDescription === "request submitted successfully") {
+		if (
+			response &&
+			response.statusDescription === "request submitted successfully"
+		) {
 			Log.info(
 				`[AuthGeneralController.js][postLogin][${phoneNumber}][${pin}][${message}] \t response: ${JSON.stringify(
 					response
