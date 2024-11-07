@@ -86,11 +86,11 @@ $(document).ready(function () {
 					const redirectUrl = localStorage.getItem("redirectUrl");
 					const url = `${redirectUrl}?code=${result.authCode}`;
 					console.log("going to " + url);
-					
 					window.location.href = url;
+					
 
-					localStorage.removeItem("redirectUrl");
-					localStorage.removeItem("phoneNumber");
+					// localStorage.removeItem("redirectUrl");
+					// localStorage.removeItem("phoneNumber");
 				} else {
 					$("#loadingOverlay").css("display", "none");
 					Swal.fire({

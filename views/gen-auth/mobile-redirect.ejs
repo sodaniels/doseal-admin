@@ -155,8 +155,10 @@
 
 	
         <script type="text/javascript">
+            	var urlParams = new URLSearchParams(window.location.search);
+                var code = urlParams.get('code');
             // Attempt to open the deep link to your app
-            window.location.href = "dosealpay://";
+            window.location.href = `dosealpay://login?code=${code}`;
     
             // Fallback URL if the deep link doesn't work (optional)
             setTimeout(function() {
