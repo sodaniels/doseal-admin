@@ -205,7 +205,7 @@ async function postLogin(req, res) {
 		if (q !== "244139937") {
 			response = await sendText(phoneNumber, message);
 		} else {
-			response = await sendText(phoneNumber, message);
+			response = true;
 		}
 
 		Log.info(
