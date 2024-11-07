@@ -434,8 +434,12 @@ async function postTransactionInitiate(req, res) {
 
 		req.body["transaction_time"] = currentDate;
 
-		req.body["accountName"] = req.body.accountName ? req.body.accountName : undefined;
-		req.body["accountNumber"] = req.body.accountNumber ? req.body.accountNumber : undefined;
+		req.body["accountName"] = req.body.accountName
+			? req.body.accountName
+			: undefined;
+		req.body["accountNumber"] = req.body.accountNumber
+			? req.body.accountNumber
+			: undefined;
 
 		if (req.body.network) {
 			const hubtelResponse = await restServices.postHubtelMSISDNSearchService(
@@ -1680,6 +1684,56 @@ async function postReportFault(req, res) {
 		});
 	}
 }
+// post search telcel postpaid account
+async function postHubtelTelecelPostpaidSearch(req, res) {
+	let hubtelResponse;
+	const validationError = handleValidationErrors(req, res);
+	if (validationError) {
+		const errorRes = await apiErrors.create(
+			errorMessages.errors.API_MESSAGE_DSTV_FAILED,
+			"POST",
+			validationError,
+			undefined
+		);
+		return res.json(errorRes);
+	}
+	try {
+		Log.info(
+			`[ApiController.js][postHubtelTelecelPostpaidSearch]\t incoming telcel postpiad account search request: ` +
+				req.ip
+		);
+
+		hubtelResponse = await restServices.postHubtelTelecelPostpaidSearchService(
+			req.body.accountNumber
+		);
+		if (hubtelResponse) {
+			Log.info(
+				`[ApiController.js][postHubtelTelecelPostpaidSearch]\t hubtelResponse: ` +
+					JSON.stringify(hubtelResponse)
+			);
+
+			if (hubtelResponse.ResponseCode === "0000") {
+				hubtelResponse["success"] = true;
+				return res.json(hubtelResponse);
+			}
+			return res.json(hubtelResponse);
+		}
+		return res.json({
+			success: false,
+			message: ServiceCode.FAILED,
+		});
+	} catch (error) {
+		Log.info(
+			`[ApiController.js][postHubtelTelecelPostpaidSearch]\t error: ` +
+				JSON.stringify(error)
+		);
+		return res.json({
+			success: false,
+			error: error.message,
+			message: ServiceCode.ERROR_OCCURED,
+		});
+	}
+}
 
 module.exports = {
 	getPageCategory,
@@ -1711,4 +1765,5 @@ module.exports = {
 	postTransferBalance,
 	getHelpDesk,
 	postReportFault,
+	postHubtelTelecelPostpaidSearch,
 };

@@ -1289,7 +1289,49 @@ class RestServices {
 			};
 		}
 	}
-
+	// hubtel telecel postpaid bill
+	// post dstv account search service
+	async postHubtelTelecelPostpaidSearchService(accountNumber) {
+		try {
+			const response = await axios.get(
+				`https://cs.hubtel.com/commissionservices/${process.env.HUBTEL_PREPAID_DEPOSTI_ACCOUNT}/${process.env.HUBTEL_TELECEL_POSTPAID_BILLS_SERVICE_ID}?destination=${accountNumber}`,
+				{
+					headers: {
+						Authorization: `Basic ${token()}`,
+						"Content-Type": "application/json",
+					},
+				}
+			);
+			return response.data;
+		} catch (error) {
+			Log.info(
+				`[RestServices.js][postHubtelTelecelPostpaidSearchService] error validating account: ${error.message}`
+			);
+			if (error.response) {
+				Log.info(
+					`[RestServices.js][postHubtelTelecelPostpaidSearchService] response status: ${error.response.status}`
+				);
+				Log.info(
+					`[RestServices.js][postHubtelTelecelPostpaidSearchService] response data: ${JSON.stringify(
+						error.response.data
+					)}`
+				);
+			} else if (error.request) {
+				Log.info(
+					`[RestServices.js][postHubtelTelecelPostpaidSearchService] request: ${error.request}`
+				);
+			} else {
+				Log.info(
+					`[RestServices.js][postHubtelTelecelPostpaidSearchService] unknown error: ${error.message}`
+				);
+			}
+			return {
+				success: false,
+				code: 500,
+				message: error.response.data ? error.response.data : error.response,
+			};
+		}
+	}
 }
 
 function token() {

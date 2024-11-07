@@ -130,5 +130,12 @@ router.post(
 	validator.validateReportFault,
 	apiController.postReportFault
 );
+// search telcel postbill account
+router.post(
+	"/search-telecel-postpaid-bills",
+	validator.validateUtilitySearch,
+	apiController.postHubtelTelecelPostpaidSearch
+);
+
 
 module.exports = router;
