@@ -4,7 +4,7 @@
       "details": [
         {
           "appID": "9QSXCVQH34.com.dosealpay",
-          "paths": ["/login"]
+          "paths": ["/login", "auth/*", "auth/login/"]
         }
       ]
     }
