@@ -56,6 +56,32 @@ async function getLogin(req, res) {
 	});
 }
 
+async function getMobileRedirect(req, res) {
+	let countries;
+
+	const redirectUrl = req.query.redirectUrl ? req.query.redirectUrl : "";
+
+	Log.info(
+		`[AuthGeneralController.js][getLogin] Visitation on login from [${redirectUrl}] ID ${req.ip}`
+	);
+	Log.info(
+		`[AuthGeneralController.js][getMobileRedirect] redirecting to dosealpay://`
+	);
+
+	countries = getCountriesWithFlags();
+
+	return res.render("gen-auth/mobile-redirect", {
+		pageTitle: "Login | Mobile Redirect",
+		path: "/login",
+		errors: false,
+		errorMessage: false,
+		countries: countries ? countries : false,
+		SITE_KEY: process.env.SITE_KEY,
+		captcha: recaptcha.render(),
+		csrfToken: req.csrfToken(),
+	});
+}
+
 async function postLogin(req, res) {
 	let hubtelMSISDNResponse,
 		registeredFirstName,
@@ -313,4 +339,5 @@ module.exports = {
 	getConfirmCode,
 	postLogout,
 	postConfirmCode,
+	getMobileRedirect,
 };
