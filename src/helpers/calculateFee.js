@@ -24,20 +24,6 @@ async function calculateCompositeFee(_amount, type) {
 	}
 }
 
-// "ECG",
-// "Airtime",
-// "Billpay",
-// "DSTV",
-// "GOtv",
-// "GOTV",
-// "StarTimesTv",
-// "STARTIMESTV",
-// "GhanaWater",
-// "WalletTopup",
-// "DATA",
-// "TELECEL_POSTPAID",
-// "TELECEL_BROADBAND",
-
 async function processDosealFee(amount, type) {
 	switch (type) {
 		case "ECG":
