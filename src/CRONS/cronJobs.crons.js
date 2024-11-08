@@ -15,21 +15,30 @@ async function connectAndStartCron() {
 		if (process.env.ENVIRONMENT !== "development") {
 			// Check transactions every one hour and check the status after  1 hour
 			Log.info(
-				`[cronJobs.crons.js][connectAndStartCron]\t checking for pending transactions and balance transfer`
+				`[cronJobs.crons.js][connectAndStartCron]\t checking balance transfer`
 			);
-			try {
-				await getPendingTransactions();
-			} catch (error) {
-				Log.info(
-					`[cronJobs.crons.js][connectAndStartCron]\t error getting pending transactions`
-				);
-			}
 
 			try {
 				await apiController.postTransferBalance();
 			} catch (error) {
 				Log.info(
 					`[cronJobs.crons.js][connectAndStartCron]\t error getting calling postTransferBalance`
+				);
+			}
+		}
+	});
+
+	cron.schedule("*/5 * * * *", async () => {
+		if (process.env.ENVIRONMENT !== "development") {
+			// Check transactions every one hour and check the status after  1 hour
+			Log.info(
+				`[cronJobs.crons.js][connectAndStartCron]\t checking for pending transactions`
+			);
+			try {
+				await getPendingTransactions();
+			} catch (error) {
+				Log.info(
+					`[cronJobs.crons.js][connectAndStartCron]\t error getting pending transactions`
 				);
 			}
 		}
