@@ -268,6 +268,51 @@ class RestMiddlewareServices {
 			};
 		}
 	}
+
+	async postTelecelPostpaidSearch(data, token) {
+		let url;
+		try {
+			url = `${process.env.DOSEAL_API_BASE_URL}/api/v1/search-telecel-postpaid-bills`;
+			Log.info(
+				`[RestMiddlewareServices.js][postTelecelPostpaidSearch] initiating request to: ${url}`
+			);
+			const response = await axios.post(url, data, {
+				headers: {
+					Authorization: `Bearer ${token}`, // Use Bearer if required
+					"Content-Type": "application/json",
+				},
+			});
+
+			return response.data;
+		} catch (error) {
+			Log.info(
+				`[RestMiddlewareServices.js][postTelecelPostpaidSearch] error validating account: ${error.message}`
+			);
+			if (error.response) {
+				Log.info(
+					`[RestMiddlewareServices.js][postTelecelPostpaidSearch] response status: ${error.response.status}`
+				);
+				Log.info(
+					`[RestMiddlewareServices.js][postTelecelPostpaidSearch] response data: ${JSON.stringify(
+						error.response.data
+					)}`
+				);
+			} else if (error.request) {
+				Log.info(
+					`[RestMiddlewareServices.js][postTelecelPostpaidSearch] request: ${error.request}`
+				);
+			} else {
+				Log.info(
+					`[RestMiddlewareServices.js][postUtiltySearch] unknown error: ${error.message}`
+				);
+			}
+			return {
+				success: false,
+				code: 500,
+				message: error.message,
+			};
+		}
+	}
 }
 
 module.exports = RestMiddlewareServices;

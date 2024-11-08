@@ -590,10 +590,22 @@ async function postUtilityServiceSearch(req, res) {
 			type: type,
 		};
 
-		hubtelResponse = await restMiddlewareServices.postUtiltySearch(
-			inputData,
-			token
-		);
+		switch (type) {
+			case "TELECEL_POSTPAID":
+				hubtelResponse = await restMiddlewareServices.postTelecelPostpaidSearch(
+					inputData,
+					token
+				);
+				break;
+
+			default:
+				hubtelResponse = await restMiddlewareServices.postUtiltySearch(
+					inputData,
+					token
+				);
+				break;
+		}
+
 		if (hubtelResponse) {
 			console.log("hubtelResponse: " + JSON.stringify(hubtelResponse));
 			if (hubtelResponse.ResponseCode === "0000") {
