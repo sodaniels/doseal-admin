@@ -28,6 +28,7 @@ async function connectAndStartCron() {
 		}
 	});
 
+	
 	cron.schedule("*/1 * * * *", async () => {
 		if (process.env.ENVIRONMENT !== "development") {
 			// Check transactions every one hour and check the status after  1 hour
