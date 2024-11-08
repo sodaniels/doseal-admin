@@ -45,6 +45,7 @@ const tranactionSchema = new Schema({
 			"GhanaWater",
 			"WalletTopup",
 			"DATA",
+			"TELECEL_POSTPAID",
 		],
 		default: "Prepaid",
 	},

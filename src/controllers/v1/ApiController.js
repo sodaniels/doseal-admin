@@ -576,6 +576,9 @@ async function postTransactionExecute(req, res) {
 			case "DATA":
 				description = "Payment for Mobile data";
 				break;
+			case "TELECEL_POSTPAID":
+				description = "Payment for Telecel Postpaid ";
+				break;
 			default:
 				break;
 		}
