@@ -66,7 +66,7 @@ const sessionStore = new MongoDBStore({
 });
 
 
-app.use("/api/v1/", /* isWhitelisted ,*/ callbackRoutes);
+app.use("/api/v1/", isWhitelisted , callbackRoutes);
 
 app.use(oauthSetting);
 
