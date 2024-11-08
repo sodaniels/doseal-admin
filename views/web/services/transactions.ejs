@@ -239,8 +239,8 @@
 										<td><%=transaction.accountNumber ? transaction.accountNumber :transaction.meterId %></td>
 										<td><%=longDate(transaction.createdAt )%></td>
 										<td style="height: 70px;">
-											<span class="<%= transaction.PaymentResponseCode === '0000' ? 'status-success' : (transaction.statusCode === 411 ? 'status-pending-orange' : (transaction.statusCode === 477 ? 'status-pending-blue' : 'status-failed')) %>">
-												<%= transaction.PaymentResponseCode === '0000' ? 'Success' : ((transaction.statusCode === 411 || transaction.ResponseCode === '0001')  ? 'Pending' : (transaction.statusCode === 477 ? 'Refunded' : 'Failed')) %>
+											<span class="<%= transaction.statusCode.toString() === '200' ? 'status-success' : (transaction.statusCode.toString() === '411' ? 'status-pending-orange' : (transaction.statusCode.toString() === 477 ? 'status-pending-blue' : 'status-failed')) %>">
+												<%= transaction.statusCode.toString() === '200' ? 'Success' : ((transaction.statusCode.toString() === '411' || transaction.ResponseCode === '0001')  ? 'Pending' : (transaction.statusCode.toString() === '477' ? 'Refunded' : 'Failed')) %>
 											  </span>
 											  
 										</td>
