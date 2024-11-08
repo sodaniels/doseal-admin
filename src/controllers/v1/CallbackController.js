@@ -97,10 +97,13 @@ async function postHubtelAirtimeTopup(req, res) {
 			const support = process.env.DESEAL_CUSTOMER_CARE;
 
 			if (saveTransaction) {
+				const trans_id = saveTransaction.transactionId;
+				const reference =
+					saveTransaction.internalReference.split("_")[1] ||
+					saveTransaction.internalReference;
+
 				if (req.body.ResponseCode.toString() === "0000") {
-					const message = `Hi ${name}, your acccount has been topup with the amount of ${currency} ${amount}. Transaction ID: ${transactionId}. Date: ${new Date().toLocaleString()}. Reference: ${
-						req.body.externalReference
-					}`;
+					const message = `Hi ${name}, your acccount has been topup with the amount of ${currency} ${amount}. Transaction ID: ${trans_id}. Date: ${new Date().toLocaleString()}. Reference: ${reference}`;
 
 					try {
 						Log.info(
