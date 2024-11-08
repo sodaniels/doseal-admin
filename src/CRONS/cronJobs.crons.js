@@ -11,7 +11,7 @@ const { rand10Id } = require("../helpers/randId");
 const io = require("../../socket");
 
 async function connectAndStartCron() {
-	cron.schedule("*/5 * * * *", async () => {
+	cron.schedule("*/60 * * * *", async () => {
 		if (process.env.ENVIRONMENT !== "development") {
 			// Check transactions every one hour and check the status after  1 hour
 			Log.info(
