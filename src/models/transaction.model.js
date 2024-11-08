@@ -46,6 +46,7 @@ const tranactionSchema = new Schema({
 			"WalletTopup",
 			"DATA",
 			"TELECEL_POSTPAID",
+			"TELECEL_BROADBAND",
 		],
 		default: "Prepaid",
 	},

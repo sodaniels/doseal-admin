@@ -579,6 +579,9 @@ async function postTransactionExecute(req, res) {
 			case "TELECEL_POSTPAID":
 				description = "Payment for Telecel Postpaid ";
 				break;
+			case "TELECEL_BROADBAND":
+				description = "Payment for Telecel Broadband ";
+				break;
 			default:
 				break;
 		}
@@ -1687,7 +1690,7 @@ async function postReportFault(req, res) {
 		});
 	}
 }
-// post search telcel postpaid account
+// post search telecel postpaid account
 async function postHubtelTelecelPostpaidSearch(req, res) {
 	let hubtelResponse;
 	const validationError = handleValidationErrors(req, res);
@@ -1737,6 +1740,56 @@ async function postHubtelTelecelPostpaidSearch(req, res) {
 		});
 	}
 }
+// post search telecel broadband
+async function postHubtelTelecelBroadbandSearch(req, res) {
+	let hubtelResponse;
+	const validationError = handleValidationErrors(req, res);
+	if (validationError) {
+		const errorRes = await apiErrors.create(
+			errorMessages.errors.API_MESSAGE_DSTV_FAILED,
+			"POST",
+			validationError,
+			undefined
+		);
+		return res.json(errorRes);
+	}
+	try {
+		Log.info(
+			`[ApiController.js][postHubtelTelecelBroadbandSearch]\t incoming telecel broadband account search request: ` +
+				req.ip
+		);
+
+		hubtelResponse = await restServices.postHubtelTelecelBroadbandSearchService(
+			req.body.accountNumber
+		);
+		if (hubtelResponse) {
+			Log.info(
+				`[ApiController.js][postHubtelTelecelBroadbandSearch]\t hubtelResponse: ` +
+					JSON.stringify(hubtelResponse)
+			);
+
+			if (hubtelResponse.ResponseCode === "0000") {
+				hubtelResponse["success"] = true;
+				return res.json(hubtelResponse);
+			}
+			return res.json(hubtelResponse);
+		}
+		return res.json({
+			success: false,
+			message: ServiceCode.FAILED,
+		});
+	} catch (error) {
+		Log.info(
+			`[ApiController.js][postHubtelTelecelBroadbandSearch]\t error: ` +
+				JSON.stringify(error)
+		);
+		return res.json({
+			success: false,
+			error: error.message,
+			message: ServiceCode.ERROR_OCCURED,
+		});
+	}
+}
 
 module.exports = {
 	getPageCategory,
@@ -1769,4 +1822,5 @@ module.exports = {
 	getHelpDesk,
 	postReportFault,
 	postHubtelTelecelPostpaidSearch,
+	postHubtelTelecelBroadbandSearch,
 };

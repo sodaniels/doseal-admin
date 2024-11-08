@@ -137,5 +137,12 @@ router.post(
 	apiController.postHubtelTelecelPostpaidSearch
 );
 
+router.post(
+	"/search-telecel-broadband",
+	validator.validateUtilitySearch,
+	apiController.postHubtelTelecelBroadbandSearch
+);
+
+
 
 module.exports = router;

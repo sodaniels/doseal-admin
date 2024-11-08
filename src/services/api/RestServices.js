@@ -1383,6 +1383,48 @@ class RestServices {
 			};
 		}
 	}
+	// post telecel broadband servie
+	async postHubtelTelecelBroadbandSearchService(accountNumber) {
+		try {
+			const response = await axios.get(
+				`https://cs.hubtel.com/commissionservices/${process.env.HUBTEL_PREPAID_DEPOSTI_ACCOUNT}/${process.env.HUBTEL_TELECEL_BROADBAND_SERVICE_ID}?destination=${accountNumber}`,
+				{
+					headers: {
+						Authorization: `Basic ${token()}`,
+						"Content-Type": "application/json",
+					},
+				}
+			);
+			return response.data;
+		} catch (error) {
+			Log.info(
+				`[RestServices.js][postHubtelTelecelBroadbandSearchService] error validating account: ${error.message}`
+			);
+			if (error.response) {
+				Log.info(
+					`[RestServices.js][postHubtelTelecelBroadbandSearchService] response status: ${error.response.status}`
+				);
+				Log.info(
+					`[RestServices.js][postHubtelTelecelBroadbandSearchService] response data: ${JSON.stringify(
+						error.response.data
+					)}`
+				);
+			} else if (error.request) {
+				Log.info(
+					`[RestServices.js][postHubtelTelecelBroadbandSearchService] request: ${error.request}`
+				);
+			} else {
+				Log.info(
+					`[RestServices.js][postHubtelTelecelBroadbandSearchService] unknown error: ${error.message}`
+				);
+			}
+			return {
+				success: false,
+				code: 500,
+				message: error.response.data ? error.response.data : error.response,
+			};
+		}
+	}
 }
 
 function token() {
