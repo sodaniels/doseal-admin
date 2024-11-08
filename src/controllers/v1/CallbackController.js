@@ -959,6 +959,11 @@ async function commitCreditTransaction(transaction) {
 					creditTransaction.statusCode = 411;
 					creditTransaction.statusMessage = "Transaction is pending";
 					break;
+				case "0000":
+					creditTransaction.status = "Successful";
+					creditTransaction.statusCode = 200;
+					creditTransaction.statusMessage = "Transaction is pending";
+					break;
 
 				default:
 					creditTransaction.status = "Failed";
