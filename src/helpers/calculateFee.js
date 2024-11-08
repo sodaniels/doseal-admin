@@ -24,11 +24,31 @@ async function calculateCompositeFee(_amount, type) {
 	}
 }
 
+// "ECG",
+// "Airtime",
+// "Billpay",
+// "DSTV",
+// "GOtv",
+// "GOTV",
+// "StarTimesTv",
+// "STARTIMESTV",
+// "GhanaWater",
+// "WalletTopup",
+// "DATA",
+// "TELECEL_POSTPAID",
+// "TELECEL_BROADBAND",
+
 async function processDosealFee(amount, type) {
 	switch (type) {
 		case "ECG":
 		case "DSTV":
 		case "GOtv":
+		case "GOTV":
+		case "StarTimesTv":
+		case "STARTIMESTV":
+		case "GhanaWater":
+		case "TELECEL_POSTPAID":
+		case "TELECEL_BROADBAND":
 			if (amount <= 0) {
 			} else if (amount >= 0.01 && amount <= 1) {
 				return 0.01;
