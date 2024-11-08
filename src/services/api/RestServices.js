@@ -1425,6 +1425,57 @@ class RestServices {
 			};
 		}
 	}
+	// post telcel broadband
+	async postHubtelTelecelBroadband(Destination, Amount, ClientReference) {
+		try {
+			Log.info(
+				`[RestServices.js][postHubtelTelecelBroadband] \t recharging telecel postpaid`
+			);
+			const response = await axios.post(
+				`https://cs.hubtel.com/commissionservices/${process.env.HUBTEL_PREPAID_DEPOSTI_ACCOUNT}/${process.env.HUBTEL_TELECEL_BROADBAND_SERVICE_ID}`,
+				{
+					Destination: Destination,
+					Amount: Amount,
+					CallbackURL: `${process.env.HUBTEL_CALLBACK_BASE_URL}/api/v1/hubtel-airtime-callback`,
+					ClientReference: ClientReference,
+				},
+				{
+					headers: {
+						Authorization: `Basic ${token()}`,
+						"Content-Type": "application/json",
+					},
+				}
+			);
+			return response.data;
+		} catch (error) {
+			Log.info(
+				`[RestServices.js][postHubtelTelecelBroadband] error posting telecel postpaid: ${error.message}`
+			);
+			if (error.response) {
+				Log.info(
+					`[RestServices.js][postHubtelTelecelBroadband] response status: ${error.response.status}`
+				);
+				Log.info(
+					`[RestServices.js][postHubtelTelecelBroadband] response data: ${JSON.stringify(
+						error.response.data
+					)}`
+				);
+			} else if (error.request) {
+				Log.info(
+					`[RestServices.js][postHubtelTelecelBroadband] request: ${error.request}`
+				);
+			} else {
+				Log.info(
+					`[RestServices.js][postHubtelTelecelBroadband] unknown error: ${error.message}`
+				);
+			}
+			return {
+				success: false,
+				code: 500,
+				message: error.message,
+			};
+		}
+	}
 }
 
 function token() {

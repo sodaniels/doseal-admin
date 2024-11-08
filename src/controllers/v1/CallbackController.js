@@ -920,7 +920,7 @@ async function commitCreditTransaction(transaction) {
 				break;
 			case "TELECEL_POSTPAID":
 				hubtelResponse = await restServices.postHubtelTelecelPostpaid(
-					transaction.phoneNumber,
+					transaction.accountNumber,
 					transaction.amount,
 					creditUniqueId
 				);
@@ -929,6 +929,19 @@ async function commitCreditTransaction(transaction) {
 						hubtelResponse
 					)}`
 				);
+				break;
+			case "TELECEL_BROADBAND":
+				hubtelResponse = await restServices.postHubtelTelecelBroadband(
+					transaction.accountNumber,
+					transaction.amount,
+					creditUniqueId
+				);
+				Log.info(
+					`[CallbackController.js][postHubtelPaymentCallback][commitCreditTransaction][${creditUniqueId}]\t hubtelResponse: ${JSON.stringify(
+						hubtelResponse
+					)}`
+				);
+				break;
 			default:
 				break;
 		}
