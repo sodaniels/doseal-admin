@@ -39,24 +39,20 @@ const apiRoutes = require("./routes/mp/api.route");
 const internalApiRoutes = require("./routes/mp/internal-api.route");
 const externalApiRoutes = require("./routes/mp/external-api.route");
 const callbackRoutes = require("./routes/mp/callback.route");
-const isWhitelisted = require("./Middleware/is-whitelisted-IP");
 
 const passportJwt = require("./helpers/passport-jwt");
-
 
 const isAuth = require("./Middleware/is-auth");
 const errorHandler = require("./Middleware/errorMiddleware");
 const { Log } = require("./helpers/Log");
 const ensureAuthenticated = require("./Middleware/ensureAuthenticated");
 
-
-
 const router = express.Router();
 const app = express();
 
 app.use(bodyParser.json());
 app.use(cookieParser());
-app.set('trust proxy', true);
+app.set("trust proxy", true);
 
 app.use(express.static(path.join(__dirname, "public")));
 
@@ -64,12 +60,6 @@ const sessionStore = new MongoDBStore({
 	uri: `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@${process.env.DB_CLUSTER}.mongodb.net/${process.env.DB_NAME}?retryWrites=true&w=majority`,
 	collection: "sessions",
 });
-
-
-app.use("/api/v1/", /* isWhitelisted ,*/ callbackRoutes);
-
-app.use(oauthSetting);
-
 
 app.use(express.urlencoded({ extended: true }));
 
@@ -110,7 +100,11 @@ app.use((req, res, next) => {
 	}
 });
 
+app.use("/api/v1/", callbackRoutes);
+
 app.use("/auth/", authApiRoutes);
+
+app.use(oauthSetting);
 
 app.use(
 	"/api/v1/",
@@ -131,8 +125,6 @@ app.use(
 app.use("/", newsRoomRoutes);
 app.use("/", expensesRoutes);
 
-
-
 app.use((req, res, next) => {
 	res.setHeader("Access-Control-Allow-Origin", "*");
 	res.setHeader(
@@ -142,7 +134,6 @@ app.use((req, res, next) => {
 	res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
 	next();
 });
-
 
 const csrfProtection = csrf();
 app.use(csrfProtection);
@@ -176,10 +167,6 @@ app.use("/", vendorRoutes);
 app.use("/", deskDeskRoutes);
 
 app.use("/", notificationRoutes);
-
-
-
-
 
 // error handling middleware
 app.use(errorHandler);
