@@ -239,9 +239,10 @@
 										<td><%=transaction.accountNumber ? transaction.accountNumber :transaction.meterId %></td>
 										<td><%=longDate(transaction.createdAt )%></td>
 										<td style="height: 70px;">
-											<span class="status-<%= transaction.statusCode === 200 ? 'success' : transaction.statusCode === 411 ? 'pending-orange' : transaction.statusCode === 477 ? 'pending-blue' : 'failed' %>">
-												<%= transaction.statusCode === 200 ? 'Success' : transaction.statusCode === 411 ? 'Pending' : transaction.statusCode === 477 ? 'Pending' : 'Failed' %>
-											</span>
+											<span class="<%= transaction.PaymentResponseCode === '0000' ? 'status-success' : (transaction.statusCode === 411 ? 'status-pending-orange' : (transaction.statusCode === 477 ? 'status-pending-blue' : 'status-failed')) %>">
+												<%= transaction.PaymentResponseCode === '0000' ? 'Success' : (transaction.statusCode === 411 ? 'Pending' : (transaction.statusCode === 477 ? 'Pending' : 'Failed')) %>
+											  </span>
+											  
 										</td>
 										
 									</tr>
