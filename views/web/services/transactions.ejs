@@ -240,7 +240,7 @@
 										<td><%=longDate(transaction.createdAt )%></td>
 										<td style="height: 70px;">
 											<span class="<%= transaction.PaymentResponseCode === '0000' ? 'status-success' : (transaction.statusCode === 411 ? 'status-pending-orange' : (transaction.statusCode === 477 ? 'status-pending-blue' : 'status-failed')) %>">
-												<%= transaction.PaymentResponseCode === '0000' ? 'Success' : (transaction.statusCode === 411 ? 'Pending' : (transaction.statusCode === 477 ? 'Pending' : 'Failed')) %>
+												<%= transaction.PaymentResponseCode === '0000' ? 'Success' : ((transaction.statusCode === 411 || transaction.ResponseCode === '0001')  ? 'Pending' : (transaction.statusCode === 477 ? 'Refunded' : 'Failed')) %>
 											  </span>
 											  
 										</td>
