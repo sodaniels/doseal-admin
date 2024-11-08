@@ -636,11 +636,11 @@ async function postTransactionExecute(req, res) {
 					.limit(4);
 				io.getIO().emit("excerptTransactionUpdate", excerptTrans);
 				Log.info(
-					"[CallbackController.js][postTransactionExecute]\t Emitted excerpt update: "
+					"[ApiController.js][postTransactionExecute]\t Emitted excerpt update: "
 				);
 			} catch (error) {
 				Log.info(
-					`[CallbackController.js][postTransactionExecute]\t error emitting excerpt update: `,
+					`[ApiController.js][postTransactionExecute]\t error emitting excerpt update: `,
 					error
 				);
 			}
@@ -690,7 +690,7 @@ async function getExcerptTransactions(req, res) {
 	try {
 		//excerptTransData
 		Log.info(
-			`[ApiController.js][getExcerptTransactions][${req.user._id}]\t retrieving transactions`
+			`[ApiController.js][postTransactionExecute][${req.user._id}]\t retrieving transactions`
 		);
 		const transactions = await Transaction.find({
 			createdBy: req.user._id,

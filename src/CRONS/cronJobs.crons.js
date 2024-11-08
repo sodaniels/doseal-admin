@@ -13,7 +13,6 @@ const io = require("../../socket");
 async function connectAndStartCron() {
 	cron.schedule("*/5 * * * *", async () => {
 		if (process.env.ENVIRONMENT !== "development") {
-			
 			// Check transactions every one hour and check the status after  1 hour
 			Log.info(
 				`[cronJobs.crons.js][connectAndStartCron]\t checking for pending transactions and balance transfer`
@@ -76,8 +75,9 @@ async function getPendingTransactions() {
 					let Data = hubtelResponse.data;
 
 					transaction = await getTransactionByTransactionId(transactionId);
+
 					if (
-						hubtelResponse.responseCode === "0000" &&
+						hubtelResponse.PaymentResponseCode === "0000" &&
 						transaction &&
 						transaction.statusCode === 411
 					) {
@@ -86,11 +86,19 @@ async function getPendingTransactions() {
 								/** hubtel */
 								transaction.PaymentResponseCode = "0000";
 								transaction.PaymentStatus = "Success";
-								transaction.amountAfterCharges = Data.amountAfterCharges;
-								transaction.Charges = Data.charges;
-								transaction.PaymentAmount = Data.amount;
-								transaction.PaymentDetails = Data.paymentMethod;
-								transaction.ExternalTransactionId = Data.transactionId;
+								transaction.amountAfterCharges = Data.amountAfterCharges
+									? Data.amountAfterCharges
+									: undefined;
+								transaction.Charges = Data.charges ? Data.charges : undefined;
+								transaction.PaymentAmount = Data.amount
+									? Data.amount
+									: undefined;
+								transaction.PaymentDetails = Data.paymentMethod
+									? Data.paymentMethod
+									: undefined;
+								transaction.ExternalTransactionId = Data.transactionId
+									? Data.transactionId
+									: undefined;
 								/** in house */
 								transaction.status = "Successful";
 								transaction.statusCode = 200;
@@ -101,11 +109,19 @@ async function getPendingTransactions() {
 								/** hubtel */
 								transaction.PaymentResponseCode = "400";
 								transaction.PaymentStatus = "Failed";
-								transaction.amountAfterCharges = Data.amountAfterCharges;
-								transaction.Charges = Data.charges;
-								transaction.PaymentAmount = Data.amount;
-								transaction.PaymentDetails = Data.paymentMethod;
-								transaction.ExternalTransactionId = Data.transactionId;
+								transaction.amountAfterCharges = Data.amountAfterCharges
+									? Data.amountAfterCharges
+									: undefined;
+								transaction.Charges = Data.charges ? Data.charges : undefined;
+								transaction.PaymentAmount = Data.amount
+									? Data.amount
+									: undefined;
+								transaction.PaymentDetails = Data.paymentMethod
+									? Data.paymentMethod
+									: undefined;
+								transaction.ExternalTransactionId = Data.transactionId
+									? Data.transactionId
+									: undefined;
 								/** in house */
 								transaction.status = "Failed";
 								transaction.statusCode = 400;
@@ -120,7 +136,6 @@ async function getPendingTransactions() {
 									`[cronJobs.crons.js][getPendingTransactions][${transactionId}]\t payment callback saved`
 								);
 								await transaction.save();
-
 								try {
 									io.getIO().emit("singleTransactionUpdate", transaction);
 								} catch (error) {}
@@ -346,6 +361,7 @@ async function commitCreditTransaction(transaction) {
 				);
 				break;
 			case "StarTimesTv":
+			case "STARTIMESTV":
 				Log.info(
 					`[cronJobs.crons.js][getPendingTransactions][commitCreditTransaction][${creditUniqueId}]\t initiating request to StarTimesTv: `
 				);
@@ -432,14 +448,38 @@ async function commitCreditTransaction(transaction) {
 						break;
 				}
 				break;
+			case "TELECEL_POSTPAID":
+				hubtelResponse = await restServices.postHubtelTelecelPostpaid(
+					transaction.accountNumber,
+					transaction.amount,
+					creditUniqueId
+				);
+				Log.info(
+					`[CallbackController.js][getPendingTransactions][commitCreditTransaction][${creditUniqueId}]\t hubtelResponse: ${JSON.stringify(
+						hubtelResponse
+					)}`
+				);
+				break;
+			case "TELECEL_BROADBAND":
+				hubtelResponse = await restServices.postHubtelTelecelBroadband(
+					transaction.accountNumber,
+					transaction.amount,
+					creditUniqueId
+				);
+				Log.info(
+					`[CallbackController.js][getPendingTransactions][commitCreditTransaction][${creditUniqueId}]\t hubtelResponse: ${JSON.stringify(
+						hubtelResponse
+					)}`
+				);
+				break;
 			default:
 				break;
 		}
 		if (creditTransaction && hubtelResponse) {
 			let Meta = hubtelResponse.Data.Meta;
-			creditTransaction.ResponseCode = hubtelResponse.ResponseCode;
-			creditTransaction.Description = hubtelResponse.Message;
-			creditTransaction.HubtelTransactionId = hubtelResponse.Data.TransactionId;
+			creditTransaction.ResponseCode = hubtelResponse.ResponseCode ? hubtelResponse.ResponseCode : undefined;
+			creditTransaction.Description = hubtelResponse.Message ? hubtelResponse.Message: uniqueId;
+			creditTransaction.HubtelTransactionId = hubtelResponse.Data.TransactionId ? hubtelResponse.Data.TransactionId: uniqueId;
 			creditTransaction.Commission = Meta.Commission
 				? Meta.Commission
 				: undefined;
