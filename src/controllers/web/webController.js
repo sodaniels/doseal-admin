@@ -597,6 +597,12 @@ async function postUtilityServiceSearch(req, res) {
 					token
 				);
 				break;
+			case "TELECEL_BROADBAND":
+				hubtelResponse = await restMiddlewareServices.postTelecelBroadbandSearch(
+					inputData,
+					token
+				);
+				break;
 
 			default:
 				hubtelResponse = await restMiddlewareServices.postUtiltySearch(
