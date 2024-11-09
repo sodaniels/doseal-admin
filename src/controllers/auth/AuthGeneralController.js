@@ -127,7 +127,11 @@ async function postLogin(req, res) {
 			}
 		);
 
-		console.log(response.data.success)
+		Log.info(
+			`[AuthGeneralController.js][postSignin] \t verifying cloudflare: ${JSON.stringify(
+				response.data.success
+			)}`
+		);
 
 		if (!response.data.success && process.env.ENVIRONMENT === "production") {
 			return res.json({
