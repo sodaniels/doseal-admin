@@ -51,6 +51,7 @@ async function getLogin(req, res) {
 		errorMessage: false,
 		countries: countries ? countries : false,
 		SITE_KEY: process.env.CLOUDFLARE_SITE_KEY,
+		environment: process.env.ENVIRONMENT,
 		csrfToken: req.csrfToken(),
 	});
 }
@@ -126,7 +127,9 @@ async function postLogin(req, res) {
 			}
 		);
 
-		if (!response.data.success) {
+		console.log(response.data.success)
+
+		if (!response.data.success && process.env.ENVIRONMENT === "production") {
 			return res.json({
 				success: false,
 				code: 401,

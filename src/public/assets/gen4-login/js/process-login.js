@@ -9,6 +9,7 @@ $(document).ready(function () {
 
 		var $button = $(this);
 
+		var env = $("#env").val();
 		var countryCode = $("#countryCode").val();
 		var phoneNumber = $("#phoneNumber").val();
 
@@ -47,7 +48,7 @@ $(document).ready(function () {
 		  
 
 	
-		if (!token) {
+		if (!token && env !== "development") {
 			Swal.fire({
 				title: "Missing Security Response",
 				text: "Please complete the CAPTCHA",

@@ -192,6 +192,7 @@
 			<div style="text-align: center;" >
                 <!-- <div class="g-recaptcha mb-3" data-sitekey="<%= SITE_KEY %>" style="display: inline-block;"></div> -->
                 <div class="cf-turnstile" data-sitekey="<%= SITE_KEY %>"></div>
+                <input type="hidden" id="env" value="<%= environment %>" >
             </div>
             <button
                 class="btn px-5 w-100 d-block fw-bold"
