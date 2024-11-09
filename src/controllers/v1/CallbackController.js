@@ -88,47 +88,7 @@ async function postHubtelAirtimeTopup(req, res) {
 				"[CallbackController.js][postBuyCredit]\t Emitting wallet update: "
 			);
 
-			const currency = "GHS";
-			const amount = parseFloat(transaction.amount).toFixed(2);
-			const phoneNumber = transaction.createdBy.phoneNumber;
-			const name =
-				transaction.createdBy.firstName + " " + transaction.createdBy.lastName;
-			const from = transaction.account_no;
-			const support = process.env.DESEAL_CUSTOMER_CARE;
-
 			if (saveTransaction) {
-				const trans_id = saveTransaction.transactionId;
-				const reference =
-					saveTransaction.internalReference.split("_")[1] ||
-					saveTransaction.internalReference;
-
-				if (req.body.ResponseCode.toString() === "0000") {
-					const message = `Hi ${name}, your acccount has been topup with the amount of ${currency} ${amount}. Transaction ID: ${trans_id}. Date: ${new Date().toLocaleString()}. Reference: ${reference}`;
-
-					try {
-						Log.info(
-							`[CallbackController.js][postHubtelAirtimeTopup][${transactionId}]\t sending success message: ${message}`
-						);
-						await sendText(phoneNumber, message);
-					} catch (error) {
-						Log.info(
-							`[CallbackController.js][postHubtelAirtimeTopup][${transactionId}]\t error sending success message: ${error}`
-						);
-					}
-				} else {
-					const message = `Your topup of ${currency} ${amount} to your account failed. For more information, please contact customer support on ${support} `;
-
-					try {
-						Log.info(
-							`[CallbackController.js][postHubtelAirtimeTopup][${transactionId}]\t sending failure message: ${message}`
-						);
-						await sendText(phoneNumber, message);
-					} catch (error) {
-						Log.info(
-							`[CallbackController.js][postHubtelAirtimeTopup][${transactionId}]\t error sending success message: ${error}`
-						);
-					}
-				}
 			}
 
 			try {
@@ -697,6 +657,9 @@ async function commitCreditTransaction(transaction) {
 			mno: transaction.mno ? transaction.mno : undefined,
 			network: transaction.network ? transaction.network : undefined,
 			paymentOption: transaction.paymentOption,
+			verifiedName: transaction.verifiedName
+				? transaction.verifiedName
+				: undefined,
 			phoneNumber: transaction.phoneNumber
 				? transaction.phoneNumber
 				: undefined,
@@ -1110,6 +1073,71 @@ async function getBalanceTransferByTransferId(transferId) {
 	}
 }
 /**helper functions*/
+
+async function sendMessages(transaction, req) {
+	const currency = "GHS";
+	const amount = parseFloat(transaction.amount).toFixed(2);
+
+	const recipientPhoneNumber = transaction.phoneNumber;
+	const recipientName = transaction.verifiedName;
+
+	const senderPhoneNumber = transaction.createdBy.phoneNumber;
+	const senderName =
+		transaction.createdBy.firstName + " " + transaction.createdBy.lastName;
+
+	const from = transaction.account_no;
+
+	const transactionId = transaction.internalReference;
+
+	const support = process.env.DESEAL_CUSTOMER_CARE;
+
+	const trans_id = transaction.transactionId;
+	const reference =
+		transaction.internalReference.split("_")[1] ||
+		transaction.internalReference;
+
+	if (req.body.ResponseCode.toString() === "0000") {
+		const recipient_message = `Hi ${
+			recipientName ? recipientName : recipientPhoneNumber
+		}, your acccount has been topup with the amount of ${currency} ${amount}. Transaction ID: ${trans_id}. Date: ${new Date().toLocaleString()}. Reference: ${reference}`;
+
+		try {
+			Log.info(
+				`[CallbackController.js][postHubtelAirtimeTopup][${transactionId}]\t sending recipient success message: ${recipient_message}`
+			);
+			await sendText(recipientPhoneNumber, recipient_message);
+		} catch (error) {
+			Log.info(
+				`[CallbackController.js][postHubtelAirtimeTopup][${transactionId}]\t error sending success message: ${error}`
+			);
+		}
+		try {
+			const senders_message = `Hi ${senderName}, your your topup of ${currency} ${amount}. to  Transaction ID: ${trans_id}. Date: ${new Date().toLocaleString()}. Reference: ${reference}`;
+
+			Log.info(
+				`[CallbackController.js][postHubtelAirtimeTopup][${transactionId}]\t sending sender's message: ${senders_message}`
+			);
+			await sendText(recipientPhoneNumber, recipient_message);
+		} catch (error) {
+			Log.info(
+				`[CallbackController.js][postHubtelAirtimeTopup][${transactionId}]\t error sending success message: ${error}`
+			);
+		}
+	} else {
+		const message = `Your topup of ${currency} ${amount} to your account failed. For more information, please contact customer support on ${support} `;
+
+		try {
+			Log.info(
+				`[CallbackController.js][postHubtelAirtimeTopup][${transactionId}]\t sending failure message: ${message}`
+			);
+			await sendText(phoneNumber, message);
+		} catch (error) {
+			Log.info(
+				`[CallbackController.js][postHubtelAirtimeTopup][${transactionId}]\t error sending success message: ${error}`
+			);
+		}
+	}
+}
 
 module.exports = {
 	postWalletTopupCallback,
