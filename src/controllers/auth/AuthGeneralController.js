@@ -142,6 +142,11 @@ async function postLogin(req, res) {
 		}
 	} catch (error) {
 		console.error("Verification error:", error);
+		Log.info(
+			`[AuthGeneralController.js][postSignin] \t error: ${JSON.stringify(
+				error
+			)}`
+		);
 		return res.json({
 			success: false,
 			code: 401,
