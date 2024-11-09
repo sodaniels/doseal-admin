@@ -51,7 +51,6 @@ async function getLogin(req, res) {
 		errorMessage: false,
 		countries: countries ? countries : false,
 		SITE_KEY: process.env.CLOUDFLARE_SITE_KEY,
-		captcha: recaptcha.render(),
 		csrfToken: req.csrfToken(),
 	});
 }
@@ -115,6 +114,31 @@ async function postLogin(req, res) {
 			success: false,
 			code: 402,
 			message: "Invalid phone number",
+		});
+	}
+
+	try {
+		const response = await axios.post(
+			"https://challenges.cloudflare.com/turnstile/v0/siteverify",
+			{
+				secret: process.env.CLOUDFLARE_SECRET_KEY,
+				response: req.body.token,
+			}
+		);
+
+		if (!response.data.success) {
+			return res.json({
+				success: false,
+				code: 401,
+				message: "Verification failed",
+			});
+		}
+	} catch (error) {
+		console.error("Verification error:", error);
+		return res.json({
+			success: false,
+			code: 401,
+			message: "Verification failed",
 		});
 	}
 
@@ -209,7 +233,6 @@ async function postLogin(req, res) {
 				statusDescription: "request submitted successfully",
 			};
 		}
-
 
 		Log.info(
 			`[AuthGeneralController.js][postLogin][${phoneNumber}][${pin}][${message}] \t `
