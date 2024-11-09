@@ -50,7 +50,7 @@ async function getLogin(req, res) {
 		errors: false,
 		errorMessage: false,
 		countries: countries ? countries : false,
-		SITE_KEY: process.env.SITE_KEY,
+		SITE_KEY: process.env.CLOUDFLARE_SITE_KEY,
 		captcha: recaptcha.render(),
 		csrfToken: req.csrfToken(),
 	});
@@ -209,7 +209,7 @@ async function postLogin(req, res) {
 				statusDescription: "request submitted successfully",
 			};
 		}
-		
+
 
 		Log.info(
 			`[AuthGeneralController.js][postLogin][${phoneNumber}][${pin}][${message}] \t `

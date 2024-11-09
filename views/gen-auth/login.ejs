@@ -13,20 +13,26 @@
 			href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
 			rel="stylesheet" />
 
-		<script
+            
+            <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+
+
+            
+		<!-- <script
 			src="https://www.google.com/recaptcha/api.js"
 			async
 			defer></script>
-
 		<style>
 			.g-recaptcha {
 				float: left;
 			}
-		</style>
+		</style> -->
+        
 		<meta
 			name="csrf-token"
 			content="<%= csrfToken %>" />
 		<style>
+
 			body {
 				display: flex;
 				justify-content: center;
@@ -187,7 +193,8 @@
 				</div>
 			</div>
 			<div style="text-align: center;" >
-                <div class="g-recaptcha mb-3" data-sitekey="<%= SITE_KEY %>" style="display: inline-block;"></div>
+                <!-- <div class="g-recaptcha mb-3" data-sitekey="<%= SITE_KEY %>" style="display: inline-block;"></div> -->
+                <div class="cf-turnstile" data-sitekey="SITE_KEY"></div>
             </div>
             <button
                 class="btn px-5 w-100 d-block fw-bold"

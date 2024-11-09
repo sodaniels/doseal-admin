@@ -12,7 +12,9 @@ $(document).ready(function () {
 		var countryCode = $("#countryCode").val();
 		var phoneNumber = $("#phoneNumber").val();
 
-		let captchaResponse = grecaptcha.getResponse();
+		const token = $('[name="cf-turnstile-response"]').val();
+
+		// let captchaResponse = grecaptcha.getResponse();
 
 		if (countryCode === "" || countryCode === undefined) {
 			Swal.fire({
@@ -41,10 +43,14 @@ $(document).ready(function () {
 		// 	return false;
 		// }
 
-		if (captchaResponse === "" || captchaResponse === undefined) {
+		   // Capture the Turnstile token
+		  
+
+	
+		if (!token) {
 			Swal.fire({
 				title: "Missing Security Response",
-				text: "Please select the checkbox to indicate you are a human",
+				text: "Please complete the CAPTCHA",
 				icon: "warning",
 			});
 			return false;
@@ -57,7 +63,8 @@ $(document).ready(function () {
 			countryCode: countryCode,
 			phoneNumber: phoneNumber,
 			redirectUrl: redirectUrl,
-			"g-recaptcha-response": captchaResponse,
+			// "g-recaptcha-response": captchaResponse,
+			token: token,
 		};
 
 		localStorage.setItem("redirectUrl", redirectUrl);
