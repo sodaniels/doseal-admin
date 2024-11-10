@@ -96,7 +96,7 @@ async function sendCode(req, res) {
 	try {
 		await setRedisWithExpiry(redisKey, 300, pin);
 
-		message = `Your OTP for ${process.env.DOSEAL_APP_NAME} is: ${pin} and expires in 5 minutes. Keey your account safe. Do not share your on-time access code with anyone.`;
+		message = `Your OTP for ${process.env.DOSEAL_APP_NAME} is: ${pin} and expires in 5 minutes. Keep your account safe. Do not share your on-time access code with anyone.`;
 		if (q !== "244139937") {
 			response = await sendText(req.body.phoneNumber, message);
 		} else {

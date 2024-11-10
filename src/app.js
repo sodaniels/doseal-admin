@@ -30,7 +30,10 @@ const notificationRoutes = require("./routes/dashboard/notification.route");
 
 const authGeneralRoutes = require("./routes/auth-general/auth.route");
 
+const subscriberRoutes = require("./routes/whatsapp/subscriber");
+
 const oauthSetting = require("./helpers/security/oauth");
+const oauth2Whatsapp = require('./helpers/security/oauth2-whatsapp');
 
 const { connectAndStartCron } = require("./CRONS/cronJobs.crons");
 connectAndStartCron();
@@ -137,10 +140,17 @@ app.use(
 	passportJwt.authenticate("jwt", { session: false }),
 	externalApiRoutes
 );
+
+
+
+
+
 app.use("/", newsRoomRoutes);
 app.use("/", expensesRoutes);
 
-
+app.use(oauth2Whatsapp);
+/** Whatsapp routes */
+app.use("/api/v1", passport.authenticate('jwt', { session: false }), subscriberRoutes);
 
 app.use((req, res, next) => {
 	res.setHeader("Access-Control-Allow-Origin", "*");
@@ -185,7 +195,6 @@ app.use("/", vendorRoutes);
 app.use("/", deskDeskRoutes);
 
 app.use("/", notificationRoutes);
-
 
 
 
