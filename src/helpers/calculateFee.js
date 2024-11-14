@@ -27,6 +27,23 @@ async function calculateCompositeFee(_amount, type) {
 async function processDosealFee(amount, type) {
 	switch (type) {
 		case "ECG":
+			if (amount <= 0) {
+			} else if (amount >= 0.01 && amount <= 1) {
+				return 0.02;
+			} else if (amount >= 1.01 && amount <= 10) {
+				return 0.2;
+			} else if (amount >= 10.01 && amount <= 50) {
+				return 1;
+			} else if (amount >= 50.01 && amount <= 500) {
+				return 0.02 * amount;
+			} else if (amount >= 500.01 && amount <= 1000) {
+				return 10;
+			} else if (amount >= 1000.01 && amount <= 2000) {
+				return 20;
+			} else if (amount > 2000.01) {
+				return 0.02 * amount;
+			}
+			break;
 		case "DSTV":
 		case "GOtv":
 		case "GOTV":
