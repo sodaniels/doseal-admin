@@ -1,5 +1,6 @@
 const Page = require("../../models/page.model");
 const User = require("../../models/user");
+const Electricity = require("../../models/electricity.model");
 const NewsRoom = require("../../models/news-room.model");
 const Notification = require("../../models/notification.model");
 const Wallet = require("../../models/wallet.model");
@@ -64,12 +65,14 @@ async function getNews(req, res) {
 }
 
 // get notifications
-async function getNotificaitons(req, res) {
+async function getNotifications(req, res) {
 	Log.info(
 		`[InternalApiController.js][getNotificaitons]\t getting notifications`
 	);
 	try {
-		const notification = await Notification.find({}).select('_id title excerpt message createdAt').sort({ _id: -1 });
+		const notification = await Notification.find({})
+			.select("_id title excerpt message createdAt")
+			.sort({ _id: -1 });
 		if (notification) {
 			return res.json({
 				success: true,
@@ -96,7 +99,65 @@ async function getNotificaitons(req, res) {
 	}
 }
 
+async function postAddElectricity(req, res) {
+	try {
+		const { phoneNumber, meterId, meterName } = req.body;
+		Log.info(
+			`[InternalApiController.js][postAddElectricity][${
+				req.user._id
+			}]\t adding electricity data: ${JSON.stringify(req.body)}`
+		);
+		const checkIfExists = await Electricity.findOne({
+			createdBy: req.user._id,
+			phoneNumber: phoneNumber,
+			meterId: meterId,
+		});
+		if (checkIfExists) {
+			return res.json({
+				success: false,
+				code: 409,
+				message: "Meter already exists",
+				data: checkIfExists,
+			});
+		}
+		const electricityObject = new Electricity({
+			phoneNumber: phoneNumber,
+			meterId: meterId,
+			meterName: meterName,
+			createdBy: req.user._id,
+		});
+		const storeMeter = await electricityObject.save();
+		if (storeMeter) {
+			const electricityData = await Electricity.find({
+				createdBy: req.user._id,
+			});
+			return res.json({
+				success: true,
+				code: 200,
+				message: "Electricity information added successfully",
+				data: electricityData,
+			});
+		} else {
+			return res.json({
+				success: false,
+				code: 400,
+				message: "Electricity information could not be added",
+			});
+		}
+	} catch (error) {
+		Log.info(
+			`[InternalApiController.js][postAddElectricity][${req.user._id}]\t error adding electricity data: ${error}`
+		);
+		return res.json({
+			success: false,
+			code: 400,
+			message: "Error adding electricity information",
+		});
+	}
+}
+
 module.exports = {
 	getNews,
-	getNotificaitons,
+	getNotifications,
+	postAddElectricity,
 };
