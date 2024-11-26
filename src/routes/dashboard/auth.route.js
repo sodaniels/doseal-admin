@@ -12,7 +12,7 @@ const validator = require('../../helpers/validator');
 
 
 // post device information
-router.get("/login", authController.getLogin);
+router.get("/secure-login", authController.getLogin);
 router.post("/login", validator.validateLogin, authController.postLogin);
 router.post("/logout", authController.postLogout);
 router.get("/transaction-status", authController.hubtelReturnUrl);
