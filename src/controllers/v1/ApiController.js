@@ -1,6 +1,7 @@
 const Page = require("../../models/page.model");
 const User = require("../../models/user");
 const Wallet = require("../../models/wallet.model");
+const Telco = require("../../models/telco.model");
 const Transaction = require("../../models/transaction.model");
 const ReportIssue = require("../../models/report-issue.model");
 const Help = require("../../models/help.model");
@@ -398,7 +399,10 @@ async function getWallets(req, res) {
 }
 // post transaction init
 async function postTransactionInitiate(req, res) {
-	let fee, totalAmount, verifiedName;
+	let fee, totalAmount, verifiedName, checkIfAccountExists;
+
+	const { phoneNumber, amount, type, accountName, accountNumber, network } =
+		req.body;
 	const validationError = handleValidationErrors(req, res);
 	if (validationError) {
 		const errorRes = await apiErrors.create(
@@ -415,18 +419,15 @@ async function postTransactionInitiate(req, res) {
 	);
 
 	try {
-		const hubtelFee = await calculateCompositeFee(
-			req.body.amount,
-			req.body.type
-		);
+		const hubtelFee = await calculateCompositeFee(amount, type);
 
-		const dosealFee = await processDosealFee(req.body.amount, req.body.type);
+		const dosealFee = await processDosealFee(amount, type);
 
 		fee = dosealFee + hubtelFee;
 
 		req.body.fee = fee;
 
-		totalAmount = Number(req.body.amount) + Number(fee);
+		totalAmount = Number(amount) + Number(fee);
 
 		req.body.totalAmount = totalAmount;
 
@@ -434,16 +435,37 @@ async function postTransactionInitiate(req, res) {
 
 		req.body["transaction_time"] = currentDate;
 
-		req.body["accountName"] = req.body.accountName
-			? req.body.accountName
-			: undefined;
-		req.body["accountNumber"] = req.body.accountNumber
-			? req.body.accountNumber
-			: undefined;
+		req.body["accountName"] = accountName ? accountName : undefined;
+		req.body["accountNumber"] = accountNumber ? accountNumber : undefined;
 
-		if (req.body.network) {
+		try {
+			checkIfAccountExists = await Telco.findOne({
+				phoneNumber: phoneNumber,
+				network: network,
+				type: type,
+				createdBy: req.user._id,
+			});
+
+			if (checkIfAccountExists) {
+				verifiedName = checkIfAccountExists.verifiedName;
+				Log.info(
+					`[ApiController.js][postTransactionInitiate]\t retrieving verifiedName from database`
+				);
+			}
+		} catch (error) {
+			Log.info(
+				`[ApiController.js][postTransactionInitiate]\t error getting verified name: ${error}`
+			);
+		}
+
+		if (network && !checkIfAccountExists) {
 			const hubtelResponse = await restServices.postHubtelMSISDNSearchService(
-				req.body.phoneNumber
+				phoneNumber
+			);
+			Log.info(
+				`[ApiController.js][postTransactionInitiate]\t msisdn search result: ${JSON.stringify(
+					hubtelResponse
+				)}`
 			);
 
 			if (hubtelResponse && hubtelResponse.ResponseCode === "0000") {
@@ -525,9 +547,13 @@ async function postTransactionExecute(req, res) {
 		const decryptedTransaction = decrypt(encryptedTransaction);
 		const transactionDetails = JSON.parse(decryptedTransaction);
 
-		req.body = transactionDetails;
+		Log.info(
+			`[ApiController.js][postTransactionExecute]\t... transaction requestBody: ${JSON.stringify(
+				transactionDetails
+			)}`
+		);
 
-		console.log("transactionDetails: " + JSON.stringify(transactionDetails));
+		req.body = transactionDetails;
 
 		// give hubtel fee
 		const hubtelFee = await calculateCompositeFee(
@@ -1304,7 +1330,8 @@ async function getFeedback(req, res) {
 }
 // search mtn bundle
 async function postSearchDataBundleByNetwork(req, res) {
-	let hubtelResponse;
+	let hubtelResponse, verifiedName, checkIfAccountExists;
+	const { accountNumber, network, type, alias } = req.body;
 	const validationError = handleValidationErrors(req, res);
 	if (validationError) {
 		const errorRes = await apiErrors.create(
@@ -1315,26 +1342,82 @@ async function postSearchDataBundleByNetwork(req, res) {
 		);
 		return res.json(errorRes);
 	}
+
+	try {
+		checkIfAccountExists = await Telco.findOne({
+			phoneNumber: accountNumber,
+			network: network,
+			type: type,
+			createdBy: req.user._id,
+		});
+
+		if (checkIfAccountExists) {
+			verifiedName = checkIfAccountExists.verifiedName;
+			Log.info(
+				`[ApiController.js][postSearchDataBundleByNetwork]\t retrieving verifiedName from database`
+			);
+		}
+	} catch (error) {
+		Log.info(
+			`[ApiController.js][postSearchDataBundleByNetwork]\t error getting verified name: ${error}`
+		);
+	}
+
+	if (!checkIfAccountExists) {
+		try {
+			const hubtelResponse = await restServices.postHubtelMSISDNSearchService(
+				accountNumber
+			);
+			if (hubtelResponse && hubtelResponse.ResponseCode === "0000") {
+				const data = hubtelResponse.Data[0];
+				verifiedName = data.Value;
+			}
+		} catch (error) {
+			Log.info(
+				`[InternalApiController.js][postSearchDataBundleByNetwork][${req.user._id}]\t error getting verifiedName: ${error}`
+			);
+		}
+		try {
+			const telcoObject = new Telco({
+				phoneNumber: accountNumber,
+				network: network,
+				verifiedName: verifiedName ? verifiedName : undefined,
+				alias: alias ? alias : undefined,
+				type: type,
+				createdBy: req.user._id,
+			});
+			await telcoObject.save();
+		} catch (error) {
+			Log.info(
+				`[InternalApiController.js][postSearchDataBundleByNetwork][${req.user._id}]\t error storing data info: ${error}`
+			);
+		}
+	}
+
 	try {
 		Log.info(
-			`[ApiController.js][postSearchMtnBundle][${req.body.accountNumber}][${req.body.network}]\t incoming data bundle search request: ` +
+			`[ApiController.js][postSearchDataBundleByNetwork][${accountNumber}][${network}]\t incoming data bundle search request: ` +
 				req.ip
 		);
+		Log.info(
+			`[ApiController.js][postSearchDataBundleByNetwork][${accountNumber}][${network}]\t requestBody: ` +
+				JSON.stringify(req.body)
+		);
 
-		switch (req.body.network) {
+		switch (network) {
 			case "mtn-gh":
 				hubtelResponse = await restServices.postMtnDataSearchService(
-					req.body.accountNumber
+					accountNumber
 				);
 				break;
 			case "vodafone-gh":
 				hubtelResponse = await restServices.postTelecelDataSearchService(
-					req.body.accountNumber
+					accountNumber
 				);
 				break;
 			case "tigo-gh":
 				hubtelResponse = await restServices.postAirtelTigoDataSearchService(
-					req.body.accountNumber
+					accountNumber
 				);
 				break;
 			default:
@@ -1347,15 +1430,22 @@ async function postSearchDataBundleByNetwork(req, res) {
 		}
 
 		if (hubtelResponse) {
-			Log.info(
-				`[ApiController.js][postSearchMtnBundle][${req.body.accountNumber}][${req.body.network}]\t hubtelResponse: ` +
-					JSON.stringify(hubtelResponse)
-			);
-
 			if (hubtelResponse.ResponseCode === "0000") {
+				hubtelResponse["verifiedName"] = verifiedName
+					? verifiedName
+					: undefined;
 				hubtelResponse["success"] = true;
+				Log.info(
+					`[ApiController.js][postSearchDataBundleByNetwork][${accountNumber}][${network}]\t hubtelResponse: ` +
+						JSON.stringify(hubtelResponse)
+				);
 				return res.json(hubtelResponse);
 			}
+
+			Log.info(
+				`[ApiController.js][postSearchDataBundleByNetwork][${accountNumber}][${network}]\t hubtelResponse: ` +
+					JSON.stringify(hubtelResponse)
+			);
 			return res.json(hubtelResponse);
 		}
 		return res.json({

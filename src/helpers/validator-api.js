@@ -117,6 +117,12 @@ const validatePhoneRequest = [
 	body("phoneNumber").exists().withMessage("The Account Number is required"),
 ];
 
+
+const validateElectricity = [
+	body("phoneNumber").exists().withMessage("The Phone Number is required"),
+	body("meterId").exists().withMessage("Meter ID is required"),
+];
+
 module.exports = {
 	validateProfile,
 	validateWallet,
@@ -134,4 +140,5 @@ module.exports = {
 	validatePhoneRequest,
 	validateExecute,
 	validateGhanaWaterSearch,
+	validateElectricity,
 };

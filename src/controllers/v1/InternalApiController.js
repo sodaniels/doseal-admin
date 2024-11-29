@@ -1,6 +1,7 @@
 const Page = require("../../models/page.model");
 const User = require("../../models/user");
 const Electricity = require("../../models/electricity.model");
+const Telco = require("../../models/telco.model");
 const NewsRoom = require("../../models/news-room.model");
 const Notification = require("../../models/notification.model");
 const Wallet = require("../../models/wallet.model");
@@ -98,7 +99,7 @@ async function getNotifications(req, res) {
 		});
 	}
 }
-
+// post electricity infrmation
 async function postAddElectricity(req, res) {
 	try {
 		const { phoneNumber, meterId, meterName } = req.body;
@@ -114,8 +115,8 @@ async function postAddElectricity(req, res) {
 		});
 		if (checkIfExists) {
 			return res.json({
-				success: false,
-				code: 409,
+				success: true,
+				code: 200,
 				message: "Meter already exists",
 				data: checkIfExists,
 			});
@@ -155,9 +156,165 @@ async function postAddElectricity(req, res) {
 		});
 	}
 }
+// get electricity information
+async function getElectricity(req, res) {
+	Log.info(
+		`[InternalApiController.js][getElectricity]\t getting electricity information`
+	);
+	try {
+		const electricityData = await Electricity.find({
+			createdBy: req.user._id,
+		}).sort({
+			_id: -1,
+		});
+		if (electricityData) {
+			return res.json({
+				success: true,
+				code: 200,
+				data: electricityData,
+			});
+		} else {
+			return res.json({
+				success: false,
+				code: 404,
+				message: "No data found",
+			});
+		}
+	} catch (error) {
+		Log.error(
+			"[InternalApiController.js][getElectricity]..error retrieving electricity",
+			error
+		);
+		return res.json({
+			success: false,
+			code: 500,
+			message: "An error occurred while retrieving data",
+		});
+	}
+}
+// post airtime validation
+async function postAirtimeValidation(req, res) {
+	let verifiedName;
+	try {
+		const { phoneNumber, network, type, alias } = req.body;
+		Log.info(
+			`[InternalApiController.js][postAirtimeValidation][${
+				req.user._id
+			}]\t validating airtime: ${JSON.stringify(req.body)}`
+		);
+		const checkIfExists = await Telco.findOne({
+			phoneNumber: phoneNumber,
+			network: network,
+			type: type,
+			createdBy: req.user._id,
+		});
+		if (checkIfExists) {
+			return res.json({
+				success: true,
+				code: 200,
+				message: "Phone number already exists",
+				data: checkIfExists,
+			});
+		}
+
+		try {
+			const hubtelResponse = await restServices.postHubtelMSISDNSearchService(
+				phoneNumber
+			);
+			if (hubtelResponse && hubtelResponse.ResponseCode === "0000") {
+				const data = hubtelResponse.Data[0];
+				verifiedName = data.Value;
+			}
+		} catch (error) {
+			Log.info(
+				`[InternalApiController.js][postAirtimeValidation][${req.user._id}]\t error getting verifiedName: ${error}`
+			);
+		}
+
+		const telcoObject = new Telco({
+			phoneNumber: phoneNumber,
+			network: network,
+			verifiedName: verifiedName ? verifiedName : undefined,
+			alias: alias ? alias : undefined,
+			type: type,
+			createdBy: req.user._id,
+		});
+		const storeMeter = await telcoObject.save();
+		if (storeMeter) {
+			const telcoData = await Telco.findOne({
+				phoneNumber: phoneNumber,
+				network: network,
+				type: type,
+				alias: alias,
+				createdBy: req.user._id,
+			});
+			return res.json({
+				success: true,
+				code: 200,
+				message: "Information added successfully",
+				data: telcoData,
+			});
+		} else {
+			return res.json({
+				success: false,
+				code: 400,
+				message: "Information could not be added",
+			});
+		}
+	} catch (error) {
+		Log.info(
+			`[InternalApiController.js][postAirtimeValidation][${req.user._id}]\t error adding telco data: ${error}`
+		);
+		return res.json({
+			success: false,
+			code: 400,
+			message: "Error adding information",
+		});
+	}
+}
+// get airtime
+async function getAirtime(req, res) {
+	Log.info(
+		`[InternalApiController.js][getAirtime]\t getting airtime information`
+	);
+	try {
+		const airtimeData = await Telco.find({
+			createdBy: req.user._id,
+			type: "Airtime",
+		}).sort({
+			_id: -1,
+		});
+		if (airtimeData) {
+			return res.json({
+				success: true,
+				code: 200,
+				data: airtimeData,
+			});
+		} else {
+			return res.json({
+				success: false,
+				code: 404,
+				message: "No data found",
+			});
+		}
+	} catch (error) {
+		Log.error(
+			"[InternalApiController.js][getAirtime]..error retrieving airtime",
+			error
+		);
+		return res.json({
+			success: false,
+			code: 500,
+			message: "An error occurred while airtime data",
+		});
+	}
+}
 
 module.exports = {
 	getNews,
 	getNotifications,
 	postAddElectricity,
+	getElectricity,
+	postAirtimeValidation,
+	getAirtime,
 };

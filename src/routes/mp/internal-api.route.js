@@ -9,7 +9,17 @@ const validator = require("../../helpers/validator-api");
 router.get("/news", internalApiController.getNews);
 // get notifications
 router.get("/notifications", internalApiController.getNotifications);
-//
-router.post("/add-electricity", internalApiController.postAddElectricity);
+// post electricity information
+router.post(
+	"/electricity",
+	validator.validateElectricity,
+	internalApiController.postAddElectricity
+);
+// get electricity information
+router.get("/electricity", internalApiController.getElectricity);
+// post airimte validation
+router.post("/airtime", internalApiController.postAirtimeValidation);
+// get airtime
+router.get("/airtime", internalApiController.getAirtime);
 
 module.exports = router;
