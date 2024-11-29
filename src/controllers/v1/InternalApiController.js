@@ -309,6 +309,41 @@ async function getAirtime(req, res) {
 		});
 	}
 }
+// get data
+async function getData(req, res) {
+	Log.info(`[InternalApiController.js][getData]\t getting getData information`);
+	try {
+		const itemData = await Telco.find({
+			createdBy: req.user._id,
+			type: "DATA",
+		}).sort({
+			_id: -1,
+		});
+		if (itemData) {
+			return res.json({
+				success: true,
+				code: 200,
+				data: itemData,
+			});
+		} else {
+			return res.json({
+				success: false,
+				code: 404,
+				message: "No data found",
+			});
+		}
+	} catch (error) {
+		Log.error(
+			"[InternalApiController.js][getData]..error retrieving airtime",
+			error
+		);
+		return res.json({
+			success: false,
+			code: 500,
+			message: "An error occurred while airtime data",
+		});
+	}
+}
 
 module.exports = {
 	getNews,
@@ -317,4 +352,5 @@ module.exports = {
 	getElectricity,
 	postAirtimeValidation,
 	getAirtime,
+	getData,
 };

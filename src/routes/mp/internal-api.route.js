@@ -21,5 +21,7 @@ router.get("/electricity", internalApiController.getElectricity);
 router.post("/airtime", internalApiController.postAirtimeValidation);
 // get airtime
 router.get("/airtime", internalApiController.getAirtime);
+// get data
+router.get("/data", internalApiController.getData);
 
 module.exports = router;
