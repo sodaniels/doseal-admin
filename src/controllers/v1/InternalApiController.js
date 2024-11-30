@@ -2,6 +2,7 @@ const Page = require("../../models/page.model");
 const User = require("../../models/user");
 const Electricity = require("../../models/electricity.model");
 const Telco = require("../../models/telco.model");
+const TvStream = require("../../models/tv-streams.model");
 const NewsRoom = require("../../models/news-room.model");
 const Notification = require("../../models/notification.model");
 const Wallet = require("../../models/wallet.model");
@@ -344,6 +345,42 @@ async function getData(req, res) {
 		});
 	}
 }
+// get tv streams
+async function getTvStreams(req, res) {
+	Log.info(
+		`[InternalApiController.js][getTvStreams]\t getting tv-streams information`
+	);
+	try {
+		const itemData = await TvStream.find({
+			createdBy: req.user._id,
+		}).sort({
+			_id: -1,
+		});
+		if (itemData) {
+			return res.json({
+				success: true,
+				code: 200,
+				data: itemData,
+			});
+		} else {
+			return res.json({
+				success: false,
+				code: 404,
+				message: "No data found",
+			});
+		}
+	} catch (error) {
+		Log.error(
+			"[InternalApiController.js][getData]..error retrieving airtime",
+			error
+		);
+		return res.json({
+			success: false,
+			code: 500,
+			message: "An error occurred while airtime data",
+		});
+	}
+}
 
 module.exports = {
 	getNews,
@@ -353,4 +390,5 @@ module.exports = {
 	postAirtimeValidation,
 	getAirtime,
 	getData,
+	getTvStreams,
 };

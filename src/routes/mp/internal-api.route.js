@@ -23,5 +23,7 @@ router.post("/airtime", internalApiController.postAirtimeValidation);
 router.get("/airtime", internalApiController.getAirtime);
 // get data
 router.get("/data", internalApiController.getData);
+// get tv-stream
+router.get("/tv-streams", internalApiController.getTvStreams);
 
 module.exports = router;
