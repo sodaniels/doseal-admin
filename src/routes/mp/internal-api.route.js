@@ -25,5 +25,7 @@ router.get("/airtime", internalApiController.getAirtime);
 router.get("/data", internalApiController.getData);
 // get tv-stream
 router.get("/tv-streams", internalApiController.getTvStreams);
+// get ghana water
+router.get("/ghana-water", internalApiController.getGhanaWater);
 
 module.exports = router;

@@ -1,6 +1,7 @@
 const Page = require("../../models/page.model");
 const User = require("../../models/user");
 const Electricity = require("../../models/electricity.model");
+const Water = require("../../models/water.model");
 const Telco = require("../../models/telco.model");
 const TvStream = require("../../models/tv-streams.model");
 const NewsRoom = require("../../models/news-room.model");
@@ -381,6 +382,42 @@ async function getTvStreams(req, res) {
 		});
 	}
 }
+// get ghana water
+async function getGhanaWater(req, res) {
+	Log.info(
+		`[InternalApiController.js][getGhanaWater]\t getting ghana water information`
+	);
+	try {
+		const itemData = await Water.find({
+			createdBy: req.user._id,
+		}).sort({
+			_id: -1,
+		});
+		if (itemData) {
+			return res.json({
+				success: true,
+				code: 200,
+				data: itemData,
+			});
+		} else {
+			return res.json({
+				success: false,
+				code: 404,
+				message: "No data found",
+			});
+		}
+	} catch (error) {
+		Log.error(
+			"[InternalApiController.js][getData]..error retrieving airtime",
+			error
+		);
+		return res.json({
+			success: false,
+			code: 500,
+			message: "An error occurred while airtime data",
+		});
+	}
+}
 
 module.exports = {
 	getNews,
@@ -391,4 +428,5 @@ module.exports = {
 	getAirtime,
 	getData,
 	getTvStreams,
+	getGhanaWater,
 };

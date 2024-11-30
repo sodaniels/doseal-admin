@@ -2,6 +2,7 @@ const Page = require("../../models/page.model");
 const User = require("../../models/user");
 const Wallet = require("../../models/wallet.model");
 const Telco = require("../../models/telco.model");
+const Water = require("../../models/water.model");
 const TvStream = require("../../models/tv-streams.model");
 const Transaction = require("../../models/transaction.model");
 const ReportIssue = require("../../models/report-issue.model");
@@ -1124,7 +1125,17 @@ async function postHubtelTvStreamingSearch(req, res) {
 }
 // search ghana water account
 async function postHubtelGhanaWaterAccountSearch(req, res) {
-	let hubtelResponse;
+	let checkIfAccountExists, hubtelResponse, verifiedName, hubtelResponse_;
+	const { accountNumber, phoneNumber, type } = req.body;
+	Log.info(
+		`[ApiController.js][postHubtelGhanaWaterAccountSearch]\t incoming ghana water account search request: ` +
+			req.ip
+	);
+	Log.info(
+		`[ApiController.js][postHubtelGhanaWaterAccountSearch]\t requestBody: ${JSON.stringify(
+			req.body
+		)}`
+	);
 	const validationError = handleValidationErrors(req, res);
 	if (validationError) {
 		const errorRes = await apiErrors.create(
@@ -1135,20 +1146,75 @@ async function postHubtelGhanaWaterAccountSearch(req, res) {
 		);
 		return res.json(errorRes);
 	}
-	try {
-		Log.info(
-			`[ApiController.js][postHubtelStarTimesTvAccountSearch]\t incoming ghana water account search request: ` +
-				req.ip
-		);
 
+	try {
+		checkIfAccountExists = await Water.findOne({
+			accountNumber: accountNumber,
+			phoneNumber: phoneNumber,
+			createdBy: req.user._id,
+		});
+
+		if (checkIfAccountExists) {
+			verifiedName = checkIfAccountExists.verifiedName;
+			Log.info(
+				`[ApiController.js][postHubtelGhanaWaterAccountSearch]\t retrieving verifiedName from database`
+			);
+		}
+	} catch (error) {
+		Log.info(
+			`[ApiController.js][postHubtelGhanaWaterAccountSearch]\t error getting verified name: ${error}`
+		);
+	}
+
+	if (!checkIfAccountExists) {
+		try {
+			hubtelResponse_ =
+				await restServices.postHubtelGhanaWaterAccountSearchService(
+					accountNumber,
+					phoneNumber
+				);
+			if (hubtelResponse_ && hubtelResponse_.ResponseCode === "0000") {
+				const data = hubtelResponse_.Data[0];
+				verifiedName = data.Value;
+			}
+		} catch (error) {
+			Log.info(
+				`[InternalApiController.js][postHubtelGhanaWaterAccountSearch][${req.user._id}]\t error getting verifiedName: ${error}`
+			);
+		}
+
+		try {
+			const itemObject = new Water({
+				accountNumber: accountNumber,
+				phoneNumber: phoneNumber,
+				verifiedName: verifiedName ? verifiedName : undefined,
+				type: type,
+				createdBy: req.user._id,
+			});
+			await itemObject.save();
+
+			hubtelResponse_["verifiedName"] = verifiedName ? verifiedName : undefined;
+			hubtelResponse["success"] = true;
+			return res.json(hubtelResponse_);
+		} catch (error) {
+			Log.info(
+				`[InternalApiController.js][postHubtelTvStreamingSearch][${req.user._id}]\t error storing data info: ${error}`
+			);
+		}
+	}
+
+	try {
 		hubtelResponse =
 			await restServices.postHubtelGhanaWaterAccountSearchService(
-				req.body.accountNumber,
-				req.body.phoneNumber
+				accountNumber,
+				phoneNumber
 			);
 		if (hubtelResponse) {
 			if (hubtelResponse.ResponseCode === "0000") {
 				hubtelResponse["success"] = true;
+				hubtelResponse["verifiedName"] = verifiedName
+					? verifiedName
+					: undefined;
 				return res.json(hubtelResponse);
 			}
 			return res.json(hubtelResponse);
