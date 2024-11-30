@@ -1330,8 +1330,13 @@ async function getFeedback(req, res) {
 }
 // search mtn bundle
 async function postSearchDataBundleByNetwork(req, res) {
-	let hubtelResponse, verifiedName, checkIfAccountExists;
-	const { accountNumber, network, type, alias } = req.body;
+	Log.info(
+		`[ApiController.js][postSearchDataBundleByNetwork]\t requestBody: ${JSON.stringify(
+			req.body
+		)}`
+	);
+	let hubtelResponse, verifiedName, checkIfAccountExists, internetResponse;
+	let { accountNumber, network, type, alias } = req.body;
 	const validationError = handleValidationErrors(req, res);
 	if (validationError) {
 		const errorRes = await apiErrors.create(
@@ -1365,18 +1370,51 @@ async function postSearchDataBundleByNetwork(req, res) {
 
 	if (!checkIfAccountExists) {
 		try {
-			const hubtelResponse = await restServices.postHubtelMSISDNSearchService(
-				accountNumber
-			);
-			if (hubtelResponse && hubtelResponse.ResponseCode === "0000") {
-				const data = hubtelResponse.Data[0];
-				verifiedName = data.Value;
+			if (
+				network === "telecel-broadband" ||
+				network === "telecel-postpaid-bill"
+			) {
+				switch (network) {
+					case "telecel-broadband":
+						internetResponse =
+							await restServices.postHubtelTelecelBroadbandSearchService(
+								accountNumber
+							);
+						if (internetResponse && internetResponse.ResponseCode === "0000") {
+							const data = internetResponse.Data[0];
+							verifiedName = data.Value;
+						}
+
+						console.log("verifiedName: " + verifiedName);
+						break;
+					case "telecel-postpaid-bill":
+						internetResponse =
+							await restServices.postHubtelTelecelPostpaidSearchService(
+								accountNumber
+							);
+						if (internetResponse && internetResponse.ResponseCode === "0000") {
+							const data = internetResponse.Data[0];
+							verifiedName = data.Value;
+						}
+						break;
+					default:
+						break;
+				}
+			} else {
+				const hubtelResponse = await restServices.postHubtelMSISDNSearchService(
+					accountNumber
+				);
+				if (hubtelResponse && hubtelResponse.ResponseCode === "0000") {
+					const data = hubtelResponse.Data[0];
+					verifiedName = data.Value;
+				}
 			}
 		} catch (error) {
 			Log.info(
 				`[InternalApiController.js][postSearchDataBundleByNetwork][${req.user._id}]\t error getting verifiedName: ${error}`
 			);
 		}
+
 		try {
 			const telcoObject = new Telco({
 				phoneNumber: accountNumber,
@@ -1420,6 +1458,24 @@ async function postSearchDataBundleByNetwork(req, res) {
 					accountNumber
 				);
 				break;
+
+			case "telecel-broadband":
+				hubtelResponse =
+					await restServices.postHubtelTelecelBroadbandSearchService(
+						accountNumber
+					);
+				break;
+			// case "telecel-broadband":
+			// case "telecel-postpaid-bill":
+			// 	internetResponse["verifiedName"] = verifiedName
+			// 		? verifiedName
+			// 		: undefined;
+			// 	internetResponse["success"] = true;
+			// 	Log.info(
+			// 		`[ApiController.js][postSearchDataBundleByNetwork][${accountNumber}][${network}]\t internetResponse: ` +
+			// 			JSON.stringify(internetResponse)
+			// 	);
+			// 	return res.json(internetResponse);
 			default:
 				return res.json({
 					success: false,
