@@ -1465,17 +1465,12 @@ async function postSearchDataBundleByNetwork(req, res) {
 						accountNumber
 					);
 				break;
-			// case "telecel-broadband":
-			// case "telecel-postpaid-bill":
-			// 	internetResponse["verifiedName"] = verifiedName
-			// 		? verifiedName
-			// 		: undefined;
-			// 	internetResponse["success"] = true;
-			// 	Log.info(
-			// 		`[ApiController.js][postSearchDataBundleByNetwork][${accountNumber}][${network}]\t internetResponse: ` +
-			// 			JSON.stringify(internetResponse)
-			// 	);
-			// 	return res.json(internetResponse);
+			case "telecel-postpaid-bill":
+				hubtelResponse =
+					await restServices.postHubtelTelecelPostpaidSearchService(
+						accountNumber
+					);
+				break;
 			default:
 				return res.json({
 					success: false,
