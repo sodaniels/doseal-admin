@@ -2,6 +2,7 @@ const Page = require("../../models/page.model");
 const User = require("../../models/user");
 const Wallet = require("../../models/wallet.model");
 const Telco = require("../../models/telco.model");
+const TvStream = require("../../models/tv-streams.model");
 const Transaction = require("../../models/transaction.model");
 const ReportIssue = require("../../models/report-issue.model");
 const Help = require("../../models/help.model");
@@ -945,6 +946,166 @@ async function postHubtelStarTimesTvAccountSearch(req, res) {
 		if (hubtelResponse) {
 			if (hubtelResponse.ResponseCode === "0000") {
 				hubtelResponse["success"] = true;
+				return res.json(hubtelResponse);
+			}
+			return res.json(hubtelResponse);
+		}
+		return res.json({
+			success: false,
+			message: ServiceCode.FAILED,
+		});
+	} catch (error) {
+		return res.json({
+			success: false,
+			error: error.message,
+			message: ServiceCode.ERROR_OCCURED,
+		});
+	}
+}
+// search tv streaming
+async function postHubtelTvStreamingSearch(req, res) {
+	let verifiedName, checkIfAccountExists, hubtelResponse_;
+	const { accountNumber, type } = req.body;
+	Log.info(
+		`[ApiController.js][postHubtelTvStreamingSearch][${accountNumber}]\t incoming tv account search: IP: ` +
+			req.ip
+	);
+	Log.info(
+		`[ApiController.js][postHubtelTvStreamingSearch]\t requestBody: ` +
+			JSON.stringify(req.body)
+	);
+	let hubtelResponse;
+
+	const validationError = handleValidationErrors(req, res);
+	if (validationError) {
+		const errorRes = await apiErrors.create(
+			errorMessages.errors.API_MESSAGE_DSTV_FAILED,
+			"POST",
+			validationError,
+			undefined
+		);
+		return res.json(errorRes);
+	}
+	try {
+		checkIfAccountExists = await TvStream.findOne({
+			accountNumber: accountNumber,
+			type: type,
+			createdBy: req.user._id,
+		});
+
+		if (checkIfAccountExists) {
+			verifiedName = checkIfAccountExists.verifiedName;
+			Log.info(
+				`[ApiController.js][postHubtelTvStreamingSearch]\t retrieving verifiedName from database`
+			);
+		}
+	} catch (error) {
+		Log.info(
+			`[ApiController.js][postHubtelTvStreamingSearch]\t error getting verified name: ${error}`
+		);
+	}
+
+	if (!checkIfAccountExists) {
+		try {
+			switch (type) {
+				case "DSTV":
+					hubtelResponse_ =
+						await restServices.postHubtelDstvAccountSearchService(
+							accountNumber
+						);
+					if (hubtelResponse_ && hubtelResponse_.ResponseCode === "0000") {
+						const data = hubtelResponse_.Data[0];
+						verifiedName = data.Value;
+					}
+					break;
+				case "GOTV":
+					hubtelResponse_ =
+						await restServices.postHubtelGoTVAccountSearchService(
+							accountNumber
+						);
+					if (hubtelResponse_ && hubtelResponse_.ResponseCode === "0000") {
+						const data = hubtelResponse_.Data[0];
+						verifiedName = data.Value;
+					}
+					break;
+				case "STARTV":
+					hubtelResponse_ =
+						await restServices.postHubtelStartTimeTVAccountSearchService(
+							accountNumber
+						);
+					if (hubtelResponse_ && hubtelResponse_.ResponseCode === "0000") {
+						const data = hubtelResponse_.Data[0];
+						verifiedName = data.Value;
+					}
+					break;
+				default:
+					break;
+			}
+		} catch (error) {
+			Log.info(
+				`[InternalApiController.js][postHubtelTvStreamingSearch][${req.user._id}]\t error getting verifiedName: ${error}`
+			);
+		}
+
+		try {
+			const tvStreamObject = new TvStream({
+				accountNumber: accountNumber,
+				verifiedName: verifiedName ? verifiedName : undefined,
+				type: type,
+				createdBy: req.user._id,
+			});
+			await tvStreamObject.save();
+
+			hubtelResponse_["verifiedName"] = verifiedName ? verifiedName : undefined;
+			hubtelResponse["success"] = true;
+			return res.json(hubtelResponse_);
+		} catch (error) {
+			Log.info(
+				`[InternalApiController.js][postHubtelTvStreamingSearch][${req.user._id}]\t error storing data info: ${error}`
+			);
+		}
+	}
+
+	try {
+		switch (type) {
+			case "DSTV":
+				hubtelResponse = await restServices.postHubtelDstvAccountSearchService(
+					accountNumber
+				);
+				break;
+			case "GOTV":
+				hubtelResponse = await restServices.postHubtelGoTVAccountSearchService(
+					accountNumber
+				);
+				break;
+			case "STARTIMESTV":
+				hubtelResponse =
+					await restServices.postHubtelStartTimeTVAccountSearchService(
+						accountNumber
+					);
+				break;
+			default:
+				break;
+		}
+
+		if (hubtelResponse) {
+			Log.info(
+				`[ApiController.js][postHubtelTvStreamingSearch][${accountNumber}]\t hubtelResponse: ` +
+					JSON.stringify(hubtelResponse)
+			);
+
+			if (hubtelResponse.ResponseCode === "0000") {
+				hubtelResponse["success"] = true;
+				hubtelResponse["verifiedName"] = verifiedName
+					? verifiedName
+					: undefined;
+				return res.json(hubtelResponse);
+			}
+			if (hubtelResponse.ResponseCode === "4000") {
+				hubtelResponse["success"] = false;
+				hubtelResponse["verifiedName"] = verifiedName
+					? verifiedName
+					: undefined;
 				return res.json(hubtelResponse);
 			}
 			return res.json(hubtelResponse);
@@ -1964,4 +2125,5 @@ module.exports = {
 	postReportFault,
 	postHubtelTelecelPostpaidSearch,
 	postHubtelTelecelBroadbandSearch,
+	postHubtelTvStreamingSearch,
 };

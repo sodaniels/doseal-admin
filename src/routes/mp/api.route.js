@@ -6,7 +6,6 @@ const apiController = require("../../controllers/v1/ApiController");
 const hubtelController = require("../../controllers/v1/HubtelController");
 const validator = require("../../helpers/validator-api");
 
-
 // post topup wallet
 router.post(
 	"/topup-wallet",
@@ -63,6 +62,12 @@ router.post(
 );
 // hubtel payment checkout
 router.post("/hubtel-payment-checkout", hubtelController.HubtelPaymentCheckout);
+// internet search
+router.post(
+	"/search-tv-streaming",
+	validator.validateUtilitySearch,
+	apiController.postHubtelTvStreamingSearch
+);
 // hubtel dstv search
 router.post(
 	"/search-dstv-account",
@@ -142,7 +147,5 @@ router.post(
 	validator.validateUtilitySearch,
 	apiController.postHubtelTelecelBroadbandSearch
 );
-
-
 
 module.exports = router;
