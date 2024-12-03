@@ -509,6 +509,7 @@ async function postTransactionInitiate(req, res) {
 // post transacion execute
 async function postTransactionExecute(req, res) {
 	let transaction, hubtelPaymentResponse, description, referrer, user;
+	const { amount } = req.body;
 	const validationError = handleValidationErrors(req, res);
 	if (validationError) {
 		const errorRes = await apiErrors.create(
@@ -524,14 +525,20 @@ async function postTransactionExecute(req, res) {
 			`[ApiController.js][postTransactionExecute]\t incoming transaction execute request: ` +
 				req.ip
 		);
+
 		const transactionId = rand10Id().toString();
 		const checksum = req.body.checksum;
+
+		const useEarnings = req.body.useEarnings;
 
 		const encryptedTransaction = await getRedis(checksum);
 
 		if (!encryptedTransaction) {
 			Log.info(
 				`[ApiController.js][postTransactionExecute]\t... transaction validation failed`
+			);
+			Log.info(
+				`[ApiController.js][postTransactionExecute]\t... useEarnings: ${useEarnings}`
 			);
 			const errorRes = await apiErrors.create(
 				errorMessages.errors.API_MESSAGE_TRANSACTION_FAILED,
@@ -615,7 +622,7 @@ async function postTransactionExecute(req, res) {
 		}
 
 		try {
-			user = await User.findOne({ _id: req.user._id }).select("_id referrer");
+			user = await User.findOne({ _id: req.user._id });
 			Log.info(
 				`[ApiController.js][postTransactionExecute][${uniqueId}]\t retrieving user referrer: ${user.referrer}`
 			);
@@ -633,6 +640,7 @@ async function postTransactionExecute(req, res) {
 			category: "DR",
 			type: req.body.type,
 			amount: req.body.amount,
+			useEarnings: useEarnings ? useEarnings : undefined,
 			verifiedName: req.body.verifiedName ? req.body.verifiedName : undefined,
 			fee: req.body.fee,
 			commission: commission,
@@ -685,36 +693,43 @@ async function postTransactionExecute(req, res) {
 				);
 			}
 
-			try {
-				hubtelPaymentResponse = await restServices.postHubtelPaymentService(
-					req.body.totalAmount,
-					description,
-					uniqueId
-				);
-
-				if (hubtelPaymentResponse) {
-					Log.info(
-						`[ApiController.js][postTransactionExecute][${uniqueId}]\t hubtel payment response : ` +
-							JSON.stringify(hubtelPaymentResponse)
+			if (
+				useEarnings &&
+				Number(user.transactions) >= Number(req.body.totalAmount)
+			) {
+				
+			} else {
+				try {
+					hubtelPaymentResponse = await restServices.postHubtelPaymentService(
+						req.body.totalAmount,
+						description,
+						uniqueId
 					);
-					return res.json(hubtelPaymentResponse);
-				}
 
-				return res.json({
-					success: false,
-					code: 400,
-					message: "Payment error occurred",
-				});
-			} catch (error) {
-				Log.info(
-					`[ApiController.js][postTransactionExecute][${uniqueId}]\t hubtel payment error : ${error}`
-				);
-				return res.json({
-					success: false,
-					code: 500,
-					error: error.message,
-					message: "Payment error occurred",
-				});
+					if (hubtelPaymentResponse) {
+						Log.info(
+							`[ApiController.js][postTransactionExecute][${uniqueId}]\t hubtel payment response : ` +
+								JSON.stringify(hubtelPaymentResponse)
+						);
+						return res.json(hubtelPaymentResponse);
+					}
+
+					return res.json({
+						success: false,
+						code: 400,
+						message: "Payment error occurred",
+					});
+				} catch (error) {
+					Log.info(
+						`[ApiController.js][postTransactionExecute][${uniqueId}]\t hubtel payment error : ${error}`
+					);
+					return res.json({
+						success: false,
+						code: 500,
+						error: error.message,
+						message: "Payment error occurred",
+					});
+				}
 			}
 		}
 	} catch (error) {

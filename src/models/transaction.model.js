@@ -133,6 +133,10 @@ const tranactionSchema = new Schema({
 		required: false,
 		default: 411,
 	},
+	useEarnings: {
+		type: Boolean,
+		required: false,
+	},
 	retried: {
 		type: Boolean,
 		required: false,
