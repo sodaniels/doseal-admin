@@ -78,7 +78,11 @@ async function postHubtelAirtimeTopup(req, res) {
 				break;
 		}
 
-		if (transaction.ResponseCode === "0000" && transaction.referrer) {
+		if (
+			transaction.ResponseCode === "0000" &&
+			transaction.referrer &&
+			Number(transaction.amount >= 20) // credit referrer when amount sent is greater or equal to 20 ghs
+		) {
 			try {
 				/** processing referrer*/
 				Log.info(
@@ -285,6 +289,29 @@ async function postHubtelUtilityCallbackServices(req, res) {
 			Log.info(
 				`[CallbackController.js][postHubtelUtilityCallbackServices][${transactionId}]\t error saving callback data: ${error}`
 			);
+		}
+
+		if (
+			transaction.ResponseCode === "0000" &&
+			transaction.referrer &&
+			Number(transaction.amount >= 20) // credit referrer when amount sent is greater or equal to 20 ghs
+		) {
+			try {
+				/** processing referrer*/
+				Log.info(
+					`[CallbackController.js][postHubtelUtilityCallbackServices]\t processing referrer`
+				);
+				try {
+					await referralCodeProcessor(
+						transaction.createdBy,
+						transaction.referrer
+					);
+				} catch (error) {
+					Log.info(
+						`[CallbackController.js][postHubtelUtilityCallbackServices]\t error processing referrer ${error}`
+					);
+				}
+			} catch (error) {}
 		}
 
 		try {
