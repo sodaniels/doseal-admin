@@ -1,213 +1,203 @@
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<meta charset="UTF-8" />
-		<meta
-			name="viewport"
-			content="width=device-width, initial-scale=1.0" />
-		<title>Doseal - Login</title>
-		<link
-			href="/assets/gen4-login/css/select2.min.css"
-			rel="stylesheet" />
-		<link
-			href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
-			rel="stylesheet" />
-           
-            
-		<!-- <script
-			src="https://www.google.com/recaptcha/api.js"
-			async
-			defer></script>
-		<style>
-			.g-recaptcha {
-				float: left;
-			}
-		</style> -->
-        
-		<meta
-			name="csrf-token"
-			content="<%= csrfToken %>" />
-		<style>
-
-			body {
-				display: flex;
-				justify-content: center;
-				align-items: center;
-				height: 100vh;
-				margin: 0;
-				background-color: white;
-			}
-			.container {
-				text-align: center;
-				max-width: 400px; /* Limit container width */
-				width: 100%; /* Full width on smaller screens */
-			}
-			.logo {
-				margin-bottom: 20px;
-			}
-			.phone-input {
-				width: 100%; /* Full width for the input */
-			}
-			.country-code {
-				width: 35%; /* Adjusted width for the country code dropdown */
-			}
-			.form-row {
-				margin-bottom: 15px; /* Space between rows */
-			}
-		
-            .btn-enabled {
-                background-color: #362a9f;
-                color: white; /* Adjust text color for visibility */
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Doseal - Login</title>
+    <link href="/assets/gen4-login/css/select2.min.css" rel="stylesheet" />
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet" />
+    <meta name="csrf-token" content="<%= csrfToken %>" />
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 70vh;
+            margin: 0;
+            background-color: white;
+        }
+        .container {
+            text-align: center;
+            max-width: 400px;
+            width: 100%;
+        }
+        .logo {
+            margin-bottom: 20px;
+        }
+        .form-row {
+            display: flex;
+            flex-wrap: nowrap;
+            align-items: center;
+            margin-bottom: 15px;
+            gap: 0; /* Ensures no gap between elements */
+        }
+        .form-row .col-md-4,
+        .form-row .col-md-8 {
+            padding: 0; /* Removes padding from the columns */
+        }
+        .form-row .col-md-4 {
+            max-width: 35%;
+        }
+        .form-row .col-md-8 {
+            flex: 1;
+        }
+        .phone-input,
+        .form-control {
+            width: 100%;
+            border-radius: 0; /* Ensures a seamless connection between fields */
+        }
+        .form-control:first-child {
+            border-top-right-radius: 0;
+            border-bottom-right-radius: 0;
+        }
+        .form-control:last-child {
+            border-top-left-radius: 0;
+            border-bottom-left-radius: 0;
+        }
+        .btn-enabled {
+            background-color: #362a9f;
+            color: white;
+        }
+        .btn {
+            background-color: transparent;
+            color: black;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        .btn-enabled:hover {
+            background-color: #493cc1;
+            color: white;
+        }
+        #loadingOverlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .spinner {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            width: 100px;
+            height: 100px;
+        }
+        .spinner::before,
+        .spinner::after {
+            content: "";
+            position: absolute;
+            border-radius: 50%;
+            animation: pulsate 1.5s infinite ease-in-out;
+        }
+        .spinner::before {
+            width: 60px;
+            height: 60px;
+            border: 6px solid #ff6b6b;
+            animation-delay: 0s;
+        }
+        .spinner::after {
+            width: 80px;
+            height: 80px;
+            border: 6px solid #3498db;
+            animation-delay: 0.75s;
+        }
+        .inner-spinner {
+            width: 40px;
+            height: 40px;
+            border: 5px solid transparent;
+            border-top: 5px solid #fff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
             }
-            .btn {
-                background-color: transparent; /* Default button color when disabled */
-                color: black; /* Default text color */
-                transition: background-color 0.3s ease, color 0.3s ease; /* Smooth transition */
+            100% {
+                transform: rotate(360deg);
             }
-
-            .btn-enabled {
-                background-color: #362a9f; /* Color when enabled */
-                color: white; /* Text color when enabled */
+        }
+        @keyframes pulsate {
+            0%,
+            100% {
+                transform: scale(1);
+                opacity: 1;
             }
-
-            .btn-enabled:hover {
-                background-color: #493cc1; /* Darker blue on hover */
-                color: white; /* Maintain text color */
+            50% {
+                transform: scale(1.5);
+                opacity: 0.5;
             }
-                        
-		</style>
-
-        <style>
-            #loadingOverlay {
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                background: rgba(0, 0, 0, 0.6);
-                display: none; /* Initially hidden */
-                justify-content: center;
-                align-items: center;
-                z-index: 1000;
-            }
-            .spinner {
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                position: relative;
-                width: 100px;
-                height: 100px;
-            }
-            .spinner::before,
-            .spinner::after {
-                content: "";
-                position: absolute;
-                border-radius: 50%;
-                animation: pulsate 1.5s infinite ease-in-out;
-            }
-            .spinner::before {
-                width: 60px;
-                height: 60px;
-                border: 6px solid #ff6b6b;
-                animation-delay: 0s;
-            }
-            .spinner::after {
-                width: 80px;
-                height: 80px;
-                border: 6px solid #3498db;
-                animation-delay: 0.75s;
-            }
-            .inner-spinner {
-                width: 40px;
-                height: 40px;
-                border: 5px solid transparent;
-                border-top: 5px solid #fff;
-                border-radius: 50%;
-                animation: spin 1s linear infinite;
-            }
-            @keyframes spin {
-                0% {
-                    transform: rotate(0deg);
-                }
-                100% {
-                    transform: rotate(360deg);
-                }
-            }
-            @keyframes pulsate {
-                0%,
-                100% {
-                    transform: scale(1);
-                    opacity: 1;
-                }
-                50% {
-                    transform: scale(1.5);
-                    opacity: 0.5;
-                }
-            }
-        </style>
-
+        }
+    </style>
     <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
-	</head>
-	<body>
-
-        <div id="loadingOverlay">
-            <div class="spinner">
-                <div class="inner-spinner"></div>
+</head>
+<body>
+    <div id="loadingOverlay">
+        <div class="spinner">
+            <div class="inner-spinner"></div>
+        </div>
+    </div>
+    <div class="container">
+        <div class="logo">
+            <div class="text-center mb-4 pb-2">
+                <img src="/assets/gen4-login/images/doseal-web-logo.webp" alt="logo" class="" width="15%" />
+                <h3>Doseal Limited</h3>
             </div>
         </div>
-
-		<div class="container">
-			<div class="logo">
-				<div class="text-center mb-4 pb-2">
-					<img
-						src="/assets/gen4-login/images/doseal-web-logo.webp"
-						alt="logo"
-						class=""
-						width="15%" />
-					<h3>Doseal Limited</h3>
-				</div>
-			</div>
-			<div class="form-row align-items-center mb-3" style="margin-top: 4em;">
-				<div
-					class="col-md-4"
-					style="margin-right: -0.7em">
-					<select class="form-control" style="height: 50px !important" id="countryCode">
-                        <% countries.forEach(country => { %>
-                            <option value="<%= country.code %>" <%= country.code === '+233' ? 'selected' : '' %>>
-                                <%= country.flag %> <%= country.code %> <%= country.name %>
-                            </option>
-                        <% }) %>
-                    </select>
-				</div>
-				<div class="col-md-8">
-					<input
-						style="height: 50px"
-						type="tel"
-                        id="phoneNumber"
-						class="form-control phone-input"
-						placeholder="Phone Number"
-						required />
-				</div>
-			</div>
-			<div style="text-align: center;" >
-                <!-- <div class="g-recaptcha mb-3" data-sitekey="<%= SITE_KEY %>" style="display: inline-block;"></div> -->
-                <div class="cf-turnstile" data-sitekey="<%= SITE_KEY %>"></div>
-                <input type="hidden" id="env" value="<%= environment %>" >
+        <div class="form-row align-items-center mb-3" style="margin-top: 2em;">
+            <div class="col-md-4">
+                <select class="form-control" style="height: 50px !important" id="countryCode">
+                    <% countries.forEach(country => { %>
+                        <option value="<%= country.code %>" <%= country.code === '+233' ? 'selected' : '' %>>
+                            <%= country.flag %> <%= country.code %> <%= country.name %>
+                        </option>
+                    <% }) %>
+                </select>
             </div>
-            <button
-                class="btn px-5 w-100 d-block fw-bold"
-                id="loginButton"
-                type="submit"
-                disabled="">
-                Continue
-            </button>
-		</div>
+            <div class="col-md-8">
+                <input
+                    style="height: 50px"
+                    type="tel"
+                    id="phoneNumber"
+                    class="form-control phone-input"
+                    placeholder="Phone Number"
+                    required />
+            </div>
+        </div>
+        <div class="form-row align-items-center mb-3">
+            <div class="col-md-12">
+                <input
+                    style="height: 50px"
+                    type="text"
+                    id="referralCode"
+                    class="form-control phone-input"
+                    placeholder="Referral Code"
+                    required />
+            </div>
 
-		<script src="/assets/gen4-login/js/jquery-3.6.0.min.js"></script>
-		<script src="/assets/gen4-login/js/select2.min.js"></script>
-		<script src="/assets/gen4-login/js/sweetalert2.all.min.js"></script>
-		<script src="/assets/gen4-login/js/process-login.js"></script>
-		<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
-		<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-	</body>
+        </div>
+        <div style="text-align: center;">
+            <div class="cf-turnstile" data-sitekey="<%= SITE_KEY %>"></div>
+            <input type="hidden" id="env" value="<%= environment %>" />
+        </div>
+        <button
+            class="btn px-5 w-100 d-block fw-bold"
+            id="loginButton"
+            type="submit"
+            disabled="">
+            Continue
+        </button>
+    </div>
+    <script src="/assets/gen4-login/js/jquery-3.6.0.min.js"></script>
+    <script src="/assets/gen4-login/js/select2.min.js"></script>
+    <script src="/assets/gen4-login/js/sweetalert2.all.min.js"></script>
+    <script src="/assets/gen4-login/js/process-login.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
 </html>
