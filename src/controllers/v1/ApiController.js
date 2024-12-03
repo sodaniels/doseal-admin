@@ -508,7 +508,7 @@ async function postTransactionInitiate(req, res) {
 }
 // post transacion execute
 async function postTransactionExecute(req, res) {
-	let transaction, hubtelPaymentResponse, description;
+	let transaction, hubtelPaymentResponse, description, referrer, user;
 	const validationError = handleValidationErrors(req, res);
 	if (validationError) {
 		const errorRes = await apiErrors.create(
@@ -614,10 +614,22 @@ async function postTransactionExecute(req, res) {
 				break;
 		}
 
+		try {
+			user = await User.findOne({ _id: req.user._id }).select("_id referrer");
+			Log.info(
+				`[ApiController.js][postTransactionExecute][${uniqueId}]\t retrieving user referrer: ${user.referrer}`
+			);
+		} catch (error) {
+			Log.info(
+				`[ApiController.js][postTransactionExecute][${uniqueId}]\t error loading referrer: ${error}`
+			);
+		}
+
 		const debitDataObject = new Transaction({
 			createdBy: req.user._id,
 			transactionId: transactionId,
 			internalReference: uniqueId,
+			referrer: user ? user.referrer : undefined,
 			category: "DR",
 			type: req.body.type,
 			amount: req.body.amount,

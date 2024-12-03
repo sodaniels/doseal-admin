@@ -14,6 +14,9 @@ const TRANSTATS = require("../../models/TransactionStats.model");
 
 const restServices = new RestServices();
 
+const mongoose = require("mongoose");
+const ObjectId = mongoose.Types.ObjectId;
+
 // post hubtel airtime topup transaction
 async function postHubtelAirtimeTopup(req, res) {
 	let saveTransaction, transactionId;
@@ -73,6 +76,25 @@ async function postHubtelAirtimeTopup(req, res) {
 				transaction.statusCode = 400;
 				transaction.statusMessage = "Transaction Failed";
 				break;
+		}
+
+		if (transaction.ResponseCode === "0000" && transaction.referrer) {
+			try {
+				/** processing referrer*/
+				Log.info(
+					`[CallbackController.js][postHubtelAirtimeTopup]\t processing referrer`
+				);
+				try {
+					await referralCodeProcessor(
+						transaction.createdBy,
+						transaction.referrer
+					);
+				} catch (error) {
+					Log.info(
+						`[CallbackController.js][postHubtelAirtimeTopup]\t error processing referrer ${error}`
+					);
+				}
+			} catch (error) {}
 		}
 
 		try {
@@ -647,6 +669,7 @@ async function commitCreditTransaction(transaction) {
 			commonReference: transaction.internalReference,
 			category: "CR",
 			type: transaction.type,
+			referrer: transaction.referrer ? transaction.referrer : undefined,
 			amount: transaction.amount,
 			totalAmount: transaction.totalAmount,
 			fee: transaction.fee,
@@ -1008,7 +1031,6 @@ async function updateDrTransactionStatus(transaction, Description) {
 		);
 	}
 }
-
 /**helper functions*/
 async function getTransactionByTransactionId(transactionId) {
 	try {
@@ -1074,6 +1096,37 @@ async function getBalanceTransferByTransferId(transferId) {
 }
 /**helper functions*/
 
+async function referralCodeProcessor(owner, referrer) {
+	Log.info(
+		`[CallbackController.js][referralCodeProcessor] \t processing referral code`
+	);
+	try {
+		let user = await User.findOneAndUpdate(
+			{
+				_id: new ObjectId(referrer),
+				referrals: { $nin: [owner] },
+			},
+			{ $push: { referrals: owner } },
+			{ new: true }
+		);
+		Log.info(`[CallbackController.js][referralCodeProcessor][${user}]`);
+		if (user) {
+			`[CallbackController.js][referralCodeProcessor][${JSON.stringify(user)}]`;
+			user.transactions++;
+			if (user.isModified) {
+				await user.save();
+			}
+		} else {
+			Log.info(
+				`[CallbackController.js][referralCodeProcessor][${referrer}] ******************************** referrer user not found`
+			);
+		}
+	} catch (error) {
+		Log.info(
+			`[CallbackController.js][referralCodeProcessor][error] \t ${error}`
+		);
+	}
+}
 
 async function sendMessages(transaction, req) {
 	const currency = "GHS";
