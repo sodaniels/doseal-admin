@@ -1109,10 +1109,10 @@ async function referralCodeProcessor(owner, referrer) {
 			{ $push: { referrals: owner } },
 			{ new: true }
 		);
-		Log.info(`[CallbackController.js][referralCodeProcessor][${user}]`);
+		Log.info(`[CallbackController.js][referralCodeProcessor]`);
 		if (user) {
-			`[CallbackController.js][referralCodeProcessor][${JSON.stringify(user)}]`;
-			user.transactions++;
+			`[CallbackController.js][referralCodeProcessor]`;
+			user.transactions += 0.4;
 			if (user.isModified) {
 				await user.save();
 			}
