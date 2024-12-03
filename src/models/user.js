@@ -99,8 +99,14 @@ const userSchema = new Schema({
 		type: String,
 		required: false,
 	},
+
 	referralCode: {
 		type: String,
+		required: false,
+	},
+	referrer: {
+		type: mongoose.Schema.Types.ObjectId,
+		ref: "User",
 		required: false,
 	},
 	referrals: [

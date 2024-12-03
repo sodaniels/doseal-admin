@@ -12,6 +12,7 @@ $(document).ready(function () {
 		var env = $("#env").val();
 		var countryCode = $("#countryCode").val();
 		var phoneNumber = $("#phoneNumber").val();
+		var referralCode = $("#referralCode").val();
 
 		const token = $('[name="cf-turnstile-response"]').val();
 
@@ -44,9 +45,6 @@ $(document).ready(function () {
 		// 	return false;
 		// }
 
-		   // Capture the Turnstile token
-		  
-
 	
 		if (!token && env !== "development") {
 			Swal.fire({
@@ -69,6 +67,7 @@ $(document).ready(function () {
 		};
 
 		localStorage.setItem("redirectUrl", redirectUrl);
+		localStorage.setItem("referralCode", referralCode);
 
 		console.log(userData);
 

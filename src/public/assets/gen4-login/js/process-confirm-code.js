@@ -15,10 +15,12 @@ $(document).ready(function () {
 		});
 
 		var phoneNumber = localStorage.getItem("phoneNumber");
+		var referralCode = localStorage.getItem("referralCode");
 
 		const userData = {
 			code: code,
 			phoneNumber: phoneNumber,
+			referralCode: referralCode,
 		};
 
 		$("#loadingOverlay").css("display", "flex");

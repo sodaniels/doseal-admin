@@ -214,7 +214,7 @@ async function postLogin(req, res) {
 				role: "Subscriber",
 				status: "Inactive",
 				referralCode: referral_code,
-				transactions: 0
+				transactions: 0,
 			});
 			const storeUser = await userData.save();
 			if (storeUser) {
@@ -301,7 +301,7 @@ async function getConfirmCode(req, res) {
 
 async function postConfirmCode(req, res) {
 	let user;
-	const { phoneNumber, code } = req.body;
+	const { phoneNumber, referralCode, code } = req.body;
 
 	const q = phoneNumber.substr(-9);
 	try {
@@ -344,6 +344,42 @@ async function postConfirmCode(req, res) {
 			if (user.isModified()) {
 				await user.save();
 			}
+
+			// check if referral code exist and process accordingly
+			try {
+				if (user && referralCode) {
+					let referralCodeTransformed = referralCode.toUpperCase();
+					Log.info(
+						`[AuthGeneralController.js][postConfirmCode][${referralCodeTransformed}]\t .. processing referral code`
+					);
+					let owner = await User.findOne({
+						referralCode: referralCode.toUpperCase(),
+					});
+					if (owner) {
+						try {
+							// update referrer
+							const updateReferrer = await User.findOneAndUpdate(
+								{ _id: user._id },
+								{
+									referrer: owner._id,
+								}
+							);
+							Log.info(
+								`[AuthGeneralController.js][postConfirmCode][updateReferrer]\t .. ${updateReferrer._id}`
+							);
+						} catch (error) {
+							Log.info(
+								`[AuthGeneralController.js][postConfirmCode][error]\t .. ${error}`
+							);
+						}
+					}
+				}
+			} catch (error) {
+				Log.info(
+					`[AuthGeneralController.js][postConfirmCode][referralCode does not exist]\t .. ${error}`
+				);
+			}
+
 			Log.info(
 				`[AuthGeneralController.js][postConfirmCode][${phoneNumber}]${code}]\t .. response: ${JSON.stringify(
 					{
