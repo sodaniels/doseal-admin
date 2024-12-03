@@ -15,7 +15,7 @@ const apiErrors = require("../../helpers/errors/errors");
 const errorMessages = require("../../helpers/error-messages");
 const { handleValidationErrors } = require("../../helpers/validationHelper");
 const { sendText } = require("../../helpers/sendText");
-const { randId } = require("../../helpers/randId");
+const { randId, generatePromoCode } = require("../../helpers/randId");
 const {
 	getRedis,
 	setRedis,
@@ -202,6 +202,8 @@ async function postLogin(req, res) {
 			const currentTimeStamp = new Date().getTime();
 			const passwd = await Hash(currentTimeStamp.toString());
 
+			const referral_code = generatePromoCode();
+
 			const userData = new User({
 				phoneNumber: phoneNumber,
 				firstName: registeredFirstName ? registeredFirstName : undefined,
@@ -211,6 +213,8 @@ async function postLogin(req, res) {
 				password: passwd,
 				role: "Subscriber",
 				status: "Inactive",
+				referralCode: referral_code,
+				transactions: 0
 			});
 			const storeUser = await userData.save();
 			if (storeUser) {

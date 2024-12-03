@@ -10,13 +10,19 @@ function rand8Id() {
 	return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-
 function rand10Id() {
 	const min = 1000000000; // Minimum 10-digit number
 	const max = 9999999999; // Maximum 10-digit number
 	return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
+function generatePromoCode() {
+	return Math.random().toString(36).substr(2, 6).toUpperCase();
+}
+
 module.exports = {
-	randId, rand8Id, rand10Id
+	randId,
+	rand8Id,
+	rand10Id,
+	generatePromoCode,
 };

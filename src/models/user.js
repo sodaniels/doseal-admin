@@ -99,6 +99,21 @@ const userSchema = new Schema({
 		type: String,
 		required: false,
 	},
+	referralCode: {
+		type: String,
+		required: false,
+	},
+	referrals: [
+		{
+			type: mongoose.Schema.Types.ObjectId,
+			ref: "User",
+			required: false,
+		},
+	],
+	transactions: {
+		type: Number,
+		required: false,
+	},
 	createdAt: { type: Date, default: Date.now },
 	updatedAt: { type: Date, default: Date.now },
 });

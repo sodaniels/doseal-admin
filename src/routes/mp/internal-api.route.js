@@ -27,5 +27,7 @@ router.get("/data", internalApiController.getData);
 router.get("/tv-streams", internalApiController.getTvStreams);
 // get ghana water
 router.get("/ghana-water", internalApiController.getGhanaWater);
+// get referral code for a user
+router.get("/referral-code", internalApiController.getRerralCode);
 
 module.exports = router;

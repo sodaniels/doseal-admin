@@ -418,6 +418,45 @@ async function getGhanaWater(req, res) {
 		});
 	}
 }
+// get referral code
+async function getRerralCode(req, res) {
+	try {
+		Log.info(
+			"[InternalApiController.js][getRerralCode]..getting referral data"
+		);
+
+		const user = await User.findOne({ _id: req.user._id }).select(
+			"referrals transactions referralCode"
+		);
+		const referralData = {
+			referrals: user.referrals.length,
+			transactions: user.transactions,
+			referralCode: user.referralCode,
+		};
+		if (user) {
+			return res.status(200).json({
+				success: true,
+				code: 200,
+				data: referralData,
+			});
+		} else {
+			return res.status(404).json({
+				success: false,
+				code: 404,
+			});
+		}
+	} catch (err) {
+		Log.error(
+			"[InternalApiController.js][getRerralCode]..error getting referral data",
+			err
+		);
+		return res.status(500).json({
+			success: false,
+			code: 500,
+			message: "Error getting referral data",
+		});
+	}
+}
 
 module.exports = {
 	getNews,
@@ -429,4 +468,5 @@ module.exports = {
 	getData,
 	getTvStreams,
 	getGhanaWater,
+	getRerralCode,
 };
