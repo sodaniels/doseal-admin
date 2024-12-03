@@ -33,7 +33,7 @@ const apiErrors = require("../../helpers/errors/errors");
 const errorMessages = require("../../helpers/error-messages");
 const RestServices = require("../../services/api/RestServices");
 const restServices = new RestServices();
-const callbackController = require("../v1/CallbackController");
+const ApiController = require("../v1/ApiController");
 const { result, has } = require("lodash");
 
 //get page
@@ -697,7 +697,9 @@ async function postTransactionExecute(req, res) {
 				useEarnings &&
 				Number(user.transactions) >= Number(req.body.totalAmount)
 			) {
-				
+				// process promo transactions without debit
+				const earningsResponse = await processTransaction(transaction);
+				return res.json(earningsResponse);
 			} else {
 				try {
 					hubtelPaymentResponse = await restServices.postHubtelPaymentService(
@@ -1357,7 +1359,7 @@ async function processAccountWalletPayment(req, uniqueId, res) {
 		);
 
 		try {
-			await callbackController.postHubtelPaymentCallback(req);
+			await ApiController.postTransactionExecute(req);
 		} catch (error) {
 			Log.info(
 				`[ApiController.js][postTransactionExecute][processAccountWalletPayment][${uniqueId}]\t error processing account wallet callback: ${error}`
@@ -2184,6 +2186,225 @@ async function postHubtelTelecelBroadbandSearch(req, res) {
 			message: ServiceCode.ERROR_OCCURED,
 		});
 	}
+}
+
+async function processTransaction(transaction) {
+	let hubtelResponse;
+	switch (transaction.type) {
+		case "Airtime":
+			switch (transaction.network) {
+				case "mtn-gh":
+					hubtelResponse = await restServices.postHubtelMtnTopup(
+						transaction.phoneNumber,
+						transaction.amount,
+						transaction.internalReference
+					);
+					Log.info(
+						`[ApiController.js][postTransactionExecute][processTransaction][${
+							transaction.internalReference
+						}]\t hubtelResponse: ${JSON.stringify(hubtelResponse)}`
+					);
+					break;
+				case "vodafone-gh":
+					hubtelResponse = await restServices.postHubtelTelecelTopup(
+						transaction.phoneNumber,
+						transaction.amount,
+						transaction.internalReference
+					);
+					Log.info(
+						`[ApiController.js][postTransactionExecute][processTransaction][${
+							transaction.internalReference
+						}]\t hubtelResponse: ${JSON.stringify(hubtelResponse)}`
+					);
+					break;
+				case "tigo-gh":
+					hubtelResponse = await restServices.postHubtelAirtelTigoTopup(
+						transaction.phoneNumber,
+						transaction.amount,
+						transaction.internalReference
+					);
+					Log.info(
+						`[ApiController.js][postTransactionExecute][processTransaction][${
+							transaction.internalReference
+						}]\t hubtelResponse: ${JSON.stringify(hubtelResponse)}`
+					);
+					break;
+				default:
+					break;
+			}
+			break;
+		case "ECG":
+			Log.info(
+				`[ApiController.js][postTransactionExecute][processTransaction][${transaction.internalReference}]\t initiating request to ECG: `
+			);
+			hubtelResponse = await restServices.postHubtelECGTopup(
+				transaction.phoneNumber,
+				transaction.meterId,
+				transaction.amount,
+				transaction.internalReference
+			);
+			Log.info(
+				`[ApiController.js][postTransactionExecute][processTransaction][${
+					transaction.internalReference
+				}]\t hubtelResponse: ${JSON.stringify(hubtelResponse)}`
+			);
+			break;
+		case "DSTV":
+			Log.info(
+				`[ApiController.js][postTransactionExecute][processTransaction][${transaction.internalReference}]\t initiating request to DSTV: `
+			);
+			hubtelResponse = await restServices.postHubtelPayDstv(
+				transaction.accountNumber,
+				transaction.amount,
+				transaction.internalReference
+			);
+			Log.info(
+				`[ApiController.js][postTransactionExecute][processTransaction][${
+					transaction.internalReference
+				}]\t hubtelResponse: ${JSON.stringify(hubtelResponse)}`
+			);
+			break;
+		case "GOtv":
+		case "GOTV":
+			Log.info(
+				`[ApiController.js][postTransactionExecute][processTransaction][${transaction.internalReference}]\t initiating request to GOtv: `
+			);
+			hubtelResponse = await restServices.postHubtelPayGOtv(
+				transaction.accountNumber,
+				transaction.amount,
+				transaction.internalReference
+			);
+			Log.info(
+				`[ApiController.js][postTransactionExecute][processTransaction][${
+					transaction.internalReference
+				}]\t hubtelResponse: ${JSON.stringify(hubtelResponse)}`
+			);
+			break;
+		case "StarTimesTv":
+		case "STARTIMESTV":
+			Log.info(
+				`[ApiController.js][postTransactionExecute][processTransaction][${transaction.internalReference}]\t initiating request to StarTimesTv: `
+			);
+			hubtelResponse = await restServices.postHubtelPayStarTimeTv(
+				transaction.accountNumber,
+				transaction.amount,
+				transaction.internalReference
+			);
+			Log.info(
+				`[ApiController.js][postTransactionExecute][processTransaction][${
+					transaction.internalReference
+				}]\t hubtelResponse: ${JSON.stringify(hubtelResponse)}`
+			);
+			break;
+		case "GhanaWater":
+			Log.info(
+				`[ApiController.js][postTransactionExecute][processTransaction][${transaction.internalReference}]\t initiating request to ghana water: `
+			);
+			hubtelResponse = await restServices.postHubtelPayGhanaWater(
+				transaction.accountNumber,
+				transaction.amount,
+				transaction.phoneNumber,
+				transaction.internalReference,
+				transaction.sessionId
+			);
+			Log.info(
+				`[ApiController.js][postTransactionExecute][processTransaction][${
+					transaction.internalReference
+				}]\t hubtelResponse: ${JSON.stringify(hubtelResponse)}`
+			);
+			break;
+		case "WalletTopup":
+			Log.info(
+				`[ApiController.js][postTransactionExecute][processTransaction][${transaction.internalReference}]\t completing wallet topup: `
+			);
+
+			hubtelResponse = {};
+
+			Log.info(
+				`[ApiController.js][postTransactionExecute][processTransaction][${
+					transaction.internalReference
+				}]\t hubtelResponse: ${JSON.stringify(hubtelResponse)}`
+			);
+			break;
+		case "DATA":
+			switch (transaction.network) {
+				case "mtn-gh":
+					hubtelResponse = await restServices.postHubtelMtnDataBundle(
+						transaction.phoneNumber,
+						transaction.amount,
+						transaction.internalReference
+					);
+					Log.info(
+						`[ApiController.js][postTransactionExecute][processTransaction][${
+							transaction.internalReference
+						}]\t hubtelResponse: ${JSON.stringify(hubtelResponse)}`
+					);
+					break;
+				case "vodafone-gh":
+					hubtelResponse = await restServices.postHubtelTelecelDataBundle(
+						transaction.phoneNumber,
+						transaction.amount,
+						transaction.internalReference
+					);
+					Log.info(
+						`[ApiController.js][postTransactionExecute][processTransaction][${
+							transaction.internalReference
+						}]\t hubtelResponse: ${JSON.stringify(hubtelResponse)}`
+					);
+					break;
+				case "tigo-gh":
+					hubtelResponse = await restServices.postHubtelAirtelTigoDataBundle(
+						transaction.phoneNumber,
+						transaction.amount,
+						transaction.internalReference
+					);
+					Log.info(
+						`[ApiController.js][postTransactionExecute][processTransaction][${
+							transaction.internalReference
+						}]\t hubtelResponse: ${JSON.stringify(hubtelResponse)}`
+					);
+					break;
+				default:
+					break;
+			}
+			break;
+		case "TELECEL_POSTPAID":
+			hubtelResponse = await restServices.postHubtelTelecelPostpaid(
+				transaction.accountNumber,
+				transaction.amount,
+				transaction.internalReference
+			);
+			Log.info(
+				`[ApiController.js][postTransactionExecute][processTransaction][${
+					transaction.internalReference
+				}]\t hubtelResponse: ${JSON.stringify(hubtelResponse)}`
+			);
+			break;
+		case "TELECEL_BROADBAND":
+			hubtelResponse = await restServices.postHubtelTelecelBroadband(
+				transaction.accountNumber,
+				transaction.amount,
+				transaction.internalReference
+			);
+			Log.info(
+				`[ApiController.js][postTransactionExecute][processTransaction][${
+					transaction.internalReference
+				}]\t hubtelResponse: ${JSON.stringify(hubtelResponse)}`
+			);
+			break;
+		default:
+			break;
+	}
+
+	if (hubtelResponse.ResponseCode === "0001") {
+		return {
+			success: true,
+			code: 200,
+			status: "Success",
+			message: ServiceCode.EARNING_TRANSCTION_SUCCESS,
+		};
+	}
+	return hubtelResponse;
 }
 
 module.exports = {

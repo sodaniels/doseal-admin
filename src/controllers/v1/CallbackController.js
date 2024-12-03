@@ -6,7 +6,7 @@ const { Log } = require("../../helpers/Log");
 const WalletTopup = require("../../models/wallet-topup.model");
 const BalanceTransfer = require("../../models/balance-transfer.model");
 const Transaction = require("../../models/transaction.model");
-const Meter = require("../../models/meter.model");
+const Redeemed = require("../../models/redeemed");
 const { sendText } = require("../../helpers/sendText");
 const { rand10Id } = require("../../helpers/randId");
 const RestServices = require("../../services/api/RestServices");
@@ -19,10 +19,12 @@ const ObjectId = mongoose.Types.ObjectId;
 
 // post hubtel airtime topup transaction
 async function postHubtelAirtimeTopup(req, res) {
-	let saveTransaction, transactionId;
-	Log.info("[CallbackController.js][postHubtelAirtimeTopup]\tIP: " + req.ip);
+	let saveTransaction, transactionId, user;
 	Log.info(
-		"[CallbackController.js][postHubtelAirtimeTopup]\tCallback Transaction: " +
+		"[postHubtelAirtimeTopup.js][postHubtelAirtimeTopup]\tIP: " + req.ip
+	);
+	Log.info(
+		"[postHubtelAirtimeTopup.js][postHubtelAirtimeTopup]\tCallback Transaction: " +
 			JSON.stringify(req.body)
 	);
 
@@ -86,7 +88,7 @@ async function postHubtelAirtimeTopup(req, res) {
 			try {
 				/** processing referrer*/
 				Log.info(
-					`[CallbackController.js][postHubtelAirtimeTopup]\t processing referrer`
+					`[postHubtelAirtimeTopup.js][postHubtelAirtimeTopup]\t processing referrer`
 				);
 				try {
 					await referralCodeProcessor(
@@ -95,10 +97,75 @@ async function postHubtelAirtimeTopup(req, res) {
 					);
 				} catch (error) {
 					Log.info(
-						`[CallbackController.js][postHubtelAirtimeTopup]\t error processing referrer ${error}`
+						`[postHubtelAirtimeTopup.js][postHubtelAirtimeTopup]\t error processing referrer ${error}`
 					);
 				}
 			} catch (error) {}
+		}
+
+		const transactionJSON = JSON.parse(JSON.stringify(transaction));
+
+		user = await User.findById(transaction.createdBy);
+
+		if (transactionJSON.useEarnings) {
+			try {
+				let redeemedAmount = transaction.totalAmount;
+
+				let numberOfEarningRedeemed = redeemedAmount / 0.4;
+
+				// Get the whole number part
+				let wholeNumberOfEarning = Math.floor(numberOfEarningRedeemed);
+
+				console.log("Whole Number:", wholeNumberOfEarning);
+
+				// remove wholeNumberOfEarning above number of entries from referrals
+				Log.info(
+					`[postHubtelAirtimeTopup.js][postHubtelAirtimeTopup] \t removing entries from referrals since redeemed`
+				);
+				const referralsToMove = user.referrals.slice(0, wholeNumberOfEarning);
+
+				// Find or create a Redeemed document
+				await Redeemed.findOneAndUpdate(
+					{ redeemedBy: user._id },
+					{
+						$push: { referrals: { $each: referralsToMove } },
+						$setOnInsert: { redeemedBy: user._id },
+					},
+					{ upsert: true }
+				);
+
+				// Remove the first wholeNumberOfEarning entries from the referrals array of the user
+				user.referrals = user.referrals.slice(wholeNumberOfEarning);
+
+				user.transactions -= redeemedAmount; // deduct wholeNumberOfEarning from the transactions field;
+
+				// Save the updated user object
+				await user.save();
+			} catch (error) {
+				Log.info(
+					`[postHubtelAirtimeTopup.js][postHubtelAirtimeTopup] \t error: ${error}`
+				);
+			}
+
+			try {
+				const updatedUser = await User.findById(transaction.createdBy);
+
+				const referralData = {
+					referrals: updatedUser.referrals.length,
+					transactions: updatedUser.transactions,
+					referralCode: updatedUser.referralCode,
+				};
+
+				io.getIO().emit("referralDataUpate", referralData);
+				Log.info(
+					"[postHubtelAirtimeTopup.js][postHubtelAirtimeTopup]\t Emitted referralDataUpate update: "
+				);
+			} catch (error) {
+				Log.info(
+					`[postHubtelAirtimeTopup.js][postHubtelAirtimeTopup]\t error emitting referralDataUpate: `,
+					error
+				);
+			}
 		}
 
 		try {
@@ -108,29 +175,26 @@ async function postHubtelAirtimeTopup(req, res) {
 				updateDrTransactionStatus(transaction, Data.Description);
 			}
 			Log.info(
-				"[CallbackController.js][postHubtelAirtimeTopup]\t Emitting single topup update: "
+				"[postHubtelAirtimeTopup.js][postHubtelAirtimeTopup]\t Emitting single topup update: "
 			);
 			Log.info(
-				"[CallbackController.js][postBuyCredit]\t Emitting wallet update: "
+				"[postHubtelAirtimeTopup.js][postBuyCredit]\t Emitting wallet update: "
 			);
-
-			if (saveTransaction) {
-			}
 
 			try {
 				io.getIO().emit("singleTransactionUpdate", saveTransaction);
 				Log.info(
-					"[CallbackController.js][postHubtelAirtimeTopup]\t Emitted single topup update: "
+					"[postHubtelAirtimeTopup.js][postHubtelAirtimeTopup]\t Emitted single topup update: "
 				);
 			} catch (error) {
 				Log.info(
-					`[CallbackController.js][postHubtelAirtimeTopup]\t error emitting walletTopUp update: `,
+					`[postHubtelAirtimeTopup.js][postHubtelAirtimeTopup]\t error emitting walletTopUp update: `,
 					error
 				);
 			}
 		} catch (error) {
 			Log.info(
-				`[CallbackController.js][postHubtelAirtimeTopup][${transactionId}]\t error saving callback data: ${error}`
+				`[postHubtelAirtimeTopup.js][postHubtelAirtimeTopup][${transactionId}]\t error saving callback data: ${error}`
 			);
 		}
 	}
@@ -144,10 +208,11 @@ async function postHubtelAirtimeTopup(req, res) {
 async function postHubtelUtilityCallbackServices(req, res) {
 	let saveTransaction, transactionId;
 	Log.info(
-		"[CallbackController.js][postHubtelUtilityCallbackServices]\tIP: " + req.ip
+		"[postHubtelAirtimeTopup.js][postHubtelUtilityCallbackServices]\tIP: " +
+			req.ip
 	);
 	Log.info(
-		"[CallbackController.js][postHubtelUtilityCallbackServices]\tCallback Transaction: " +
+		"[postHubtelAirtimeTopup.js][postHubtelUtilityCallbackServices]\tCallback Transaction: " +
 			JSON.stringify(req.body)
 	);
 
@@ -217,19 +282,19 @@ async function postHubtelUtilityCallbackServices(req, res) {
 				updateDrTransactionStatus(transaction, Data.Description);
 			}
 			Log.info(
-				"[CallbackController.js][postHubtelUtilityCallbackServices]\t Emitting single topup update: "
+				"[postHubtelAirtimeTopup.js][postHubtelUtilityCallbackServices]\t Emitting single topup update: "
 			);
 			Log.info(
-				"[CallbackController.js][postHubtelUtilityCallbackServices]\t Emitting wallet update: "
+				"[postHubtelAirtimeTopup.js][postHubtelUtilityCallbackServices]\t Emitting wallet update: "
 			);
 			try {
 				io.getIO().emit("singleTransactionUpdate", transaction);
 				Log.info(
-					"[CallbackController.js][postHubtelUtilityCallbackServices]\t Emitted single topup update: "
+					"[postHubtelAirtimeTopup.js][postHubtelUtilityCallbackServices]\t Emitted single topup update: "
 				);
 			} catch (error) {
 				Log.info(
-					`[CallbackController.js][postHubtelUtilityCallbackServices]\t error emitting walletTopUp update: `,
+					`[postHubtelAirtimeTopup.js][postHubtelUtilityCallbackServices]\t error emitting walletTopUp update: `,
 					error
 				);
 			}
@@ -250,12 +315,12 @@ async function postHubtelUtilityCallbackServices(req, res) {
 
 					try {
 						Log.info(
-							`[CallbackController.js][postHubtelUtilityCallbackServices][${transactionId}]\t sending success message: ${message}`
+							`[postHubtelAirtimeTopup.js][postHubtelUtilityCallbackServices][${transactionId}]\t sending success message: ${message}`
 						);
 						await sendText(phoneNumber, message);
 					} catch (error) {
 						Log.info(
-							`[CallbackController.js][postHubtelUtilityCallbackServices][${transactionId}]\t error sending success message: ${error}`
+							`[postHubtelAirtimeTopup.js][postHubtelUtilityCallbackServices][${transactionId}]\t error sending success message: ${error}`
 						);
 					}
 				} else {
@@ -263,12 +328,12 @@ async function postHubtelUtilityCallbackServices(req, res) {
 
 					try {
 						Log.info(
-							`[CallbackController.js][postHubtelUtilityCallbackServices][${transactionId}]\t sending failure message: ${message}`
+							`[postHubtelAirtimeTopup.js][postHubtelUtilityCallbackServices][${transactionId}]\t sending failure message: ${message}`
 						);
 						await sendText(phoneNumber, message);
 					} catch (error) {
 						Log.info(
-							`[CallbackController.js][postHubtelUtilityCallbackServices][${transactionId}]\t error sending success message: ${error}`
+							`[postHubtelAirtimeTopup.js][postHubtelUtilityCallbackServices][${transactionId}]\t error sending success message: ${error}`
 						);
 					}
 				}
@@ -277,17 +342,17 @@ async function postHubtelUtilityCallbackServices(req, res) {
 			try {
 				io.getIO().emit("excerptTransData", transaction);
 				Log.info(
-					"[CallbackController.js][postHubtelUtilityCallbackServices]\t Emitted wallet update: "
+					"[postHubtelAirtimeTopup.js][postHubtelUtilityCallbackServices]\t Emitted wallet update: "
 				);
 			} catch (error) {
 				Log.info(
-					`[CallbackController.js][postHubtelUtilityCallbackServices]\t error emitting wallet update: `,
+					`[postHubtelAirtimeTopup.js][postHubtelUtilityCallbackServices]\t error emitting wallet update: `,
 					error
 				);
 			}
 		} catch (error) {
 			Log.info(
-				`[CallbackController.js][postHubtelUtilityCallbackServices][${transactionId}]\t error saving callback data: ${error}`
+				`[postHubtelAirtimeTopup.js][postHubtelUtilityCallbackServices][${transactionId}]\t error saving callback data: ${error}`
 			);
 		}
 
@@ -299,7 +364,7 @@ async function postHubtelUtilityCallbackServices(req, res) {
 			try {
 				/** processing referrer*/
 				Log.info(
-					`[CallbackController.js][postHubtelUtilityCallbackServices]\t processing referrer`
+					`[postHubtelAirtimeTopup.js][postHubtelUtilityCallbackServices]\t processing referrer`
 				);
 				try {
 					await referralCodeProcessor(
@@ -308,7 +373,7 @@ async function postHubtelUtilityCallbackServices(req, res) {
 					);
 				} catch (error) {
 					Log.info(
-						`[CallbackController.js][postHubtelUtilityCallbackServices]\t error processing referrer ${error}`
+						`[postHubtelAirtimeTopup.js][postHubtelUtilityCallbackServices]\t error processing referrer ${error}`
 					);
 				}
 			} catch (error) {}
@@ -316,12 +381,12 @@ async function postHubtelUtilityCallbackServices(req, res) {
 
 		try {
 			Log.info(
-				"[CallbackController.js][postHubtelUtilityCallbackServices]\t updating transaction totals: "
+				"[postHubtelAirtimeTopup.js][postHubtelUtilityCallbackServices]\t updating transaction totals: "
 			);
 			await TRANSTATS.updateTransactionStats(saveTransaction);
 		} catch (error) {
 			Log.info(
-				`[CallbackController.js][postHubtelUtilityCallbackServices]\t error updating transaction totals: ${error}`
+				`[postHubtelAirtimeTopup.js][postHubtelUtilityCallbackServices]\t error updating transaction totals: ${error}`
 			);
 		}
 	}
@@ -334,9 +399,9 @@ async function postHubtelUtilityCallbackServices(req, res) {
 // post walelt topup callback
 async function postWalletTopupCallback(req, res) {
 	let staveRequest, requestId;
-	Log.info("[CallbackController.js][walletTopupCallback]\tIP: " + req.ip);
+	Log.info("[postHubtelAirtimeTopup.js][walletTopupCallback]\tIP: " + req.ip);
 	Log.info(
-		"[CallbackController.js][walletTopupCallback]\tCallback Request: " +
+		"[postHubtelAirtimeTopup.js][walletTopupCallback]\tCallback Request: " +
 			JSON.stringify(req.body)
 	);
 
@@ -352,16 +417,16 @@ async function postWalletTopupCallback(req, res) {
 		try {
 			staveRequest = await request.save();
 			Log.info(
-				"[CallbackController.js][postWalletTopupCallback]\t Emitting single topup update: "
+				"[postHubtelAirtimeTopup.js][postWalletTopupCallback]\t Emitting single topup update: "
 			);
 			try {
 				io.getIO().emit("singleItemTopUpDataUpdate", request);
 				Log.info(
-					"[CallbackController.js][postWalletTopupCallback]\t Emitted single topup update: "
+					"[postHubtelAirtimeTopup.js][postWalletTopupCallback]\t Emitted single topup update: "
 				);
 			} catch (error) {
 				Log.info(
-					`[CallbackController.js][postWalletTopupCallback]\t error emitting walletTopUp update: `,
+					`[postHubtelAirtimeTopup.js][postWalletTopupCallback]\t error emitting walletTopUp update: `,
 					error
 				);
 			}
@@ -386,22 +451,22 @@ async function postWalletTopupCallback(req, res) {
 						await user.save();
 
 						Log.info(
-							"[CallbackController.js][postWalletTopupCallback]\t Emitting balance update: "
+							"[postHubtelAirtimeTopup.js][postWalletTopupCallback]\t Emitting balance update: "
 						);
 						try {
 							io.getIO().emit("balanceUpdate", user.balance);
 							Log.info(
-								"[CallbackController.js][postWalletTopupCallback]\t Emitted balance update: "
+								"[postHubtelAirtimeTopup.js][postWalletTopupCallback]\t Emitted balance update: "
 							);
 						} catch (error) {
 							Log.info(
-								`[CallbackController.js][postWalletTopupCallback]\t error emitting balance update: `,
+								`[postHubtelAirtimeTopup.js][postWalletTopupCallback]\t error emitting balance update: `,
 								error
 							);
 						}
 					} catch (error) {
 						Log.info(
-							`[CallbackController.js][getRequestByReference][${requestId}]\t error updating balance: ${error}`
+							`[postHubtelAirtimeTopup.js][getRequestByReference][${requestId}]\t error updating balance: ${error}`
 						);
 					}
 
@@ -411,12 +476,12 @@ async function postWalletTopupCallback(req, res) {
 
 					try {
 						Log.info(
-							`[CallbackController.js][getRequestByReference][${requestId}]\t sending success message: ${message}`
+							`[postHubtelAirtimeTopup.js][getRequestByReference][${requestId}]\t sending success message: ${message}`
 						);
 						await sendText(phoneNumber, message);
 					} catch (error) {
 						Log.info(
-							`[CallbackController.js][getRequestByReference][${requestId}]\t error sending success message: ${error}`
+							`[postHubtelAirtimeTopup.js][getRequestByReference][${requestId}]\t error sending success message: ${error}`
 						);
 					}
 				} else {
@@ -424,19 +489,19 @@ async function postWalletTopupCallback(req, res) {
 
 					try {
 						Log.info(
-							`[CallbackController.js][getRequestByReference][${requestId}]\t sending failure message: ${message}`
+							`[postHubtelAirtimeTopup.js][getRequestByReference][${requestId}]\t sending failure message: ${message}`
 						);
 						await sendText(phoneNumber, message);
 					} catch (error) {
 						Log.info(
-							`[CallbackController.js][getRequestByReference][${requestId}]\t error sending success message: ${error}`
+							`[postHubtelAirtimeTopup.js][getRequestByReference][${requestId}]\t error sending success message: ${error}`
 						);
 					}
 				}
 			}
 		} catch (error) {
 			Log.info(
-				`[CallbackController.js][getRequestByReference][${requestId}]\t error saving callback data: ${error}`
+				`[postHubtelAirtimeTopup.js][getRequestByReference][${requestId}]\t error saving callback data: ${error}`
 			);
 		}
 	}
@@ -449,9 +514,11 @@ async function postWalletTopupCallback(req, res) {
 // post payment callback
 async function postHubtelPaymentCallback(req, res) {
 	let transactionId;
-	Log.info("[CallbackController.js][postHubtelPaymentCallback]\tIP: " + req.ip);
 	Log.info(
-		"[CallbackController.js][postHubtelPaymentCallback]\tCallback Transaction: " +
+		"[postHubtelAirtimeTopup.js][postHubtelPaymentCallback]\tIP: " + req.ip
+	);
+	Log.info(
+		"[postHubtelAirtimeTopup.js][postHubtelPaymentCallback]\tCallback Transaction: " +
 			JSON.stringify(req.body)
 	);
 
@@ -485,7 +552,7 @@ async function postHubtelPaymentCallback(req, res) {
 			try {
 				if (transaction.isModified) {
 					Log.info(
-						`[CallbackController.js][postHubtelPaymentCallback][${transactionId}]\t payment callback saved`
+						`[postHubtelAirtimeTopup.js][postHubtelPaymentCallback][${transactionId}]\t payment callback saved`
 					);
 					await transaction.save();
 					if (req.body.ResponseCode === "0000") {
@@ -494,7 +561,7 @@ async function postHubtelPaymentCallback(req, res) {
 				}
 			} catch (error) {
 				Log.info(
-					`[CallbackController.js][postHubtelPaymentCallback][${transactionId}]\t error saving callback data: ${error}`
+					`[postHubtelAirtimeTopup.js][postHubtelPaymentCallback][${transactionId}]\t error saving callback data: ${error}`
 				);
 			}
 		}
@@ -505,7 +572,7 @@ async function postHubtelPaymentCallback(req, res) {
 		});
 	} catch (error) {
 		Log.info(
-			`[CallbackController.js][postHubtelPaymentCallback][${transactionId}]\t error processing payment callback: ${error}`
+			`[postHubtelAirtimeTopup.js][postHubtelPaymentCallback][${transactionId}]\t error processing payment callback: ${error}`
 		);
 	}
 }
@@ -513,10 +580,11 @@ async function postHubtelPaymentCallback(req, res) {
 async function postHubtelTransferBalanceCallback(req, res) {
 	let transferId;
 	Log.info(
-		"[CallbackController.js][postHubtelTransferBalanceCallback]\tIP: " + req.ip
+		"[postHubtelAirtimeTopup.js][postHubtelTransferBalanceCallback]\tIP: " +
+			req.ip
 	);
 	Log.info(
-		"[CallbackController.js][postHubtelTransferBalanceCallback]\tCallback Transaction: " +
+		"[postHubtelAirtimeTopup.js][postHubtelTransferBalanceCallback]\tCallback Transaction: " +
 			JSON.stringify(req.body)
 	);
 
@@ -554,16 +622,18 @@ async function postHubtelTransferBalanceCallback(req, res) {
 		});
 	} catch (error) {
 		Log.info(
-			`[CallbackController.js][postHubtelTransferBalanceCallback][${transferId}]\t error processing payment callback: ${error}`
+			`[postHubtelAirtimeTopup.js][postHubtelTransferBalanceCallback][${transferId}]\t error processing payment callback: ${error}`
 		);
 	}
 }
 // post transaction callback
 async function postTransactionCallback(req, res) {
 	let saveTransaction, transactionId;
-	Log.info("[CallbackController.js][postTransactionCallback]\tIP: " + req.ip);
 	Log.info(
-		"[CallbackController.js][postTransactionCallback]\tCallback Transaction: " +
+		"[postHubtelAirtimeTopup.js][postTransactionCallback]\tIP: " + req.ip
+	);
+	Log.info(
+		"[postHubtelAirtimeTopup.js][postTransactionCallback]\tCallback Transaction: " +
 			JSON.stringify(req.body)
 	);
 
@@ -579,16 +649,16 @@ async function postTransactionCallback(req, res) {
 		try {
 			saveTransaction = await transaction.save();
 			Log.info(
-				"[CallbackController.js][postTransactionCallback]\t Emitting single topup update: "
+				"[postHubtelAirtimeTopup.js][postTransactionCallback]\t Emitting single topup update: "
 			);
 			try {
 				io.getIO().emit("singleTransactionUpdate", transaction);
 				Log.info(
-					"[CallbackController.js][postTransactionCallback]\t Emitted single topup update: "
+					"[postHubtelAirtimeTopup.js][postTransactionCallback]\t Emitted single topup update: "
 				);
 			} catch (error) {
 				Log.info(
-					`[CallbackController.js][postTransactionCallback]\t error emitting walletTopUp update: `,
+					`[postHubtelAirtimeTopup.js][postTransactionCallback]\t error emitting walletTopUp update: `,
 					error
 				);
 			}
@@ -614,23 +684,23 @@ async function postTransactionCallback(req, res) {
 							await user.save();
 
 							Log.info(
-								"[CallbackController.js][postTransactionCallback]\t Emitting balance update: "
+								"[postHubtelAirtimeTopup.js][postTransactionCallback]\t Emitting balance update: "
 							);
 							try {
 								io.getIO().emit("balanceUpdate", user.balance);
 								Log.info(
-									"[CallbackController.js][postTransactionCallback]\t Emitted balance update: "
+									"[postHubtelAirtimeTopup.js][postTransactionCallback]\t Emitted balance update: "
 								);
 							} catch (error) {
 								Log.info(
-									`[CallbackController.js][postTransactionCallback]\t error emitting balance update: `,
+									`[postHubtelAirtimeTopup.js][postTransactionCallback]\t error emitting balance update: `,
 									error
 								);
 							}
 						}
 					} catch (error) {
 						Log.info(
-							`[CallbackController.js][getRequestByReference][${transactionId}]\t error updating balance: ${error}`
+							`[postHubtelAirtimeTopup.js][getRequestByReference][${transactionId}]\t error updating balance: ${error}`
 						);
 					}
 
@@ -640,12 +710,12 @@ async function postTransactionCallback(req, res) {
 
 					try {
 						Log.info(
-							`[CallbackController.js][postTransactionCallback][${transactionId}]\t sending success message: ${message}`
+							`[postHubtelAirtimeTopup.js][postTransactionCallback][${transactionId}]\t sending success message: ${message}`
 						);
 						await sendText(phoneNumber, message);
 					} catch (error) {
 						Log.info(
-							`[CallbackController.js][postTransactionCallback][${transactionId}]\t error sending success message: ${error}`
+							`[postHubtelAirtimeTopup.js][postTransactionCallback][${transactionId}]\t error sending success message: ${error}`
 						);
 					}
 				} else {
@@ -653,19 +723,19 @@ async function postTransactionCallback(req, res) {
 
 					try {
 						Log.info(
-							`[CallbackController.js][postTransactionCallback][${transactionId}]\t sending failure message: ${message}`
+							`[postHubtelAirtimeTopup.js][postTransactionCallback][${transactionId}]\t sending failure message: ${message}`
 						);
 						await sendText(phoneNumber, message);
 					} catch (error) {
 						Log.info(
-							`[CallbackController.js][postTransactionCallback][${transactionId}]\t error sending success message: ${error}`
+							`[postHubtelAirtimeTopup.js][postTransactionCallback][${transactionId}]\t error sending success message: ${error}`
 						);
 					}
 				}
 			}
 		} catch (error) {
 			Log.info(
-				`[CallbackController.js][postTransactionCallback][${transactionId}]\t error saving callback data: ${error}`
+				`[postHubtelAirtimeTopup.js][postTransactionCallback][${transactionId}]\t error saving callback data: ${error}`
 			);
 		}
 	}
@@ -683,7 +753,7 @@ async function commitCreditTransaction(transaction) {
 		const creditTransactionId = rand10Id().toString();
 
 		Log.info(
-			`[CallbackController.js][postHubtelPaymentCallback][commitCreditTransaction][${transactionId}]\t committing credit transaction`
+			`[postHubtelAirtimeTopup.js][postHubtelPaymentCallback][commitCreditTransaction][${transactionId}]\t committing credit transaction`
 		);
 		const uniqueId =
 			transaction.internalReference.split("_")[1] ||
@@ -736,7 +806,7 @@ async function commitCreditTransaction(transaction) {
 							creditUniqueId
 						);
 						Log.info(
-							`[CallbackController.js][postHubtelPaymentCallback][commitCreditTransaction][${creditUniqueId}]\t hubtelResponse: ${JSON.stringify(
+							`[postHubtelAirtimeTopup.js][postHubtelPaymentCallback][commitCreditTransaction][${creditUniqueId}]\t hubtelResponse: ${JSON.stringify(
 								hubtelResponse
 							)}`
 						);
@@ -748,7 +818,7 @@ async function commitCreditTransaction(transaction) {
 							creditUniqueId
 						);
 						Log.info(
-							`[CallbackController.js][postHubtelPaymentCallback][commitCreditTransaction][${creditUniqueId}]\t hubtelResponse: ${JSON.stringify(
+							`[postHubtelAirtimeTopup.js][postHubtelPaymentCallback][commitCreditTransaction][${creditUniqueId}]\t hubtelResponse: ${JSON.stringify(
 								hubtelResponse
 							)}`
 						);
@@ -760,7 +830,7 @@ async function commitCreditTransaction(transaction) {
 							creditUniqueId
 						);
 						Log.info(
-							`[CallbackController.js][postHubtelPaymentCallback][commitCreditTransaction][${creditUniqueId}]\t hubtelResponse: ${JSON.stringify(
+							`[postHubtelAirtimeTopup.js][postHubtelPaymentCallback][commitCreditTransaction][${creditUniqueId}]\t hubtelResponse: ${JSON.stringify(
 								hubtelResponse
 							)}`
 						);
@@ -771,7 +841,7 @@ async function commitCreditTransaction(transaction) {
 				break;
 			case "ECG":
 				Log.info(
-					`[CallbackController.js][postHubtelPaymentCallback][commitCreditTransaction][${creditUniqueId}]\t initiating request to ECG: `
+					`[postHubtelAirtimeTopup.js][postHubtelPaymentCallback][commitCreditTransaction][${creditUniqueId}]\t initiating request to ECG: `
 				);
 				hubtelResponse = await restServices.postHubtelECGTopup(
 					transaction.phoneNumber,
@@ -780,44 +850,14 @@ async function commitCreditTransaction(transaction) {
 					creditUniqueId
 				);
 				Log.info(
-					`[CallbackController.js][postHubtelPaymentCallback][commitCreditTransaction][${creditUniqueId}]\t hubtelResponse: ${JSON.stringify(
+					`[postHubtelAirtimeTopup.js][postHubtelPaymentCallback][commitCreditTransaction][${creditUniqueId}]\t hubtelResponse: ${JSON.stringify(
 						hubtelResponse
 					)}`
 				);
-				try {
-					Log.info(
-						`[CallbackController.js][postHubtelPaymentCallback][${creditUniqueId}]\t storing meter information if not already present`
-					);
-					if (hubtelResponse) {
-						const meterExists = await Meter.findOne({
-							createdBy: transaction.createdBy._id,
-							phoneNumber: transaction.phoneNumber,
-							meterId: transaction.meterId,
-						});
-						if (!meterExists) {
-							const prepareMeter = new Meter({
-								createdBy: transaction.createdBy._id,
-								phoneNumber: transaction.phoneNumber,
-								meterName: transaction.meterName,
-								meterId: transaction.meterId,
-							});
-							const storeMeter = await prepareMeter.save();
-							if (storeMeter) {
-								Log.info(
-									`[CallbackController.js][postHubtelPaymentCallback][${transaction.meterId}][${transaction.phoneNumber}]\t new meter information stored`
-								);
-							}
-						}
-					}
-				} catch (error) {
-					Log.info(
-						`[CallbackController.js][postHubtelPaymentCallback][${creditUniqueId}]\t error ocurred while storing meter information: ${error}`
-					);
-				}
 				break;
 			case "DSTV":
 				Log.info(
-					`[CallbackController.js][postHubtelPaymentCallback][commitCreditTransaction][${creditUniqueId}]\t initiating request to DSTV: `
+					`[postHubtelAirtimeTopup.js][postHubtelPaymentCallback][commitCreditTransaction][${creditUniqueId}]\t initiating request to DSTV: `
 				);
 				hubtelResponse = await restServices.postHubtelPayDstv(
 					transaction.accountNumber,
@@ -825,7 +865,7 @@ async function commitCreditTransaction(transaction) {
 					creditUniqueId
 				);
 				Log.info(
-					`[CallbackController.js][postHubtelPaymentCallback][commitCreditTransaction][${creditUniqueId}]\t hubtelResponse: ${JSON.stringify(
+					`[postHubtelAirtimeTopup.js][postHubtelPaymentCallback][commitCreditTransaction][${creditUniqueId}]\t hubtelResponse: ${JSON.stringify(
 						hubtelResponse
 					)}`
 				);
@@ -833,7 +873,7 @@ async function commitCreditTransaction(transaction) {
 			case "GOtv":
 			case "GOTV":
 				Log.info(
-					`[CallbackController.js][postHubtelPaymentCallback][commitCreditTransaction][${creditUniqueId}]\t initiating request to GOtv: `
+					`[postHubtelAirtimeTopup.js][postHubtelPaymentCallback][commitCreditTransaction][${creditUniqueId}]\t initiating request to GOtv: `
 				);
 				hubtelResponse = await restServices.postHubtelPayGOtv(
 					transaction.accountNumber,
@@ -841,7 +881,7 @@ async function commitCreditTransaction(transaction) {
 					creditUniqueId
 				);
 				Log.info(
-					`[CallbackController.js][postHubtelPaymentCallback][commitCreditTransaction][${creditUniqueId}]\t hubtelResponse: ${JSON.stringify(
+					`[postHubtelAirtimeTopup.js][postHubtelPaymentCallback][commitCreditTransaction][${creditUniqueId}]\t hubtelResponse: ${JSON.stringify(
 						hubtelResponse
 					)}`
 				);
@@ -849,7 +889,7 @@ async function commitCreditTransaction(transaction) {
 			case "StarTimesTv":
 			case "STARTIMESTV":
 				Log.info(
-					`[CallbackController.js][postHubtelPaymentCallback][commitCreditTransaction][${creditUniqueId}]\t initiating request to StarTimesTv: `
+					`[postHubtelAirtimeTopup.js][postHubtelPaymentCallback][commitCreditTransaction][${creditUniqueId}]\t initiating request to StarTimesTv: `
 				);
 				hubtelResponse = await restServices.postHubtelPayStarTimeTv(
 					transaction.accountNumber,
@@ -857,14 +897,14 @@ async function commitCreditTransaction(transaction) {
 					creditUniqueId
 				);
 				Log.info(
-					`[CallbackController.js][postHubtelPaymentCallback][commitCreditTransaction][${creditUniqueId}]\t hubtelResponse: ${JSON.stringify(
+					`[postHubtelAirtimeTopup.js][postHubtelPaymentCallback][commitCreditTransaction][${creditUniqueId}]\t hubtelResponse: ${JSON.stringify(
 						hubtelResponse
 					)}`
 				);
 				break;
 			case "GhanaWater":
 				Log.info(
-					`[CallbackController.js][postHubtelPaymentCallback][commitCreditTransaction][${creditUniqueId}]\t initiating request to ghana water: `
+					`[postHubtelAirtimeTopup.js][postHubtelPaymentCallback][commitCreditTransaction][${creditUniqueId}]\t initiating request to ghana water: `
 				);
 				hubtelResponse = await restServices.postHubtelPayGhanaWater(
 					transaction.accountNumber,
@@ -874,20 +914,20 @@ async function commitCreditTransaction(transaction) {
 					transaction.sessionId
 				);
 				Log.info(
-					`[CallbackController.js][postHubtelPaymentCallback][commitCreditTransaction][${creditUniqueId}]\t hubtelResponse: ${JSON.stringify(
+					`[postHubtelAirtimeTopup.js][postHubtelPaymentCallback][commitCreditTransaction][${creditUniqueId}]\t hubtelResponse: ${JSON.stringify(
 						hubtelResponse
 					)}`
 				);
 				break;
 			case "WalletTopup":
 				Log.info(
-					`[CallbackController.js][postHubtelPaymentCallback][commitCreditTransaction][${creditUniqueId}]\t completing wallet topup: `
+					`[postHubtelAirtimeTopup.js][postHubtelPaymentCallback][commitCreditTransaction][${creditUniqueId}]\t completing wallet topup: `
 				);
 
 				hubtelResponse = {};
 
 				Log.info(
-					`[CallbackController.js][postHubtelPaymentCallback][commitCreditTransaction][${creditUniqueId}]\t hubtelResponse: ${JSON.stringify(
+					`[postHubtelAirtimeTopup.js][postHubtelPaymentCallback][commitCreditTransaction][${creditUniqueId}]\t hubtelResponse: ${JSON.stringify(
 						hubtelResponse
 					)}`
 				);
@@ -901,7 +941,7 @@ async function commitCreditTransaction(transaction) {
 							creditUniqueId
 						);
 						Log.info(
-							`[CallbackController.js][postHubtelPaymentCallback][commitCreditTransaction][${creditUniqueId}]\t hubtelResponse: ${JSON.stringify(
+							`[postHubtelAirtimeTopup.js][postHubtelPaymentCallback][commitCreditTransaction][${creditUniqueId}]\t hubtelResponse: ${JSON.stringify(
 								hubtelResponse
 							)}`
 						);
@@ -913,7 +953,7 @@ async function commitCreditTransaction(transaction) {
 							creditUniqueId
 						);
 						Log.info(
-							`[CallbackController.js][postHubtelPaymentCallback][commitCreditTransaction][${creditUniqueId}]\t hubtelResponse: ${JSON.stringify(
+							`[postHubtelAirtimeTopup.js][postHubtelPaymentCallback][commitCreditTransaction][${creditUniqueId}]\t hubtelResponse: ${JSON.stringify(
 								hubtelResponse
 							)}`
 						);
@@ -925,7 +965,7 @@ async function commitCreditTransaction(transaction) {
 							creditUniqueId
 						);
 						Log.info(
-							`[CallbackController.js][postHubtelPaymentCallback][commitCreditTransaction][${creditUniqueId}]\t hubtelResponse: ${JSON.stringify(
+							`[postHubtelAirtimeTopup.js][postHubtelPaymentCallback][commitCreditTransaction][${creditUniqueId}]\t hubtelResponse: ${JSON.stringify(
 								hubtelResponse
 							)}`
 						);
@@ -941,7 +981,7 @@ async function commitCreditTransaction(transaction) {
 					creditUniqueId
 				);
 				Log.info(
-					`[CallbackController.js][postHubtelPaymentCallback][commitCreditTransaction][${creditUniqueId}]\t hubtelResponse: ${JSON.stringify(
+					`[postHubtelAirtimeTopup.js][postHubtelPaymentCallback][commitCreditTransaction][${creditUniqueId}]\t hubtelResponse: ${JSON.stringify(
 						hubtelResponse
 					)}`
 				);
@@ -953,7 +993,7 @@ async function commitCreditTransaction(transaction) {
 					creditUniqueId
 				);
 				Log.info(
-					`[CallbackController.js][postHubtelPaymentCallback][commitCreditTransaction][${creditUniqueId}]\t hubtelResponse: ${JSON.stringify(
+					`[postHubtelAirtimeTopup.js][postHubtelPaymentCallback][commitCreditTransaction][${creditUniqueId}]\t hubtelResponse: ${JSON.stringify(
 						hubtelResponse
 					)}`
 				);
@@ -992,7 +1032,7 @@ async function commitCreditTransaction(transaction) {
 			}
 
 			Log.info(
-				`[CallbackController.js][postHubtelPaymentCallback][processCreditTransaction][${transactionId}]\t ${JSON.stringify(
+				`[postHubtelAirtimeTopup.js][postHubtelPaymentCallback][processCreditTransaction][${transactionId}]\t ${JSON.stringify(
 					{
 						code: 200,
 						message: "Callback processed successfully.",
@@ -1002,14 +1042,14 @@ async function commitCreditTransaction(transaction) {
 		}
 	} catch (error) {
 		Log.info(
-			`[CallbackController.js][postHubtelPaymentCallback][processCreditTransaction][${transactionId}]\t failed committing credit transaction: ${error}`
+			`[postHubtelAirtimeTopup.js][postHubtelPaymentCallback][processCreditTransaction][${transactionId}]\t failed committing credit transaction: ${error}`
 		);
 	}
 }
 // update DR transaction
 async function updateDrTransactionStatus(transaction, Description) {
 	Log.info(
-		`[CallbackController][updateDrTransactionStatus][${transaction.internalReference}] \t updating DR request`
+		`[postHubtelAirtimeTopup][updateDrTransactionStatus][${transaction.internalReference}] \t updating DR request`
 	);
 	try {
 		const uniqueId =
@@ -1054,7 +1094,7 @@ async function updateDrTransactionStatus(transaction, Description) {
 		}
 	} catch (error) {
 		Log.info(
-			`[CallbackController][updateDrTransactionStatus][${transaction.internalReference}] \t error udating drTransactionStatus ${error}`
+			`[postHubtelAirtimeTopup][updateDrTransactionStatus][${transaction.internalReference}] \t error udating drTransactionStatus ${error}`
 		);
 	}
 }
@@ -1070,7 +1110,7 @@ async function getTransactionByTransactionId(transactionId) {
 		return transaction;
 	} catch (error) {
 		Log.info(
-			`[CallbackController.js][getTransactionByTransactionId][${transactionId}]\t error : ${error}`
+			`[postHubtelAirtimeTopup.js][getTransactionByTransactionId][${transactionId}]\t error : ${error}`
 		);
 		return null;
 	}
@@ -1087,7 +1127,7 @@ async function getTransactionByType(transactionId, _type) {
 		return transaction;
 	} catch (error) {
 		Log.info(
-			`[CallbackController.js][getTransactionByTransactionId][${transactionId}]\t error : ${error}`
+			`[postHubtelAirtimeTopup.js][getTransactionByTransactionId][${transactionId}]\t error : ${error}`
 		);
 		return null;
 	}
@@ -1103,7 +1143,7 @@ async function getRequestByRequestId(requestId) {
 		return request;
 	} catch (error) {
 		Log.info(
-			`[CallbackController.js][getRequestByRequestId][${requestId}]\t error : ${error}`
+			`[postHubtelAirtimeTopup.js][getRequestByRequestId][${requestId}]\t error : ${error}`
 		);
 		return null;
 	}
@@ -1116,7 +1156,7 @@ async function getBalanceTransferByTransferId(transferId) {
 		return transfer;
 	} catch (error) {
 		Log.info(
-			`[CallbackController.js][getBalanceTransferByTransferId][${transferId}]\t error : ${error}`
+			`[postHubtelAirtimeTopup.js][getBalanceTransferByTransferId][${transferId}]\t error : ${error}`
 		);
 		return null;
 	}
@@ -1125,7 +1165,7 @@ async function getBalanceTransferByTransferId(transferId) {
 
 async function referralCodeProcessor(owner, referrer) {
 	Log.info(
-		`[CallbackController.js][referralCodeProcessor] \t processing referral code`
+		`[postHubtelAirtimeTopup.js][referralCodeProcessor] \t processing referral code`
 	);
 	try {
 		let user = await User.findOneAndUpdate(
@@ -1136,21 +1176,21 @@ async function referralCodeProcessor(owner, referrer) {
 			{ $push: { referrals: owner } },
 			{ new: true }
 		);
-		Log.info(`[CallbackController.js][referralCodeProcessor]`);
+		Log.info(`[postHubtelAirtimeTopup.js][referralCodeProcessor]`);
 		if (user) {
-			`[CallbackController.js][referralCodeProcessor]`;
+			`[postHubtelAirtimeTopup.js][referralCodeProcessor]`;
 			user.transactions += 0.4;
 			if (user.isModified) {
 				await user.save();
 			}
 		} else {
 			Log.info(
-				`[CallbackController.js][referralCodeProcessor][${referrer}] ******************************** referrer user not found`
+				`[postHubtelAirtimeTopup.js][referralCodeProcessor][${referrer}] ******************************** referrer user not found`
 			);
 		}
 	} catch (error) {
 		Log.info(
-			`[CallbackController.js][referralCodeProcessor][error] \t ${error}`
+			`[postHubtelAirtimeTopup.js][referralCodeProcessor][error] \t ${error}`
 		);
 	}
 }
@@ -1184,24 +1224,24 @@ async function sendMessages(transaction, req) {
 
 		try {
 			Log.info(
-				`[CallbackController.js][postHubtelAirtimeTopup][${transactionId}]\t sending recipient success message: ${recipient_message}`
+				`[postHubtelAirtimeTopup.js][postHubtelAirtimeTopup][${transactionId}]\t sending recipient success message: ${recipient_message}`
 			);
 			await sendText(recipientPhoneNumber, recipient_message);
 		} catch (error) {
 			Log.info(
-				`[CallbackController.js][postHubtelAirtimeTopup][${transactionId}]\t error sending success message: ${error}`
+				`[postHubtelAirtimeTopup.js][postHubtelAirtimeTopup][${transactionId}]\t error sending success message: ${error}`
 			);
 		}
 		try {
 			const senders_message = `Hi ${senderName}, your your topup of ${currency} ${amount}. to  Transaction ID: ${trans_id}. Date: ${new Date().toLocaleString()}. Reference: ${reference}`;
 
 			Log.info(
-				`[CallbackController.js][postHubtelAirtimeTopup][${transactionId}]\t sending sender's message: ${senders_message}`
+				`[postHubtelAirtimeTopup.js][postHubtelAirtimeTopup][${transactionId}]\t sending sender's message: ${senders_message}`
 			);
 			await sendText(recipientPhoneNumber, recipient_message);
 		} catch (error) {
 			Log.info(
-				`[CallbackController.js][postHubtelAirtimeTopup][${transactionId}]\t error sending success message: ${error}`
+				`[postHubtelAirtimeTopup.js][postHubtelAirtimeTopup][${transactionId}]\t error sending success message: ${error}`
 			);
 		}
 	} else {
@@ -1209,12 +1249,12 @@ async function sendMessages(transaction, req) {
 
 		try {
 			Log.info(
-				`[CallbackController.js][postHubtelAirtimeTopup][${transactionId}]\t sending failure message: ${message}`
+				`[postHubtelAirtimeTopup.js][postHubtelAirtimeTopup][${transactionId}]\t sending failure message: ${message}`
 			);
 			await sendText(phoneNumber, message);
 		} catch (error) {
 			Log.info(
-				`[CallbackController.js][postHubtelAirtimeTopup][${transactionId}]\t error sending success message: ${error}`
+				`[postHubtelAirtimeTopup.js][postHubtelAirtimeTopup][${transactionId}]\t error sending success message: ${error}`
 			);
 		}
 	}
