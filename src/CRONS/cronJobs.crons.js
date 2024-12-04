@@ -150,7 +150,7 @@ async function getPendingTransactions() {
 									io.getIO().emit("singleTransactionUpdate", transaction);
 								} catch (error) {}
 
-								if (Data.status === "Paid") {
+								if (Data.status === "Paid" && transaction.category !== "CR") {
 									commitCreditTransaction(transaction);
 								}
 							}
