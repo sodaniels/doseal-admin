@@ -713,6 +713,13 @@ async function postTransactionExecute(req, res) {
 							`[ApiController.js][postTransactionExecute][${uniqueId}]\t hubtel payment response : ` +
 								JSON.stringify(hubtelPaymentResponse)
 						);
+						// emit transactionUpdate
+						try {
+							const transactionUpdate = await Transaction.find({
+								createdBy: req.user._id,
+							});
+							io.getIO().emit("transactionUpdate", transactionUpdate);
+						} catch (error) {}
 						return res.json(hubtelPaymentResponse);
 					}
 
