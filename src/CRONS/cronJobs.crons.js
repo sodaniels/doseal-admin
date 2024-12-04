@@ -28,8 +28,7 @@ async function connectAndStartCron() {
 		}
 	});
 
-
-	cron.schedule("*/60 * * * *", async () => {
+	cron.schedule("*/5 * * * *", async () => {
 		if (process.env.ENVIRONMENT !== "development") {
 			// Check transactions every one hour and check the status after  1 hour
 			Log.info(
@@ -86,7 +85,9 @@ async function getPendingTransactions() {
 
 					transaction = await getTransactionByTransactionId(transactionId);
 
-					if ((hubtelResponse.PaymentResponseCode === "0000" || hubtelResponse.responseCode === "0000") &&
+					if (
+						(hubtelResponse.PaymentResponseCode === "0000" ||
+							hubtelResponse.responseCode === "0000") &&
 						transaction &&
 						transaction.statusCode === 411
 					) {
@@ -486,9 +487,15 @@ async function commitCreditTransaction(transaction) {
 		}
 		if (creditTransaction && hubtelResponse) {
 			let Meta = hubtelResponse.Data.Meta;
-			creditTransaction.ResponseCode = hubtelResponse.ResponseCode ? hubtelResponse.ResponseCode : undefined;
-			creditTransaction.Description = hubtelResponse.Message ? hubtelResponse.Message: uniqueId;
-			creditTransaction.HubtelTransactionId = hubtelResponse.Data.TransactionId ? hubtelResponse.Data.TransactionId: uniqueId;
+			creditTransaction.ResponseCode = hubtelResponse.ResponseCode
+				? hubtelResponse.ResponseCode
+				: undefined;
+			creditTransaction.Description = hubtelResponse.Message
+				? hubtelResponse.Message
+				: uniqueId;
+			creditTransaction.HubtelTransactionId = hubtelResponse.Data.TransactionId
+				? hubtelResponse.Data.TransactionId
+				: uniqueId;
 			creditTransaction.Commission = Meta.Commission
 				? Meta.Commission
 				: undefined;
