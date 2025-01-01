@@ -15,7 +15,7 @@ function verifyTransaction(request, originalHash) {
 	return newHash.toUpperCase() === originalHash;
 }
 
-async function calculateCompositeFee(_amount, type) {
+async function calculateCompositeFee(_amount, type=Null) {
 	try {
 		const amount = Number(_amount);
 		return processDefaultFee(amount);

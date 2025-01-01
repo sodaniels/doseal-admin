@@ -405,6 +405,7 @@ async function postTransactionInitiate(req, res) {
 
 	const { phoneNumber, amount, type, accountName, accountNumber, network } =
 		req.body;
+
 	const validationError = handleValidationErrors(req, res);
 	if (validationError) {
 		const errorRes = await apiErrors.create(
@@ -417,6 +418,10 @@ async function postTransactionInitiate(req, res) {
 	}
 	Log.info(
 		`[ApiController.js][postTransactionInitiate]\t incoming initiate transaction: ` +
+			req.ip
+	);
+	Log.info(
+		`[ApiController.js][postTransactionInitiate]\t requestBody: ${JSON.stringify(req.body)} ` +
 			req.ip
 	);
 
@@ -461,19 +466,26 @@ async function postTransactionInitiate(req, res) {
 		}
 
 		if (network && !checkIfAccountExists) {
-			const hubtelResponse = await restServices.postHubtelMSISDNSearchService(
-				phoneNumber
-			);
-			Log.info(
-				`[ApiController.js][postTransactionInitiate]\t msisdn search result: ${JSON.stringify(
-					hubtelResponse
-				)}`
-			);
-
-			if (hubtelResponse && hubtelResponse.ResponseCode === "0000") {
-				const data = hubtelResponse.Data[0];
-				verifiedName = data.Value;
+			try {
+				const hubtelResponse = await restServices.postHubtelMSISDNSearchService(
+					phoneNumber
+				);
+				Log.info(
+					`[ApiController.js][postTransactionInitiate]\t msisdn search result: ${JSON.stringify(
+						hubtelResponse
+					)}`
+				);
+	
+				if (hubtelResponse && hubtelResponse.ResponseCode === "0000") {
+					const data = hubtelResponse.Data[0];
+					verifiedName = data.Value;
+				}
+			} catch (error) {
+				Log.info(
+					`[ApiController.js][postTransactionInitiate]\t error postHubtelMSISDNSearchService: ${error}`
+				);
 			}
+			
 		}
 
 		console.log("verifiedName: " + verifiedName);
@@ -486,8 +498,14 @@ async function postTransactionInitiate(req, res) {
 
 		const checksum = transactionHash.toUpperCase();
 
+		
+
 		const encryptedTransaction = encrypt(JSON.stringify(req.body));
 		await setRedisWithExpiry(checksum, 600, encryptedTransaction);
+
+		// console.log("After encryption: " + encryptedTransaction);
+
+		
 
 		return res.json({
 			success: true,
@@ -497,7 +515,7 @@ async function postTransactionInitiate(req, res) {
 		});
 	} catch (error) {
 		Log.info(
-			`[ApiController.js][postTransactionInitiate]\t error initiating transaction: ` +
+			`[ApiController.js][postTransactionInitiate]\t error postHubtelMSISDNSearchService:: ${error}` +
 				error
 		);
 		return res.json({
