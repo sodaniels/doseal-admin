@@ -4,6 +4,8 @@ const mongoose = require("mongoose");
 const path = require("path");
 require("dotenv").config();
 const passport = require("passport");
+const cors = require("cors");
+const helmet = require("helmet");
 
 const session = require("express-session");
 const flash = require("express-flash");
@@ -60,6 +62,31 @@ const app = express();
 app.use(bodyParser.json());
 app.use(cookieParser());
 app.set('trust proxy', true);
+/**helmet configuration */
+app.use(cors());
+app.use(helmet());
+app.use(helmet.contentSecurityPolicy());
+app.use(helmet.dnsPrefetchControl());
+app.use(helmet.frameguard({ action: "deny" }));
+app.use(helmet.hidePoweredBy());
+app.use(
+	helmet.hsts({ maxAge: 31536000, includeSubDomains: true, preload: true })
+);
+app.use(helmet.ieNoOpen());
+app.use(helmet.noSniff());
+app.use(helmet.permittedCrossDomainPolicies());
+app.use(helmet.referrerPolicy({ policy: "strict-origin-when-cross-origin" }));
+app.use(helmet.xssFilter());
+// Configure CORS options
+const corsOptions = {
+	origin: "https://unity.doseal.org",
+	methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+	credentials: true, // Allow cookies if needed
+	optionsSuccessStatus: 204 // For legacy browser support
+  };
+  // Apply CORS middleware
+app.use(cors(corsOptions));
+/**helmet configuration */
 
 app.use(express.static(path.join(__dirname, "public")));
 
