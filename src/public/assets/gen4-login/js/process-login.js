@@ -14,9 +14,9 @@ $(document).ready(function () {
 		var phoneNumber = $("#phoneNumber").val();
 		var referralCode = $("#referralCode").val();
 
-		const token = $('[name="cf-turnstile-response"]').val();
+		// const token = $('[name="cf-turnstile-response"]').val();
 
-		// let captchaResponse = grecaptcha.getResponse();
+		let captchaResponse = grecaptcha.getResponse();
 
 		if (countryCode === "" || countryCode === undefined) {
 			Swal.fire({
@@ -36,6 +36,16 @@ $(document).ready(function () {
 			return false;
 		}
 
+		if (captchaResponse === "" || captchaResponse === undefined) {
+			Swal.fire({
+				title: "Missing Security Response",
+				text: "Please select the checkbox to indicate you are a human",
+				icon: "warning",
+			});
+			return false;
+		}
+
+
 		// if (phoneNumber.length > 10) {
 		// 	Swal.fire({
 		// 		title: "Check phone number",
@@ -46,14 +56,16 @@ $(document).ready(function () {
 		// }
 
 	
-		if (!token && env !== "development") {
-			Swal.fire({
-				title: "Missing Security Response",
-				text: "Please complete the CAPTCHA",
-				icon: "warning",
-			});
-			return false;
-		}
+		// if (!token && env !== "development") {
+		// 	Swal.fire({
+		// 		title: "Missing Security Response",
+		// 		text: "Please complete the CAPTCHA",
+		// 		icon: "warning",
+		// 	});
+		// 	return false;
+		// }
+
+	
 
 		var urlParams = new URLSearchParams(window.location.search);
 		var redirectUrl = urlParams.get('redirectUrl');
@@ -62,8 +74,8 @@ $(document).ready(function () {
 			countryCode: countryCode,
 			phoneNumber: phoneNumber,
 			redirectUrl: redirectUrl,
-			// "g-recaptcha-response": captchaResponse,
-			token: token,
+			"g-recaptcha-response": captchaResponse,
+			// token: token,
 		};
 
 		localStorage.setItem("redirectUrl", redirectUrl);

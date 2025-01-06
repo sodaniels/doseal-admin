@@ -62,6 +62,7 @@ const app = express();
 app.use(bodyParser.json());
 app.use(cookieParser());
 app.set('trust proxy', true);
+
 /**helmet configuration */
 app.use(cors());
 app.use(helmet());
@@ -76,6 +77,13 @@ app.use(helmet.ieNoOpen());
 app.use(helmet.noSniff());
 app.use(helmet.permittedCrossDomainPolicies());
 app.use(helmet.referrerPolicy({ policy: "strict-origin-when-cross-origin" }));
+app.use((req, res, next) => {
+	res.setHeader(
+		"Content-Security-Policy",
+		"script-src 'self' https://www.google.com/recaptcha/api.js https://www.gstatic.com"
+	);
+	next();
+});
 app.use(helmet.xssFilter());
 // Configure CORS options
 const corsOptions = {

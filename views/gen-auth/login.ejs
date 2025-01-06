@@ -134,7 +134,13 @@
             }
         }
     </style>
-    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+    <!-- <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script> -->
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+    <style>
+        .g-recaptcha {
+            float: left;
+        }
+    </style>
 </head>
 <body>
     <div id="loadingOverlay">
@@ -181,10 +187,20 @@
             </div>
 
         </div>
-        <div style="text-align: center;">
+        <!-- <div style="text-align: center;">
             <div class="cf-turnstile" data-sitekey="<%= SITE_KEY %>"></div>
             <input type="hidden" id="env" value="<%= environment %>" />
+        </div> -->
+        <div style="text-align: center;">
+            <div class="col-lg-12">
+                <div class="form-group">
+                    <div
+                        class="g-recaptcha"
+                        data-sitekey="<%= SITE_KEY %>"></div>
+                </div>
+            </div>
         </div>
+        
         <button
             class="btn px-5 w-100 d-block fw-bold"
             id="loginButton"

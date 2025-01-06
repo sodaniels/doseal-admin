@@ -50,7 +50,9 @@ async function getLogin(req, res) {
 		errors: false,
 		errorMessage: false,
 		countries: countries ? countries : false,
-		SITE_KEY: process.env.CLOUDFLARE_SITE_KEY,
+		SITE_KEY: process.env.SITE_KEY,
+		captcha: recaptcha.render(),
+		// SITE_KEY: process.env.CLOUDFLARE_SITE_KEY,
 		environment: process.env.ENVIRONMENT,
 		csrfToken: req.csrfToken(),
 	});
@@ -118,42 +120,82 @@ async function postLogin(req, res) {
 		});
 	}
 
-	
-	try {
-		const response = await axios.post(
-			"https://challenges.cloudflare.com/turnstile/v0/siteverify",
-			{
-				secret: process.env.CLOUDFLARE_SECRET_KEY,
-				response: req.body.token,
-			}
-		);
+	const captchaResponse = req.body["g-recaptcha-response"];
+	const secret_key = process.env.SECRET_KEY;
 
-		Log.info(
-			`[AuthGeneralController.js][postSignin] \t verifying cloudflare: ${JSON.stringify(
-				response.data.success
-			)}`
-		);
-
-		if (!response.data.success && process.env.ENVIRONMENT === "production") {
-			return res.json({
-				success: false,
-				code: 401,
-				message: "Verification failed",
-			});
-		}
-	} catch (error) {
-		console.error("Verification error:", error);
-		Log.info(
-			`[AuthGeneralController.js][postSignin] \t error: ${JSON.stringify(
-				error
-			)}`
-		);
+	if (!req.body["g-recaptcha-response"]) {
 		return res.json({
 			success: false,
 			code: 401,
-			message: "Verification failed",
+			message: "Please select the security check",
 		});
 	}
+
+	try {
+		const url = `https://www.google.com/recaptcha/api/siteverify?secret=${secret_key}&response=${captchaResponse}`;
+		const requestOptions = {
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify({
+				secret: secret_key,
+				response: captchaResponse,
+			}),
+		};
+		const response = await fetch(url, requestOptions);
+		const googleResponse = await response.json();
+		if (!googleResponse.success) {
+			return res.json({
+				success: false,
+				code: 401,
+				message: "reCAPTCHA verification failed. Please try again.",
+			});
+		}
+	} catch (error) {
+		Log.info(`[AuthGeneralController.js][postSignin] error: ${error}`);
+		if (!req.body["g-recaptcha-response"]) {
+			return res.json({
+				success: false,
+				code: 401,
+				message: "reCAPTCHA verification failed. Please try again.",
+			});
+		}
+	}
+	
+	// try {
+	// 	const response = await axios.post(
+	// 		"https://challenges.cloudflare.com/turnstile/v0/siteverify",
+	// 		{
+	// 			secret: process.env.CLOUDFLARE_SECRET_KEY,
+	// 			response: req.body.token,
+	// 		}
+	// 	);
+
+	// 	Log.info(
+	// 		`[AuthGeneralController.js][postSignin] \t verifying cloudflare: ${JSON.stringify(
+	// 			response.data.success
+	// 		)}`
+	// 	);
+
+	// 	if (!response.data.success && process.env.ENVIRONMENT === "production") {
+	// 		return res.json({
+	// 			success: false,
+	// 			code: 401,
+	// 			message: "Verification failed",
+	// 		});
+	// 	}
+	// } catch (error) {
+	// 	console.error("Verification error:", error);
+	// 	Log.info(
+	// 		`[AuthGeneralController.js][postSignin] \t error: ${JSON.stringify(
+	// 			error
+	// 		)}`
+	// 	);
+	// 	return res.json({
+	// 		success: false,
+	// 		code: 401,
+	// 		message: "Verification failed",
+	// 	});
+	// }
 
 	let formattedNumber_ = removePlusFromPhoneNumber(formattedNumber_raw.format);
 
