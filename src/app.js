@@ -85,15 +85,7 @@ app.use((req, res, next) => {
 	next();
 });
 app.use(helmet.xssFilter());
-// Configure CORS options
-const corsOptions = {
-	origin: "https://unity.doseal.org",
-	methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
-	credentials: true, // Allow cookies if needed
-	optionsSuccessStatus: 204 // For legacy browser support
-  };
-  // Apply CORS middleware
-app.use(cors(corsOptions));
+app.use(cors({ origin: 'https://unity.doseal.org' })); // Replace with your app's URL
 /**helmet configuration */
 
 app.use(express.static(path.join(__dirname, "public")));
