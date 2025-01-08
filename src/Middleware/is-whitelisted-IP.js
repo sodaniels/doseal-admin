@@ -11,6 +11,9 @@ module.exports = (req, res, next) => {
 	if (allowedIPs.includes(requestIP)) {
 		next(); // IP is allowed, continue to the next middleware/route
 	} else {
+		Log.info(
+			`[is-whitelisted-IP.js]\t Blocked IP: ${requestIP}`
+		);
 		res.status(403).json({
 			code: 403,
 			message: "Access forbidden.",
