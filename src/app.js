@@ -142,7 +142,7 @@ app.use((req, res, next) => {
 });
 
 
-app.use("/api/v1/",/* isWhitelisted, */  callbackRoutes);
+app.use("/api/v1/", isWhitelisted, callbackRoutes);
 
 app.use("/auth/", authApiRoutes);
 

@@ -1,4 +1,5 @@
 const { Log } = require("../helpers/Log");
+const ServiceCode = require("../constants/serviceCode");
 
 module.exports = (req, res, next) => {
 	
@@ -6,7 +7,7 @@ module.exports = (req, res, next) => {
 	Log.info(
 		`[is-whitelisted-IP.js]\t incoming IP: ${requestIP}`
 	);
-	const allowedIPs = process.env.ALLOWED_IPs;
+	const allowedIPs = ServiceCode.ALLOWED_IP_ADDRESSES;
 	if (allowedIPs.includes(requestIP)) {
 		next(); // IP is allowed, continue to the next middleware/route
 	} else {
