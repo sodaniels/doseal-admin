@@ -6,6 +6,8 @@ require("dotenv").config();
 const passport = require("passport");
 const cors = require("cors");
 const helmet = require("helmet");
+const rateLimit = require('express-rate-limit');
+const { globalRateLimiter } = require('./Middleware/globalRateLimiterMiddleware');
 
 const session = require("express-session");
 const flash = require("express-flash");
@@ -61,7 +63,7 @@ const app = express();
 app.use(bodyParser.json());
 app.use(cookieParser());
 // Tell Express to trust the reverse proxy
-app.set('trust proxy', true);
+app.set('trust proxy', 1);
 
 /**helmet configuration */
 app.use(cors());
@@ -87,6 +89,7 @@ app.use((req, res, next) => {
 app.use(helmet.xssFilter());
 app.use(cors({ origin: 'https://unity.doseal.org' })); // Replace with your app's URL
 /**helmet configuration */
+
 
 app.use(express.static(path.join(__dirname, "public")));
 
