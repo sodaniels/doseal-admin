@@ -5,6 +5,9 @@ const { Log } = require("../../helpers/Log");
 const serviceCode = require("../../constants/serviceCode");
 
 async function postSubscriber(req, res) {
+	Log.info(
+		`[subscriberController.js][postSubscriber]\t IP ${req.ip}`
+	);
 	const subscriber = new User({
 		phoneNumber: req.body.msisdn,
 		role: req.body.account_type,
@@ -31,6 +34,9 @@ async function postSubscriber(req, res) {
 }
 
 async function getAccountKyc(req, res) {
+	Log.info(
+		`[subscriberController.js][getAccountKyc]\t IP ${req.ip}`
+	);
 	Log.info(
 		"[SubscriberController.js][getSubscriber]\t ..retrieving subscriber with : " +
 			req.params.msisdn
@@ -67,6 +73,9 @@ async function getAccountKyc(req, res) {
 
 async function getAccountStatus(req, res) {
 	Log.info(
+		`[subscriberController.js][getAccountStatus]\t IP ${req.ip}`
+	);
+	Log.info(
 		"[SubscriberController.js][getSubscriber]\t ..retrieving subscriber with : " +
 			req.params.msisdn
 	);
@@ -94,6 +103,9 @@ async function getAccountStatus(req, res) {
 }
 
 async function postValidatePin(req, res) {
+	Log.info(
+		`[subscriberController.js][postValidatePin]\t IP ${req.ip}`
+	);
 	try {
 		const msisdn = String(req.body.msisdn);
 		const pin = String(req.body.pin);

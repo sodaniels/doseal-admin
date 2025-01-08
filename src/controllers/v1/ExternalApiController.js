@@ -34,6 +34,9 @@ const callbackController = require("./CallbackController");
 
 // post msisdn query
 async function postMSISDNquery(req, res) {
+	Log.info(
+		`[ExternalApiController.js][postMSISDNquery]\t IP ${req.ip}`
+	);
 	let hubtelResponse;
 	const validationError = handleValidationErrors(req, res);
 	if (validationError) {
@@ -75,6 +78,9 @@ async function postMSISDNquery(req, res) {
 }
 // post validate ID card. Ghana card and Voter Id
 async function postValidateIDCard(req, res) {
+	Log.info(
+		`[ExternalApiController.js][postValidateIDCard]\t IP ${req.ip}`
+	);
 	let hubtelResponse;
 	const validationError = handleValidationErrors(req, res);
 	if (validationError) {

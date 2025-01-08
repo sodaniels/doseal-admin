@@ -27,6 +27,9 @@ const Helpers = require("../../../helpers/helper");
 const helpers = new Helpers();
 
 async function postSigin(req, res) {
+	Log.info(
+		`[AuthEmailController.js][postSigin]\t IP ${req.ip}`
+	);
 	let user;
 	const { email, password } = req.body;
 	Log.info(
@@ -87,6 +90,9 @@ async function postSigin(req, res) {
 }
 
 async function processEmail(user, email, res) {
+	Log.info(
+		`[AuthEmailController.js][processEmail]\t IP ${req.ip}`
+	);
 	try {
 		Log.info(
 			`[AuthEmailController.js][postSigin][${email}] \t initial registration successful`
@@ -150,6 +156,9 @@ async function processEmail(user, email, res) {
 }
 
 async function postVerifyAccount(req, res) {
+	Log.info(
+		`[AuthEmailController.js][postVerifyAccount]\t IP ${req.ip}`
+	);
 	const { phoneNumber, email, code } = req.body;
 	Log.info(
 		`[AuthEmailController.js][postVerifyAccount][${email}] posting verifying account IP: ${req.ip}`
@@ -206,6 +215,9 @@ async function postVerifyAccount(req, res) {
 }
 
 async function postSignup(req, res) {
+	Log.info(
+		`[AuthEmailController.js][postSignup]\t IP ${req.ip}`
+	);
 	let codeSentViaEmail, uncompletedUser, storeUser;
 
 	const {

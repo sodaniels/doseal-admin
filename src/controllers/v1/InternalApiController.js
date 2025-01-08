@@ -38,7 +38,10 @@ const { result } = require("lodash");
 
 //get page
 async function getNews(req, res) {
-	Log.info(`[InternalApiController.js][getNews]\t getting news`);
+	Log.info(
+		`[InternalApiController.js][getNews]\t IP ${req.ip}`
+	);
+	Log.info(`[InternalApiController.js][getNews]\t getting news ${req.ip}`);
 	try {
 		const news = await NewsRoom.find({}).sort({ _id: -1 });
 		if (news) {
@@ -70,7 +73,10 @@ async function getNews(req, res) {
 // get notifications
 async function getNotifications(req, res) {
 	Log.info(
-		`[InternalApiController.js][getNotificaitons]\t getting notifications`
+		`[InternalApiController.js][getNews]\t IP ${req.ip}`
+	);
+	Log.info(
+		`[InternalApiController.js][getNotificaitons]\t getting notifications ${req.ip}`
 	);
 	try {
 		const notification = await Notification.find({})
@@ -103,10 +109,13 @@ async function getNotifications(req, res) {
 }
 // post electricity infrmation
 async function postAddElectricity(req, res) {
+	Log.info(
+		`[InternalApiController.js][postAddElectricity]\t IP ${req.ip}`
+	);
 	try {
 		const { phoneNumber, meterId, meterName } = req.body;
 		Log.info(
-			`[InternalApiController.js][postAddElectricity][${
+			`[InternalApiController.js][postAddElectricity][${req.ip}][${
 				req.user._id
 			}]\t adding electricity data: ${JSON.stringify(req.body)}`
 		);
@@ -161,7 +170,10 @@ async function postAddElectricity(req, res) {
 // get electricity information
 async function getElectricity(req, res) {
 	Log.info(
-		`[InternalApiController.js][getElectricity]\t getting electricity information`
+		`[InternalApiController.js][getElectricity]\t IP ${req.ip}`
+	);
+	Log.info(
+		`[InternalApiController.js][getElectricity]\t getting electricity information ${req.ip}`
 	);
 	try {
 		const electricityData = await Electricity.find({
@@ -196,6 +208,9 @@ async function getElectricity(req, res) {
 }
 // post airtime validation
 async function postAirtimeValidation(req, res) {
+	Log.info(
+		`[InternalApiController.js][postAirtimeValidation]\t IP ${req.ip}`
+	);
 	let verifiedName;
 	try {
 		const { phoneNumber, network, type, alias } = req.body;
@@ -277,7 +292,10 @@ async function postAirtimeValidation(req, res) {
 // get airtime
 async function getAirtime(req, res) {
 	Log.info(
-		`[InternalApiController.js][getAirtime]\t getting airtime information`
+		`[InternalApiController.js][getAirtime]\t IP ${req.ip}`
+	);
+	Log.info(
+		`[InternalApiController.js][getAirtime]\t getting airtime information ${req.ip}`
 	);
 	try {
 		const airtimeData = await Telco.find({
@@ -313,7 +331,10 @@ async function getAirtime(req, res) {
 }
 // get data
 async function getData(req, res) {
-	Log.info(`[InternalApiController.js][getData]\t getting getData information`);
+	Log.info(
+		`[InternalApiController.js][getData]\t IP ${req.ip}`
+	);
+	Log.info(`[InternalApiController.js][getData]\t getting getData information ${req.ip}`);
 	try {
 		const itemData = await Telco.find({
 			createdBy: req.user._id,
@@ -349,7 +370,10 @@ async function getData(req, res) {
 // get tv streams
 async function getTvStreams(req, res) {
 	Log.info(
-		`[InternalApiController.js][getTvStreams]\t getting tv-streams information`
+		`[InternalApiController.js][getTvStreams]\t IP ${req.ip}`
+	);
+	Log.info(
+		`[InternalApiController.js][getTvStreams]\t getting tv-streams information ${req.ip}`
 	);
 	try {
 		const itemData = await TvStream.find({
@@ -385,7 +409,10 @@ async function getTvStreams(req, res) {
 // get ghana water
 async function getGhanaWater(req, res) {
 	Log.info(
-		`[InternalApiController.js][getGhanaWater]\t getting ghana water information`
+		`[InternalApiController.js][getGhanaWater]\t IP ${req.ip}`
+	);
+	Log.info(
+		`[InternalApiController.js][getGhanaWater]\t getting ghana water information ${req.ip}`
 	);
 	try {
 		const itemData = await Water.find({
@@ -420,9 +447,12 @@ async function getGhanaWater(req, res) {
 }
 // get referral code
 async function getRerralCode(req, res) {
+	Log.info(
+		`[InternalApiController.js][getRerralCode]\t IP ${req.ip}`
+	);
 	try {
 		Log.info(
-			"[InternalApiController.js][getRerralCode]..getting referral data"
+			`[InternalApiController.js][getRerralCode]..getting referral data ${req.ip}`
 		);
 
 		const user = await User.findOne({ _id: req.user._id }).select(

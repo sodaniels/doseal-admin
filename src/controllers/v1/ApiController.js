@@ -38,6 +38,9 @@ const { result, has } = require("lodash");
 
 //get page
 async function getPageCategory(req, res) {
+	Log.info(
+		`[ApiController.js][getPageCategory]\t IP ${req.ip}`
+	);
 	const cat = req.params.pageCategory;
 
 	try {
@@ -71,6 +74,9 @@ async function getPageCategory(req, res) {
 }
 // get topup wallet
 async function postTopUpWallet(req, res) {
+	Log.info(
+		`[ApiController.js][postTopUpWallet]\t IP ${req.ip}`
+	);
 	const validationError = handleValidationErrors(req, res);
 	if (validationError) {
 		const errorRes = await apiErrors.create(
@@ -178,9 +184,12 @@ async function postTopUpWallet(req, res) {
 }
 // get topup wallets
 async function getTopUpWallets(req, res) {
+	Log.info(
+		`[ApiController.js][getTopUpWallets]\t IP ${req.ip}`
+	);
 	try {
 		Log.info(
-			`[ApiController.js][postTopUpWallet][${req.user._id}]\t retrieving top-up wallets`
+			`[ApiController.js][postTopUpWallet][${req.user._id}]\t retrieving top-up wallets ${req.ip}`
 		);
 		const wallets = await Transaction.find({
 			createdBy: req.user._id,
@@ -214,6 +223,9 @@ async function getTopUpWallets(req, res) {
 }
 // get profile information
 async function getProfile(req, res) {
+	Log.info(
+		`[ApiController.js][getProfile]\t IP ${req.ip}`
+	);
 	try {
 		Log.info(
 			`[ApiController.js][getProfile][${req.user._id}]\t profile information`
@@ -246,6 +258,9 @@ async function getProfile(req, res) {
 }
 // put update profile
 async function putUpdateProfile(req, res) {
+	Log.info(
+		`[ApiController.js][putUpdateProfile]\t IP ${req.ip}`
+	);
 	const validationError = handleValidationErrors(req, res);
 	if (validationError) {
 		const errorRes = await apiErrors.create(
@@ -296,6 +311,9 @@ async function putUpdateProfile(req, res) {
 }
 // post wallet
 async function postWallet(req, res) {
+	Log.info(
+		`[ApiController.js][postWallet]\t IP ${req.ip}`
+	);
 	const validationError = handleValidationErrors(req, res);
 	if (validationError) {
 		const errorRes = await apiErrors.create(
@@ -369,6 +387,9 @@ async function postWallet(req, res) {
 }
 //get wallet
 async function getWallets(req, res) {
+	Log.info(
+		`[ApiController.js][getWallets]\t IP ${req.ip}`
+	);
 	try {
 		Log.info(
 			`[ApiController.js][getWallets][${req.user._id}]\t retrieving wallets`
@@ -401,6 +422,9 @@ async function getWallets(req, res) {
 }
 // post transaction init
 async function postTransactionInitiate(req, res) {
+	Log.info(
+		`[ApiController.js][postTransactionInitiate]\t IP ${req.ip}`
+	);
 	let fee, totalAmount, verifiedName, checkIfAccountExists;
 
 	const { phoneNumber, amount, type, accountName, accountNumber, network } =
@@ -526,6 +550,9 @@ async function postTransactionInitiate(req, res) {
 }
 // post transacion execute
 async function postTransactionExecute(req, res) {
+	Log.info(
+		`[ApiController.js][postTransactionExecute]\t IP ${req.ip}`
+	);
 	let transaction, hubtelPaymentResponse, description, referrer, user;
 	const { amount } = req.body;
 	const validationError = handleValidationErrors(req, res);
@@ -769,10 +796,13 @@ async function postTransactionExecute(req, res) {
 }
 // get transaction data
 async function getExcerptTransactions(req, res) {
+	Log.info(
+		`[ApiController.js][getExcerptTransactions]\t IP ${req.ip}`
+	);
 	try {
 		//excerptTransData
 		Log.info(
-			`[ApiController.js][postTransactionExecute][${req.user._id}]\t retrieving transactions`
+			`[ApiController.js][postTransactionExecute][${req.user._id}]\t retrieving transactions ${req.ip}`
 		);
 		const transactions = await Transaction.find({
 			createdBy: req.user._id,
@@ -808,10 +838,13 @@ async function getExcerptTransactions(req, res) {
 }
 // get transactions
 async function getTransactions(req, res) {
+	Log.info(
+		`[ApiController.js][getExcerptTransactions]\t IP ${req.ip}`
+	);
 	try {
 		//excerptTransData
 		Log.info(
-			`[ApiController.js][getTransactions][${req.user._id}]\t retrieving transactions`
+			`[ApiController.js][getTransactions][${req.user._id}]\t retrieving transactions ${req.ip}`
 		);
 		const transactions = await Transaction.find({
 			createdBy: req.user._id,
@@ -845,6 +878,9 @@ async function getTransactions(req, res) {
 }
 // search for ecg meter
 async function postHubtelEcgMeterSearch(req, res) {
+	Log.info(
+		`[ApiController.js][postHubtelEcgMeterSearch]\t IP ${req.ip}`
+	);
 	let hubtelResponse;
 	const validationError = handleValidationErrors(req, res);
 	if (validationError) {
@@ -890,6 +926,9 @@ async function postHubtelEcgMeterSearch(req, res) {
 }
 // search hubtel dstv accounts
 async function postHubtelDstvAccountSearch(req, res) {
+	Log.info(
+		`[ApiController.js][postHubtelDstvAccountSearch]\t IP ${req.ip}`
+	);
 	let hubtelResponse;
 	const validationError = handleValidationErrors(req, res);
 	if (validationError) {
@@ -977,6 +1016,9 @@ async function postHubtelGoTVAccountSearch(req, res) {
 }
 // search star times tv account
 async function postHubtelStarTimesTvAccountSearch(req, res) {
+	Log.info(
+		`[ApiController.js][postHubtelStarTimesTvAccountSearch]\t IP ${req.ip}`
+	);
 	let hubtelResponse;
 	const validationError = handleValidationErrors(req, res);
 	if (validationError) {
@@ -1019,6 +1061,9 @@ async function postHubtelStarTimesTvAccountSearch(req, res) {
 }
 // search tv streaming
 async function postHubtelTvStreamingSearch(req, res) {
+	Log.info(
+		`[ApiController.js][postHubtelTvStreamingSearch]\t IP ${req.ip}`
+	);
 	let verifiedName, checkIfAccountExists, hubtelResponse_;
 	const { accountNumber, type } = req.body;
 	Log.info(
@@ -1098,7 +1143,7 @@ async function postHubtelTvStreamingSearch(req, res) {
 			}
 		} catch (error) {
 			Log.info(
-				`[InternalApiController.js][postHubtelTvStreamingSearch][${req.user._id}]\t error getting verifiedName: ${error}`
+				`[ApiController.js][postHubtelTvStreamingSearch][${req.user._id}]\t error getting verifiedName: ${error}`
 			);
 		}
 
@@ -1116,7 +1161,7 @@ async function postHubtelTvStreamingSearch(req, res) {
 			return res.json(hubtelResponse_);
 		} catch (error) {
 			Log.info(
-				`[InternalApiController.js][postHubtelTvStreamingSearch][${req.user._id}]\t error storing data info: ${error}`
+				`[ApiController.js][postHubtelTvStreamingSearch][${req.user._id}]\t error storing data info: ${error}`
 			);
 		}
 	}
@@ -1179,6 +1224,9 @@ async function postHubtelTvStreamingSearch(req, res) {
 }
 // search ghana water account
 async function postHubtelGhanaWaterAccountSearch(req, res) {
+	Log.info(
+		`[ApiController.js][postHubtelGhanaWaterAccountSearch]\t IP ${req.ip}`
+	);
 	let checkIfAccountExists, hubtelResponse, verifiedName, hubtelResponse_;
 	const { accountNumber, phoneNumber, type } = req.body;
 	Log.info(
@@ -1233,7 +1281,7 @@ async function postHubtelGhanaWaterAccountSearch(req, res) {
 			}
 		} catch (error) {
 			Log.info(
-				`[InternalApiController.js][postHubtelGhanaWaterAccountSearch][${req.user._id}]\t error getting verifiedName: ${error}`
+				`[ApiController.js][postHubtelGhanaWaterAccountSearch][${req.user._id}]\t error getting verifiedName: ${error}`
 			);
 		}
 
@@ -1252,7 +1300,7 @@ async function postHubtelGhanaWaterAccountSearch(req, res) {
 			return res.json(hubtelResponse_);
 		} catch (error) {
 			Log.info(
-				`[InternalApiController.js][postHubtelTvStreamingSearch][${req.user._id}]\t error storing data info: ${error}`
+				`[ApiController.js][postHubtelTvStreamingSearch][${req.user._id}]\t error storing data info: ${error}`
 			);
 		}
 	}
@@ -1287,6 +1335,9 @@ async function postHubtelGhanaWaterAccountSearch(req, res) {
 }
 // get stored meters
 async function getStoredECGMeters(req, res) {
+	Log.info(
+		`[ApiController.js][getStoredECGMeters]\t IP ${req.ip}`
+	);
 	try {
 		Log.info(
 			`[ApiController.js][getStoredECGMeters]\t retrieving stored ECG meters ` +
@@ -1320,6 +1371,9 @@ async function getStoredECGMeters(req, res) {
 }
 // process account wallet payment
 async function processAccountWalletPayment(req, uniqueId, res) {
+	Log.info(
+		`[ApiController.js][processAccountWalletPayment]\t IP ${req.ip}`
+	);
 	try {
 		Log.info(
 			`[ApiController.js][postTransactionExecute][processAccountWalletPayment][${uniqueId}]\t processing account wallet payment`
@@ -1405,6 +1459,9 @@ async function processAccountWalletPayment(req, uniqueId, res) {
 }
 // post reported issue
 async function postReportedIssue(req, res) {
+	Log.info(
+		`[ApiController.js][postReportedIssue]\t IP ${req.ip}`
+	);
 	const validationError = handleValidationErrors(req, res);
 	if (validationError) {
 		const errorRes = await apiErrors.create(
@@ -1479,6 +1536,9 @@ async function postReportedIssue(req, res) {
 }
 // get reported issues
 async function getReportedIssues(req, res) {
+	Log.info(
+		`[ApiController.js][getReportedIssues]\t IP ${req.ip}`
+	);
 	try {
 		Log.info(
 			`[ApiController.js][getReportedIssues]\t retrieving reported issues for ${req.user._id} ` +
@@ -1511,6 +1571,9 @@ async function getReportedIssues(req, res) {
 }
 // post feedback
 async function postFeedback(req, res) {
+	Log.info(
+		`[ApiController.js][postFeedback]\t IP ${req.ip}`
+	);
 	const validationError = handleValidationErrors(req, res);
 	if (validationError) {
 		const errorRes = await apiErrors.create(
@@ -1612,6 +1675,9 @@ async function getFeedback(req, res) {
 // search mtn bundle
 async function postSearchDataBundleByNetwork(req, res) {
 	Log.info(
+		`[ApiController.js][postSearchDataBundleByNetwork]\t IP ${req.ip}`
+	);
+	Log.info(
 		`[ApiController.js][postSearchDataBundleByNetwork]\t requestBody: ${JSON.stringify(
 			req.body
 		)}`
@@ -1692,7 +1758,7 @@ async function postSearchDataBundleByNetwork(req, res) {
 			}
 		} catch (error) {
 			Log.info(
-				`[InternalApiController.js][postSearchDataBundleByNetwork][${req.user._id}]\t error getting verifiedName: ${error}`
+				`[ApiController.js][postSearchDataBundleByNetwork][${req.user._id}]\t error getting verifiedName: ${error}`
 			);
 		}
 
@@ -1708,7 +1774,7 @@ async function postSearchDataBundleByNetwork(req, res) {
 			await telcoObject.save();
 		} catch (error) {
 			Log.info(
-				`[InternalApiController.js][postSearchDataBundleByNetwork][${req.user._id}]\t error storing data info: ${error}`
+				`[ApiController.js][postSearchDataBundleByNetwork][${req.user._id}]\t error storing data info: ${error}`
 			);
 		}
 	}
@@ -1835,6 +1901,9 @@ async function getTransactionStatusCheck(req, res) {
 }
 // get balance query
 async function getPOSBalanceQuery(req, res) {
+	Log.info(
+		`[ApiController.js][getPOSBalanceQuery]\t IP ${req.ip}`
+	);
 	let hubtelResponse;
 	try {
 		Log.info(
@@ -1864,6 +1933,9 @@ async function getPOSBalanceQuery(req, res) {
 }
 // get prepaid balance query
 async function getPrepaidBalanceQuery(req, res) {
+	Log.info(
+		`[ApiController.js][getPrepaidBalanceQuery]\t IP ${req.ip}`
+	);
 	let hubtelResponse;
 	try {
 		Log.info(
@@ -1893,6 +1965,9 @@ async function getPrepaidBalanceQuery(req, res) {
 }
 // post transfer balance
 async function postTransferBalance() {
+	Log.info(
+		`[ApiController.js][postTransferBalance]\t IP ${req.ip}`
+	);
 	let hubtelResponse, balanceResponse, storeTransfer, Amount;
 	try {
 		let currentDate = new Date();
@@ -2006,6 +2081,9 @@ async function getBalanceTransferByTransferId(transferId) {
 }
 // get help desk
 async function getHelpDesk(req, res) {
+	Log.info(
+		`[ApiController.js][getHelpDesk]\t IP ${req.ip}`
+	);
 	try {
 		Log.info(
 			`[ApiController.js][getHelpDesk]\t retrieving help desk by ${req.user._id} ` +
@@ -2114,6 +2192,9 @@ async function postReportFault(req, res) {
 }
 // post search telecel postpaid account
 async function postHubtelTelecelPostpaidSearch(req, res) {
+	Log.info(
+		`[ApiController.js][postHubtelTelecelPostpaidSearch]\t IP ${req.ip}`
+	);
 	let hubtelResponse;
 	const validationError = handleValidationErrors(req, res);
 	if (validationError) {
@@ -2214,6 +2295,9 @@ async function postHubtelTelecelBroadbandSearch(req, res) {
 }
 
 async function processTransaction(transaction) {
+	Log.info(
+		`[ApiController.js][processTransaction]\t IP ${req.ip}`
+	);
 	let hubtelResponse;
 	switch (transaction.type) {
 		case "Airtime":

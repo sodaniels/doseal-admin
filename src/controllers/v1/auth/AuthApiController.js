@@ -25,6 +25,9 @@ const restServices = new RestServices();
 
 // store device information
 async function postDeviceData(req, res) {
+	Log.info(
+		`[AuthApiController.js][postDeviceData]\t IP ${req.ip}`
+	);
 	try {
 		const deviceData = JSON.parse(JSON.stringify(req.body));
 
@@ -74,6 +77,9 @@ async function postDeviceData(req, res) {
 }
 // send code
 async function sendCode(req, res) {
+	Log.info(
+		`[AuthApiController.js][sendCode]\t IP ${req.ip}`
+	);
 	let pin, response;
 	Log.info(
 		`[AuthApiController.js][sendCode][${req.body.phoneNumber}] \t ****** sending sms `
@@ -130,6 +136,9 @@ async function sendCode(req, res) {
 }
 // confirm code
 async function confirmCode(req, res) {
+	Log.info(
+		`[AuthApiController.js][confirmCode]\t IP ${req.ip}`
+	);
 	let hubtelMSISDNResponse,
 		registeredFirstName,
 		registeredLastName,
@@ -269,6 +278,9 @@ async function confirmCode(req, res) {
 // do login
 async function doLogin(req, res) {
 	Log.info(
+		`[AuthApiController.js][doLogin]\t IP ${req.ip}`
+	);
+	Log.info(
 		`[AuthApiController.js][doLogin][${req.body.phoneNumber}] \t ****** initiating login ...  `
 	);
 
@@ -308,6 +320,9 @@ async function doLogin(req, res) {
 }
 // complete registration
 async function completeRegistration(req, res) {
+	Log.info(
+		`[AuthApiController.js][completeRegistration]\t IP ${req.ip}`
+	);
 	try {
 		Log.info(
 			`[AuthApiController.js][completeRegistration][${req.body.phoneNumber}] \t ****** initiate confirm code  `
@@ -378,6 +393,9 @@ async function completeRegistration(req, res) {
 }
 // post do biometric login
 async function postDoBioMetricLogin(req, res) {
+	Log.info(
+		`[AuthApiController.js][postDoBioMetricLogin]\t IP ${req.ip}`
+	);
 	try {
 		Log.info(
 			`[AuthApiController.js][postDoBioMetricLogin][${req.body.UniqueId}] \t ****** checking account status`
@@ -419,6 +437,9 @@ async function postDoBioMetricLogin(req, res) {
 
 // check account status account-status
 async function postCheckAccountStatus(req, res) {
+	Log.info(
+		`[AuthApiController.js][postCheckAccountStatus]\t IP ${req.ip}`
+	);
 	try {
 		Log.info(
 			`[AuthApiController.js][postCheckAccountStatus][${req.body.UniqueId}] \t ****** checking account status`
@@ -448,6 +469,9 @@ async function postCheckAccountStatus(req, res) {
 }
 
 async function processUser(login_response, req) {
+	Log.info(
+		`[AuthApiController.js][processUser]\t IP ${req.ip}`
+	);
 	const q = req.body.phoneNumber.substr(-9);
 	let user = await Person.findOne({
 		phoneNumber: { $regex: q, $options: "i" },
@@ -492,6 +516,9 @@ async function createToken(_id) {
 }
 
 async function getPageCategory(req, res) {
+	Log.info(
+		`[AuthApiController.js][getPageCategory]\t IP ${req.ip}`
+	);
 	const cat = req.params.pageCategory;
 
 	try {

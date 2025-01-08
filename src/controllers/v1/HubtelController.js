@@ -17,6 +17,9 @@ const restServices = new RestServices();
 
 // get topup wallet
 async function AccountValidation(req, res) {
+	Log.info(
+		`[HubtelController.js][AccountValidation]\t IP ${req.ip}`
+	);
 	const validationError = handleValidationErrors(req, res);
 	if (validationError) {
 		const errorRes = await apiErrors.create(
@@ -76,9 +79,11 @@ async function AccountValidation(req, res) {
 	}
 }
 
-
 // hubtel mtn topup request
 async function HubtelAirtimeTopupRequest(req, res) {
+	Log.info(
+		`[HubtelController.js][HubtelAirtimeTopupRequest]\t IP ${req.ip}`
+	);
 	let response;
 	const validationError = handleValidationErrors(req, res);
 	if (validationError) {
@@ -148,6 +153,9 @@ async function HubtelAirtimeTopupRequest(req, res) {
 }
 
 async function HubtelPaymentCheckout(req, res) {
+	Log.info(
+		`[HubtelController.js][HubtelPaymentCheckout]\t IP ${req.ip}`
+	);
 	// const validationError = handleValidationErrors(req, res);
 	// if (validationError) {
 	// 	const errorRes = await apiErrors.create(

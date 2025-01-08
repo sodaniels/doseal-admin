@@ -61,6 +61,7 @@ const app = express();
 
 app.use(bodyParser.json());
 app.use(cookieParser());
+// Tell Express to trust the reverse proxy
 app.set('trust proxy', true);
 
 /**helmet configuration */
