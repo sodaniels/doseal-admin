@@ -97,10 +97,6 @@ const sessionStore = new MongoDBStore({
 
 
 
-
-
-
-
 app.use(express.urlencoded({ extended: true }));
 
 app.set("view engine", "ejs");
