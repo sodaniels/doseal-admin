@@ -43,5 +43,6 @@ router.get("/business/delete/:businessId", isAuth, isSuperUser, businessControll
 /**Transactions */
 // get transactions
 router.get("/transactions", isAuth, transactionController.getTransactions);
+/**Transactions */
 
 module.exports = router;

@@ -1,5 +1,6 @@
 const User = require("../../models/user");
 const Admin = require("../../models/admin.model");
+const Device = require("../../models/device");
 const Schedule = require("../../models/schedule.model");
 const TRANSTATS = require("../../models/TransactionStats.model");
 const CompletedJob = require("../../models/completed-job.model");
@@ -9,9 +10,22 @@ const restServices = new RestServices();
 const Helpers = require("../../helpers/helper");
 const helpers = new Helpers();
 
+const startOfDay = new Date();
+startOfDay.setHours(0, 0, 0, 0); // Start of the current day
+
+const endOfDay = new Date();
+endOfDay.setHours(23, 59, 59, 999); // End of the current day
+
 async function getIndex(req, res) {
 	let prepadidBalance, posBalance;
-	let totalUsers, systemUsers, totalSchedules, completePickups, transactions, transactionStats;
+	let totalUsers,
+		systemUsers,
+		totalSchedules,
+		completePickups,
+		transactions,
+		transactionStats,
+		totalCreditTransactions,
+		totalDownloads;
 	try {
 		totalUsers = await User.countDocuments({ role: "Subscriber" });
 		systemUsers = await Admin.countDocuments({});
@@ -25,6 +39,26 @@ async function getIndex(req, res) {
 		prepadidBalance = await restServices.getPrepaidBalanceQueryService();
 		posBalance = await restServices.getPosBalanceQueryService();
 		console.log("posBalance: " + JSON.stringify(posBalance));
+		totalDownloads = await Device.countDocuments({
+			createdAt: { $gte: startOfDay, $lt: endOfDay },
+		});
+
+		totalCreditTransactions = await Transaction.countDocuments({
+			$and: [
+				{
+					$or: [
+						{ category: { $regex: /^CR$/i } },
+						{
+							category: { $regex: /^DR$/i },
+							transaction_status: 200,
+						},
+					],
+				},
+				{
+					createdAt: { $gte: startOfDay, $lt: endOfDay },
+				},
+			],
+		});
 	} catch (error) {
 		console.error(error);
 	}
@@ -43,8 +77,10 @@ async function getIndex(req, res) {
 		posBalance: posBalance ? posBalance : 0,
 		admin: req.session.user,
 		transactions: transactions ? transactions : [],
-		transactionStats: transactionStats ? transactionStats: false,
+		transactionStats: transactionStats ? transactionStats : false,
 		convertTo2Decimal: helpers.convertTo2Decimal,
+		totalDownloads: totalDownloads,
+		totalCreditTransactions: totalCreditTransactions,
 	});
 }
 
@@ -54,6 +90,7 @@ async function getIndex1(req, res) {
 		totalSchedules,
 		completePickups,
 		posBalance,
+		totalDownloads,
 		transactions;
 	try {
 		totalUsers = await User.countDocuments({ role: "Subscriber" });
@@ -63,6 +100,9 @@ async function getIndex1(req, res) {
 		prepadidBalance = await restServices.getPrepaidBalanceQueryService();
 		posBalance = await restServices.getPosBalanceQueryService();
 		console.log("posBalance: " + JSON.stringify(posBalance));
+		totalDownloads = await Device.countDocuments({
+			createdAt: { $gte: startOfDay, $lt: endOfDay },
+		});
 	} catch (error) {
 		console.error(error);
 	}
@@ -81,6 +121,7 @@ async function getIndex1(req, res) {
 		admin: req.session.user,
 		transactions: transactions ? transactions : [],
 		convertTo2Decimal: helpers.convertTo2Decimal,
+		totalDownloads: totalDownloads,
 	});
 }
 

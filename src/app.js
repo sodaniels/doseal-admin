@@ -31,6 +31,7 @@ const authApiRoutes = require("./routes/mp/authApi.route");
 const deskDeskRoutes = require("./routes/dashboard/help-desk.route");
 const newsRoomRoutes = require("./routes/dashboard/news-room.route");
 const notificationRoutes = require("./routes/dashboard/notification.route");
+const deviceRoutes = require("./routes/dashboard/device.route");
 
 const authGeneralRoutes = require("./routes/auth-general/auth.route");
 
@@ -219,6 +220,8 @@ app.use("/", vendorRoutes);
 app.use("/", deskDeskRoutes);
 
 app.use("/", notificationRoutes);
+// device routes
+app.use("/", deviceRoutes);
 
 
 
