@@ -5,7 +5,7 @@ const express = require("express");
 const router = express.Router();
 
 const callBackController = require("../../controllers/v1/CallbackController");
-// const isWhitelisted = require("../../Middleware/is-whitelisted-IP");
+const isWhitelisted = require("../../Middleware/is-whitelisted-IP");
 
 
 // post wallet topup callback
