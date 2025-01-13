@@ -18,6 +18,7 @@ router.post("/login", validator.validateLogin, authController.postLogin);
 router.post("/logout", authController.postLogout);
 router.get("/transaction-status", authController.hubtelReturnUrl);
 router.get("/transaction-cancelled", authController.hubtelCancellationUrl);
+router.get("/auth/logout", authController.logout);
 
 
 module.exports = router;

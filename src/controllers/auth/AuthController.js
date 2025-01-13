@@ -129,10 +129,20 @@ async function hubtelCancellationUrl(req, res) {
 	});
 }
 
+async function logout(req, res) {
+	req.session.destroy((err) => {
+		console.log(err);
+		res.redirect("/secure-admin");
+	});
+}
+
+
+
 module.exports = {
 	getLogin,
 	postLogin,
 	postLogout,
 	hubtelReturnUrl,
 	hubtelCancellationUrl,
+	logout,
 };

@@ -48,12 +48,13 @@ const upload = multer({
 	},
 });
 
-const viewExpenses = require("../../Middleware/view-expenses");
+
 
 const expenseController = require("../../controllers/dashboard/ExpenseController");
 
+const viewExpenses = require("../../Middleware/view-expenses");
 
-router.use(viewExpenses)
+// router.use(viewExpenses)
 // list expenses
 router.get("/expense/manage", expenseController.listExpense);
 // get add expense
