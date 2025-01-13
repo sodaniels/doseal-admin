@@ -190,6 +190,9 @@ app.use("/", authGeneralRoutes);
 
 app.use(isAuth);
 
+// device routes
+app.use("/", deviceRoutes);
+
 app.use("/", usersRoutes);
 
 app.use("/", dashboardRoutes);
@@ -213,8 +216,7 @@ app.use("/", vendorRoutes);
 app.use("/", deskDeskRoutes);
 
 app.use("/", notificationRoutes);
-// device routes
-app.use("/", deviceRoutes);
+
 //transactions routes
 app.use("/", transactionRoutes);
 

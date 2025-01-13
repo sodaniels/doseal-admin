@@ -87,10 +87,10 @@ async function postLogin(req, res) {
 
 			user.lastLogin = timeOfLogin;
 			user.save().then(() => {
-				// if (user.role === "Marketing") {
-				// 	console.log("is marketing")
-				// 	return res.redirect("../downloads");
-				// }
+				if (user.role == "Marketing") {
+					console.log("is marketing")
+					return res.redirect("../downloads");
+				}
 
 				return res.redirect("../dashboard");
 			});
