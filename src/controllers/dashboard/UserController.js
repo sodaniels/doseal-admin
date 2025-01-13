@@ -278,6 +278,7 @@ async function putEditUser(req, res) {
 			phoneNumber: req.body.phoneNumber,
 			role: selectRole,
 			email: req.body.email,
+			permissions: req.body.permissions
 		};
 
 		Admin.findOne({ userId: req.params.userId })
