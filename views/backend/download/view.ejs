@@ -1,0 +1,198 @@
+<%- include('../../includes/head.ejs') %>
+
+<body class="default-header">
+  <!-- GLOBAL-LOADER -->
+  <div id="global-loader">
+    <img
+      src="/assets/admin/img/svgs/loader.svg"
+      class="loader-img"
+      alt="Loader"
+    />
+  </div>
+
+  <div class="page">
+    <div class="page-main">
+      <!-- HEADER -->
+      <div class="header hor-top-header">
+        <%- include('../../includes/header.ejs') %>
+      </div>
+      <!-- HEADER END -->
+
+      <!-- HORIZONTAL-MENU -->
+      <div class="sticky">
+        <div class="horizontal-main hor-menu clearfix">
+          <div class="horizontal-mainwrapper container clearfix">
+            <%- include('../../includes/nav.ejs') %>
+            <!-- NAV END -->
+          </div>
+        </div>
+      </div>
+      <!-- HORIZONTAL-MENU END -->
+
+      <!-- CONTAINER -->
+      <div class="container content-area relative">
+        <!-- PAGE-HEADER -->
+        <div class="page-header">
+          <h4 class="page-title">Download</h4>
+          <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="#">Download</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Details</li>
+          </ol>
+        </div>
+        <!-- PAGE-HEADER END -->
+
+        <!-- ROW-1 OPEN -->
+        <div class="row" id="user-profile">
+          <div class="col-lg-12">
+            <div class="card">
+              <div class="card-body">
+                <div class="wideget-user">
+                  <div class="row">
+                    <div class="col-lg-6 col-md-12">
+                      <div class="wideget-user-desc d-flex">
+                        <div class="user-wrap">
+                          <h4>
+                            <% if (download) { %> <%= download.uuid || "" %> <%
+                            } %>
+                          </h4>
+                          <h6 class="text-muted mb-3">
+                            Created At: <% if (download) { %> <%=
+                            download.createdAt || "" %> <% } %>
+                          </h6>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="border-top">
+                <div class="wideget-user-tab">
+                  <div class="tab-menu-heading">
+                    <div class="tabs-menu1">
+                      <ul class="nav">
+                        <li class="">
+                          <a
+                            href="#tab-51"
+                            class="active show"
+                            data-toggle="tab"
+                            >Details</a
+                          >
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-body">
+                <div class="border-0">
+                  <div class="tab-content">
+                    <div class="tab-pane active show" id="tab-51">
+                      <div id="profile-log-switch">
+                        <div class="media-heading">
+                          <h5 class="text-uppercase">
+                            <strong>Basic Information</strong>
+                          </h5>
+                        </div>
+                        <hr class="m-0" />
+                        <div class="table-responsive">
+                          <table class="table row table-borderless">
+                            <tbody class="col-lg-12 col-xl-6 p-0">
+                              <tr>
+                                <td>
+                                  <strong>Model :</strong>
+                                  <% if (download) { %> <%= download.model || ""
+                                  %> <% } %>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td>
+                                  <strong>OS Version :</strong>
+                                  <% if (download) { %> <%= download.osVersion
+                                  || "" %> <% } %>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td>
+                                  <strong>SDK Version :</strong>
+                                  <% if (download) { %> <%= download.sdkVersion
+                                  || "" %> <% } %>.
+                                </td>
+                              </tr>
+                              <tr>
+                                <td>
+                                  <strong>Device Type :</strong>
+                                  <% if (download) { %> <%= download.deviceType
+                                  || "" %> <% } %>
+                                </td>
+                              </tr>
+                            </tbody>
+
+                            <tbody class="col-lg-12 col-xl-6 p-0">
+                              <tr>
+                                <td>
+                                  <strong>OS :</strong>
+                                  <% if (download) { %> <%= download.os || "" %>
+                                  <% } %>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td>
+                                  <strong>Language :</strong>
+                                  <% if (download) { %> <%= download.language ||
+                                  "" %> <% } %>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td>
+                                  <strong>Manufacturer :</strong>
+                                  <% if (download) { %> <%=
+                                  download.manufacturer || "" %> <% } %>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td>
+                                  <strong>Region :</strong>
+                                  <% if (download) { %> <%= download.region ||
+                                  "" %> <% } %>
+                                </td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- COL-END -->
+        </div>
+        <!-- ROW-1 CLOSED -->
+      </div>
+      <!-- CONTAINER CLOSED -->
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+      <div class="container">
+        <div class="row align-items-center flex-row-reverse">
+          <div class="col-md-12 col-sm-12 text-center">
+            Copyright ©
+            <script>
+              document.write(new Date().getFullYear());
+            </script>
+            <a href="http://myzeepay.com" target="_blank">Zeepay</a>. All rights
+            reserved.
+          </div>
+        </div>
+      </div>
+    </footer>
+    <!-- FOOTER CLOSED -->
+  </div>
+
+  <%- include('../../includes/script-tail.ejs') %>
+</body>
