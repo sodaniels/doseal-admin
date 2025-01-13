@@ -11,6 +11,7 @@ const helpers = new Helpers();
 async function listExpense(req, res) {
 	const errorMessage = req.query.errorMessage;
 	const successMessage = req.query.successMessage;
+	const admin = req.session.admin;
 
 	const expenses = await Expense.find({}).sort({ _id: -1 });
 	const globalStats = await GSTATS.GlobalStats.findOne();
@@ -25,6 +26,7 @@ async function listExpense(req, res) {
 				userInput: false,
 				expense: false,
 				globalStats: globalStats,
+				admin: admin,
 				errorMessage: errorMessage ? errorMessage : false,
 				successMessage: successMessage ? successMessage : false,
 				expenses: expenses,
@@ -41,6 +43,7 @@ async function listExpense(req, res) {
 			expense: false,
 			userInput: false,
 			errorMessage: false,
+			admin: admin,
 			successMessage: true,
 			globalStats: globalStats,
 			expenses: expenses,
@@ -57,6 +60,7 @@ async function listExpense(req, res) {
 			expense: false,
 			globalStats: false,
 			errorMessage: error,
+			admin: admin,
 			expenses: false,
 			successMessage: false,
 			shortData: shortData,
@@ -71,7 +75,7 @@ async function postAddExpense(req, res) {
 	const globalStats = await GSTATS.GlobalStats.find({});
 	const errors = validationResult(req);
 	const requestBody = req.body;
-	const admin = req.session.user;
+	const admin = req.session.admin;
 
 	if (!errors.isEmpty()) {
 		return res.status(200).render("backend/expenses/manage", {
@@ -84,6 +88,7 @@ async function postAddExpense(req, res) {
 			successMessage: false,
 			globalStats: globalStats,
 			expenses: expenses,
+			admin: admin,
 			shortData: shortData,
 			cuteDate: cuteDate,
 			truncateText: helpers.truncateText,
@@ -124,6 +129,7 @@ async function postAddExpense(req, res) {
 				errorMessage: false,
 				successMessage: "Expense saved successfully",
 				globalStats: globalStats,
+				admin: admin,
 				expenses: expenses,
 				shortData: shortData,
 				truncateText: helpers.truncateText,
@@ -139,6 +145,7 @@ async function postAddExpense(req, res) {
 			errorMessage: false,
 			successMessage: false,
 			expenses: expenses,
+			admin: admin,
 			globalStats: globalStats,
 			shortData: shortData,
 			cuteDate: cuteDate,
@@ -155,6 +162,7 @@ async function postAddExpense(req, res) {
 			successMessage: false,
 			globalStats: globalStats,
 			expenses: expenses,
+			admin: admin,
 			shortData: shortData,
 			cuteDate: cuteDate,
 			truncateText: helpers.truncateText,
@@ -163,6 +171,7 @@ async function postAddExpense(req, res) {
 }
 
 async function getAddExpense(req, res) {
+	const admin = req.session.admin;
 	try {
 		return res.status(200).render("backend/expenses/add", {
 			pageTitle: "Edit Expense",
@@ -171,6 +180,7 @@ async function getAddExpense(req, res) {
 			userInput: false,
 			expense: false,
 			errorMessage: false,
+			admin: admin,
 			successMessage: false,
 			shortData: shortData,
 			cuteDate: cuteDate,
@@ -183,6 +193,7 @@ async function getAddExpense(req, res) {
 			userInput: false,
 			expense: false,
 			errorMessage: false,
+			admin: admin,
 			successMessage: false,
 			shortData: shortData,
 			cuteDate: cuteDate,
@@ -195,6 +206,7 @@ async function getEditExpense(req, res) {
 		const _id = req.params._id;
 		const expense = await Expense.findOne({ _id: _id });
 		const expenses = await Expense.find({}).sort({ _id: -1 });
+		const admin = req.session.admin;
 
 		if (expense) {
 			return res.status(200).render("admin/expenses/edit", {
@@ -205,6 +217,7 @@ async function getEditExpense(req, res) {
 				expense: expense,
 				expenses: expenses,
 				errorMessage: false,
+				admin: admin,
 				successMessage: false,
 				shortData: shortData,
 				cuteDate: cuteDate,
@@ -216,6 +229,7 @@ async function getEditExpense(req, res) {
 				errors: false,
 				expense: false,
 				userInput: false,
+				admin: admin,
 				errorMessage: false,
 				successMessage: true,
 				expenses: false,
@@ -231,6 +245,7 @@ async function getEditExpense(req, res) {
 			userInput: false,
 			expense: false,
 			errorMessage: error,
+			admin: admin,
 			expenses: false,
 			successMessage: false,
 			shortData: shortData,
@@ -244,6 +259,7 @@ async function putEditExpense(req, res) {
 	const expenses = await Expense.find({}).sort({ _id: -1 });
 	const expense = await Expense.findOne({ _id: req.params._id });
 	const errors = validationResult(req);
+	const admin = req.session.admin;
 
 	if (!errors.isEmpty()) {
 		return res.status(200).render("admin/expenses/edit", {
@@ -255,6 +271,7 @@ async function putEditExpense(req, res) {
 			expenses: expenses,
 			errorMessage: false,
 			successMessage: false,
+			admin: admin,
 			csrfToken: req.csrfToken(),
 			shortData: shortData,
 			cuteDate: cuteDate,
@@ -298,6 +315,7 @@ async function putEditExpense(req, res) {
 					userInput: false,
 					expense: expense,
 					expenses: expenses,
+					admin: admin,
 					errorMessage: error,
 					successMessage: false,
 					csrfToken: req.csrfToken(),
@@ -313,6 +331,7 @@ async function putEditExpense(req, res) {
 			userInput: false,
 			expense: expense,
 			expenses: expenses,
+			admin: admin,
 			errorMessage: error,
 			successMessage: false,
 			csrfToken: req.csrfToken(),
@@ -323,6 +342,7 @@ async function putEditExpense(req, res) {
 }
 
 async function getDeleteExpense(req, res) {
+	const admin = req.session.admin;
 	try {
 		const _id = req.params._id;
 		const expense = await Expense.findOneAndDelete({ _id: _id });
@@ -344,6 +364,7 @@ async function getDeleteExpense(req, res) {
 			userInput: false,
 			expense: false,
 			expenses: expenses,
+			admin: admin,
 			errorMessage: error,
 			successMessage: false,
 			csrfToken: req.csrfToken(),

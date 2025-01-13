@@ -3,7 +3,6 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
 const adminSchema = new Schema({
-
 	userId: {
 		type: String,
 		required: false,
@@ -32,10 +31,6 @@ const adminSchema = new Schema({
 		type: String,
 		required: false,
 	},
-	role: {
-		type: String,
-		required: true,
-	},
 	email: {
 		type: String,
 		required: true,
@@ -46,14 +41,38 @@ const adminSchema = new Schema({
 		enum: ["Active", "Inactive", "Blocked"],
 		default: "Active",
 	},
-	permissions: {
-		type: Object,
-		required: false,
+	role: {
+		type: String,
+		enum: [
+			"Super-Admin",
+			"Admin",
+			"Viewer",
+			"Compliance",
+			"Service-Delivery",
+			"Marketing",
+		],
+		default: "Admin",
 	},
+	permissions: [
+		{
+			type: String,
+			enum: [
+				"Dashboard",
+				"Transactions",
+				"Users",
+				"Downloads",
+				"News Room",
+				"Notifications",
+				"Expenses",
+				"Devices",
+				"Help Desk",
+			],
+		},
+	],
 	createdBy: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Admin'
-    },
+		type: mongoose.Schema.Types.ObjectId,
+		ref: "Admin",
+	},
 	password: {
 		type: String,
 		required: false,
@@ -62,9 +81,10 @@ const adminSchema = new Schema({
 	updatedAt: { type: Date, default: Date.now },
 });
 
-
-adminSchema.virtual('name').get(function() {
-    return `${this.firstName} ${this.middleName ? this.middleName + ' ' : ''}${this.lastName}`;
+adminSchema.virtual("name").get(function () {
+	return `${
+		this.firstName
+	} ${this.middleName ? this.middleName + " " : ""}${this.lastName}`;
 });
 
 module.exports = mongoose.model("Admin", adminSchema);

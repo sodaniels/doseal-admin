@@ -3,33 +3,29 @@ const path = require("path");
 const express = require("express");
 
 const router = express.Router();
-const validator = require('../../helpers/validator');
+const validator = require("../../helpers/validator");
 
-const isAuth = require('../../Middleware/is-auth');
-const isSuperUser = require('../../Middleware/is-superUser');
+const viewUsers = require("../../Middleware/view-users");
 
-const usersController = require('../../controllers/dashboard/UserController');
+const usersController = require("../../controllers/dashboard/UserController");
 
+router.use(viewUsers);
 // list users
-router.get("/users1", isAuth, isSuperUser, usersController.listUsers1);
+router.get("/users1", usersController.listUsers1);
 // get edit user page
-router.get("/user/edit/:userId", isAuth, isSuperUser, usersController.getEditUser);
+router.get("/user/edit/:userId", usersController.getEditUser);
 // // post edit user to db
-router.post("/user/edit/:userId", isAuth, isSuperUser, usersController.putEditUser);
-
+router.post("/user/edit/:userId", usersController.putEditUser);
 
 // list users
-router.get("/users", isAuth, isSuperUser, usersController.listUsers);
+router.get("/users", usersController.listUsers);
 // get user page
-router.get("/users/add", isAuth, isSuperUser, usersController.getAddUser);
+router.get("/users/add", usersController.getAddUser);
 // post add user
-router.post("/users/add", isAuth, isSuperUser, validator.validateUser, usersController.postAddUser);
+router.post("/users/add", validator.validateUser, usersController.postAddUser);
 // get edit user page
-router.get("/users/edit/:userId", isAuth, isSuperUser, usersController.getEditUser);
+router.get("/users/edit/:userId", usersController.getEditUser);
 // post edit user to db
-router.post("/users/edit/:userId", isAuth, isSuperUser, usersController.putEditUser);
-
-
-
+router.post("/users/edit/:userId", usersController.putEditUser);
 
 module.exports = router;

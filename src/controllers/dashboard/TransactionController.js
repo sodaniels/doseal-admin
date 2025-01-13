@@ -9,6 +9,7 @@ async function getTransactions(req, res) {
 	let transactionStats;
 	const page = req.query.page || 1;
 	const perPage = 20;
+	const admin = req.session.admin;
 
 	const transactions = await Transaction.find()
 		.populate("createdBy")
@@ -28,6 +29,7 @@ async function getTransactions(req, res) {
 		shortDate: shortDate,
 		totalPages: Math.ceil(totalTransactions / perPage),
 		currentPage: page,
+		admin: admin,
 		totalTransactions: totalTransactions,
 		transactionStats: transactionStats ? transactionStats: false,
         startDate: false,

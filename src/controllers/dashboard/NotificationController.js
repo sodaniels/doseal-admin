@@ -11,6 +11,7 @@ const { v4: uuidv4 } = require("uuid");
 async function listItem(req, res) {
 	const errorMessage = req.query.errorMessage;
 	const successMessage = req.query.successMessage;
+	const admin = req.session.admin;
 
 	const users = await User.find({});
 
@@ -23,6 +24,7 @@ async function listItem(req, res) {
 				errors: false,
 				userInput: false,
 				users: users,
+				admin: admin,
 				notifications: notifications,
 				errorMessage: errorMessage ? errorMessage : false,
 				successMessage: successMessage ? successMessage : false,
@@ -39,6 +41,7 @@ async function listItem(req, res) {
 			errors: false,
 			userInput: false,
 			users: users,
+			admin: admin,
 			errorMessage: false,
 			successMessage: true,
 			notifications: notifications,
@@ -54,6 +57,7 @@ async function listItem(req, res) {
 			errors: false,
 			userInput: false,
 			users: users,
+			admin: admin,
 			errorMessage: error,
 			successMessage: false,
 			notifications: notifications,
@@ -68,6 +72,7 @@ async function listItem(req, res) {
 async function AddItem(req, res) {
 	const errorMessage = req.query.errorMessage;
 	const successMessage = req.query.successMessage;
+	const admin = req.session.admin;
 	try {
 		if (helps) {
 			return res.status(200).render("backend/notification/add", {
@@ -75,6 +80,7 @@ async function AddItem(req, res) {
 				path: "/notification/add",
 				errors: false,
 				userInput: false,
+				admin: admin,
 				notifications: false,
 				errorMessage: errorMessage ? errorMessage : false,
 				successMessage: successMessage ? successMessage : false,
@@ -90,6 +96,7 @@ async function AddItem(req, res) {
 			path: "/notification/add",
 			errors: false,
 			userInput: false,
+			admin: admin,
 			notifications: false,
 			errorMessage: errorMessage ? errorMessage : false,
 			successMessage: successMessage ? successMessage : false,
@@ -104,6 +111,7 @@ async function AddItem(req, res) {
 			path: "/notification/add",
 			errors: false,
 			userInput: false,
+			admin: admin,
 			notifications: false,
 			errorMessage: errorMessage ? errorMessage : false,
 			successMessage: successMessage ? successMessage : false,
@@ -122,7 +130,8 @@ async function postAddItem(req, res) {
 	const notifications = await Notification.find({}).sort({ _id: -1 });
 	const errors = validationResult(req);
 	const requestBody = req.body;
-	const admin = req.session.user;
+	const admin = req.session.admin;
+
 
 	
 
@@ -134,6 +143,7 @@ async function postAddItem(req, res) {
 			userInput: requestBody,
 			users: users,
 			errorMessage: false,
+			admin: admin,
 			successMessage: false,
 			notifications: notifications,
 			csrfToken: req.csrfToken(),
@@ -150,6 +160,7 @@ async function postAddItem(req, res) {
 			errors: errors.array(),
 			users: users,
 			userInput: requestBody,
+			admin: admin,
 			errorMessage: "Please choose a user to send the notification ofr select 'Send to All'",
 			successMessage: false,
 			notifications: notifications,
@@ -197,6 +208,7 @@ async function postAddItem(req, res) {
 				errors: false,
 				users: users,
 				userInput: requestBody,
+				admin: admin,
 				errorMessage: false,
 				successMessage: "Notification saved successfully",
 				notifications: notifications,
@@ -214,6 +226,7 @@ async function postAddItem(req, res) {
 			userInput: requestBody,
 			errorMessage: false,
 			successMessage: false,
+			admin: admin,
 			notifications: notifications,
 			csrfToken: req.csrfToken(),
 			shortData: shortData,
@@ -229,6 +242,7 @@ async function postAddItem(req, res) {
 			userInput: requestBody,
 			errorMessage: error,
 			successMessage: false,
+			admin: admin,
 			notifications: notifications,
 			csrfToken: req.csrfToken(),
 			shortData: shortData,

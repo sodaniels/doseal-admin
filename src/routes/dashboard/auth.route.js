@@ -12,6 +12,7 @@ const validator = require('../../helpers/validator');
 
 
 // post device information
+
 router.get("/secure-admin", authController.getLogin);
 router.post("/login", validator.validateLogin, authController.postLogin);
 router.post("/logout", authController.postLogout);

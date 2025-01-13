@@ -10,6 +10,7 @@ const helpers = new Helpers();
 async function listItem(req, res) {
 	const errorMessage = req.query.errorMessage;
 	const successMessage = req.query.successMessage;
+	const admin = req.session.admin;
 
 	const items = await NewsRoom.find({}).sort({ _id: -1 });
 	try {
@@ -22,6 +23,7 @@ async function listItem(req, res) {
 				errorMessage: errorMessage ? errorMessage : false,
 				successMessage: successMessage ? successMessage : false,
 				items: items,
+				admin: admin,
 				item: false,
 				shortData: shortData,
 				cuteDate: cuteDate,
@@ -37,6 +39,7 @@ async function listItem(req, res) {
 			errorMessage: false,
 			successMessage: true,
 			items: items,
+			admin: admin,
 			item: false,
 			shortData: shortData,
 			cuteDate: cuteDate,
@@ -50,6 +53,7 @@ async function listItem(req, res) {
 			userInput: false,
 			errorMessage: error,
 			items: items,
+			admin: admin,
 			item: false,
 			successMessage: false,
 			shortData: shortData,
@@ -63,7 +67,7 @@ async function postAddItem(req, res) {
 	const items = await NewsRoom.find({}).sort({ _id: -1 });
 	const errors = validationResult(req);
 	const requestBody = req.body;
-	const admin = req.session.user;
+	const admin = req.session.admin;
 
 	if (!errors.isEmpty()) {
 		return res.status(200).render("backend/news-room/manage", {
@@ -74,6 +78,7 @@ async function postAddItem(req, res) {
 			errorMessage: false,
 			successMessage: false,
 			items: items,
+			admin: admin,
 			item: false,
 			shortData: shortData,
 			cuteDate: cuteDate,
@@ -106,6 +111,7 @@ async function postAddItem(req, res) {
 				errorMessage: false,
 				successMessage: "Help Desk saved successfully",
 				items: items,
+				admin: admin,
 				item: false,
 				shortData: shortData,
 				truncateText: helpers.truncateText,
@@ -120,6 +126,7 @@ async function postAddItem(req, res) {
 			errorMessage: false,
 			successMessage: false,
 			items: items,
+			admin: admin,
 			item: false,
 			shortData: shortData,
 			cuteDate: cuteDate,
@@ -137,6 +144,7 @@ async function postAddItem(req, res) {
 			errorMessage: error,
 			successMessage: false,
 			items: items,
+			admin: admin,
 			item: false,
 			shortData: shortData,
 			cuteDate: cuteDate,
@@ -146,6 +154,7 @@ async function postAddItem(req, res) {
 }
 
 async function getAddItem(req, res) {
+	const admin = req.session.admin;
 	try {
 		return res.status(200).render("backend/news-room/add", {
 			pageTitle: "Add News Item",
@@ -155,6 +164,7 @@ async function getAddItem(req, res) {
 			item: false,
 			items: false,
 			errorMessage: false,
+			admin: admin,
 			successMessage: false,
 			shortData: shortData,
 			cuteDate: cuteDate,
@@ -167,6 +177,7 @@ async function getAddItem(req, res) {
 			userInput: false,
 			errorMessage: error,
 			item: false,
+			admin: admin,
 			items: false,
 			successMessage: false,
 			shortData: shortData,
@@ -177,6 +188,7 @@ async function getAddItem(req, res) {
 
 async function getEditItem(req, res) {
 	const _id = req.params._id;
+	const admin = req.session.admin;
 	try {
 		const item = await NewsRoom.findOne({ _id: _id });
 		const items = await NewsRoom.find({}).sort({ _id: -1 });
@@ -188,6 +200,7 @@ async function getEditItem(req, res) {
 				errors: false,
 				userInput: false,
 				item: item,
+				admin: admin,
 				items: items,
 				errorMessage: false,
 				successMessage: false,
@@ -202,6 +215,7 @@ async function getEditItem(req, res) {
 				userInput: false,
 				errorMessage: false,
 				successMessage: true,
+				admin: admin,
 				item: item,
 				items: items,
 				shortData: shortData,
@@ -216,6 +230,7 @@ async function getEditItem(req, res) {
 			userInput: false,
 			errorMessage: error,
 			item: false,
+			admin: admin,
 			items: false,
 			successMessage: false,
 			shortData: shortData,
@@ -230,6 +245,7 @@ async function putEditItem(req, res) {
 	const items = await NewsRoom.find({}).sort({ _id: -1 });
 	const item = await NewsRoom.findOne({ _id: req.params._id });
 	const errors = validationResult(req);
+	const admin = req.session.admin;
 
 	if (!errors.isEmpty()) {
 		return res.status(200).render("backend/news-room/add", {
@@ -238,6 +254,7 @@ async function putEditItem(req, res) {
 			errors: false,
 			userInput: requestBody,
 			items: items,
+			admin: admin,
 			item: item,
 			errorMessage: false,
 			successMessage: false,
@@ -301,6 +318,7 @@ async function putEditItem(req, res) {
 					userInput: false,
 					items: items,
 					item: item,
+					admin: admin,
 					errorMessage: error,
 					successMessage: false,
 					shortData: shortData,
@@ -315,6 +333,7 @@ async function putEditItem(req, res) {
 			userInput: false,
 			items: items,
 			item: item,
+			admin: admin,
 			errorMessage: error,
 			successMessage: false,
 			shortData: shortData,
@@ -324,6 +343,7 @@ async function putEditItem(req, res) {
 }
 
 async function getDeleteItem(req, res) {
+	const admin = req.session.admin;
 	try {
 		const _id = req.params._id;
 		const item = await NewsRoom.findOneAndDelete({ _id: _id });
@@ -345,6 +365,7 @@ async function getDeleteItem(req, res) {
 			userInput: false,
 			help: false,
 			helps: helps,
+			admin: admin,
 			errorMessage: error,
 			successMessage: false,
 			csrfToken: req.csrfToken(),

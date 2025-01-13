@@ -17,32 +17,31 @@ const seederController = require('../../controllers/auth/seederController')
 
 const validator = require('../../helpers/validator');
 
-router.get("/seeder", isAuth, isSuperUser, seederController.seeder);
+const viewDashboard = require("../../Middleware/view-dashboard");
 
-router.get("/dashboard1", isAuth, dashboardController.getIndex1); // remove
+router.use(viewDashboard);
+
+router.get("/seeder", seederController.seeder);
+
+router.get("/dashboard1",  dashboardController.getIndex1); // remove
 
 // dashboard
-router.get("/", isAuth, dashboardController.getIndex);
-router.get("/dashboard", isAuth, dashboardController.getIndex);
+router.get("/", dashboardController.getIndex);
+router.get("/dashboard",dashboardController.getIndex);
 
 /** Business */
 // list business
-router.get("/businesses", isAuth, isSuperUser, businessController.listBusiness);
+router.get("/businesses", businessController.listBusiness);
 // get Business page
-router.get("/business/add", isAuth, isSuperUser, businessController.getAddBusiness);
+router.get("/business/add",businessController.getAddBusiness);
 // post Business to db
-router.post("/business/add", isAuth, isSuperUser, validator.validateCustomer, businessApiController.postBusiness);
+router.post("/business/add", validator.validateCustomer, businessApiController.postBusiness);
 // post edit Business to db
-router.get("/business/edit/:businessId", isAuth, isSuperUser, businessController.getEditBusiness);
+router.get("/business/edit/:businessId", businessController.getEditBusiness);
 // post edit Business to db
-router.post("/business/edit/:businessId", isAuth, isSuperUser, businessController.putEditBusiness);
+router.post("/business/edit/:businessId", businessController.putEditBusiness);
 // delete Business
-router.get("/business/delete/:businessId", isAuth, isSuperUser, businessController.deleteBusiness);
+router.get("/business/delete/:businessId", businessController.deleteBusiness);
 /** Business */
-
-/**Transactions */
-// get transactions
-router.get("/transactions", isAuth, transactionController.getTransactions);
-/**Transactions */
 
 module.exports = router;

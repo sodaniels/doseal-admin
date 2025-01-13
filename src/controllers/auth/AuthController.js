@@ -76,12 +76,25 @@ async function postLogin(req, res) {
 				email: user.email,
 				user_id: user.userId,
 				_id: user._id,
+				permissions: user.permissions,
 			};
 
 			req.session.isLoggedIn = true;
 			req.session.user = iUser;
+			req.session.admin = iUser;
 
-			res.redirect("../dashboard");
+			const timeOfLogin = Date.now();
+
+			user.lastLogin = timeOfLogin;
+			user.save().then(() => {
+				// if (user.role === "Marketing") {
+				// 	console.log("is marketing")
+				// 	return res.redirect("../downloads");
+				// }
+
+				return res.redirect("../dashboard");
+			});
+
 		})
 		.catch((err) => {
 			console.log(err);

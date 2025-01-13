@@ -14,6 +14,8 @@ const helpers = new Helpers();
 
 async function listUsers(req, res) {
 	const users = await Admin.find({ role: { $ne: "Subscriber" } });
+	const admin = req.session.admin;
+
 	try {
 		if (users) {
 			return res.status(200).render("backend/users/manage", {
@@ -25,7 +27,7 @@ async function listUsers(req, res) {
                 userInput: false,
 				users: users,
 				user: false,
-                admin: req.session.user,
+                admin: admin,
 				csrfToken: req.csrfToken(),
 				shortData: customData.shortData,
                 getInitials: helpers.getInitials
@@ -41,7 +43,7 @@ async function listUsers(req, res) {
             userInput: false,
             user: false,
 			users: users,
-            admin: req.session.user,
+            admin: admin,
 			csrfToken: req.csrfToken(),
 			shortData: customData.shortData,
             getInitials: helpers.getInitials
@@ -55,7 +57,7 @@ async function listUsers(req, res) {
             userInput: false,
 			users: false,
             user: false,
-            admin: req.session.user,
+            admin: admin,
 			successMessage: false,
 			csrfToken: req.csrfToken(),
 			shortData: customData.shortData,
@@ -125,15 +127,7 @@ async function postAddUser(req, res) {
 			role: selectRole,
 			email: req.body.email,
 			password: passwd,
-
-			permissions: {
-				action: {
-					add: req.body.add,
-					edit: req.body.edit,
-					delete: req.body.delete,
-				},
-				permission: {},
-			},
+			permissions: req.body.permissions,
 		});
 
 		const savedCustomer = await newUser.save();
@@ -204,6 +198,9 @@ async function getEditUser(req, res) {
     const users = await Admin.find({ role: { $ne: "Subscriber" } });
 	const user = await Admin.findOne({ _id: req.params.userId });
 	const permissions = await Permission.find({});
+
+
+	
 	if (user) {
 		const userRole = user.role;
 		return res.status(200).render("backend/users/add", {

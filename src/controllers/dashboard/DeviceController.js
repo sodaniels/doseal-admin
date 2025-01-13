@@ -9,6 +9,8 @@ async function getDevices(req, res) {
 	const page = req.query.page || 1;
 	const perPage = 20;
 
+	const admin = req.session.admin;
+
 	const devices = await Device.find()
 		.sort({ createdAt: -1 })
 		.skip((page - 1) * perPage)
@@ -26,6 +28,7 @@ async function getDevices(req, res) {
 		currentPage: page,
 		startDate: false,
 		endDate: false,
+		admin: admin,
 		totaldevices: totaldevices,
 	});
 }

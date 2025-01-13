@@ -14,6 +14,7 @@ const errorMessages = require("../../helpers/error-messages");
 async function listItem(req, res) {
 	const errorMessage = req.query.errorMessage;
 	const successMessage = req.query.successMessage;
+	const admin = req.session.admin;
 
 	const helps = await Help.find({}).sort({ _id: -1 });
 	try {
@@ -27,6 +28,7 @@ async function listItem(req, res) {
 				successMessage: successMessage ? successMessage : false,
 				helps: helps,
 				help: false,
+				admin: admin,
 				csrfToken: req.csrfToken(),
 				shortData: shortData,
 				cuteDate: cuteDate,
@@ -42,6 +44,7 @@ async function listItem(req, res) {
 			errorMessage: false,
 			successMessage: true,
 			helps: helps,
+			admin: admin,
 			help: false,
 			csrfToken: req.csrfToken(),
 			shortData: shortData,
@@ -57,6 +60,7 @@ async function listItem(req, res) {
 			errorMessage: error,
 			helps: helps,
 			help: false,
+			admin: admin,
 			successMessage: false,
 			csrfToken: req.csrfToken(),
 			shortData: shortData,
@@ -69,6 +73,7 @@ async function listItem(req, res) {
 async function AddItem(req, res) {
 	const errorMessage = req.query.errorMessage;
 	const successMessage = req.query.successMessage;
+	const admin = req.session.admin;
 
 	const helps = await Help.find({}).sort({ _id: -1 });
 	try {
@@ -82,6 +87,7 @@ async function AddItem(req, res) {
 				successMessage: successMessage ? successMessage : false,
 				helps: helps,
 				help: false,
+				admin: admin,
 				csrfToken: req.csrfToken(),
 				shortData: shortData,
 				cuteDate: cuteDate,
@@ -97,6 +103,7 @@ async function AddItem(req, res) {
 			errorMessage: false,
 			successMessage: true,
 			helps: helps,
+			admin: admin,
 			help: false,
 			csrfToken: req.csrfToken(),
 			shortData: shortData,
@@ -112,6 +119,7 @@ async function AddItem(req, res) {
 			errorMessage: error,
 			helps: helps,
 			help: false,
+			admin: admin,
 			successMessage: false,
 			csrfToken: req.csrfToken(),
 			shortData: shortData,
@@ -125,7 +133,7 @@ async function postAddHelpDesk(req, res) {
 	const helps = await Help.find({}).sort({ _id: -1 });
 	const errors = validationResult(req);
 	const requestBody = req.body;
-	const admin = req.session.user;
+	const admin = req.session.admin;
 
 	if (!errors.isEmpty()) {
 		return res.status(200).render("backend/help-desk/manage", {
@@ -136,6 +144,7 @@ async function postAddHelpDesk(req, res) {
 			errorMessage: false,
 			successMessage: false,
 			helps: helps,
+			admin: admin,
 			help: false,
 			csrfToken: req.csrfToken(),
 			shortData: shortData,
@@ -164,6 +173,7 @@ async function postAddHelpDesk(req, res) {
 				errorMessage: false,
 				successMessage: "Help Desk saved successfully",
 				helps: helps,
+				admin: admin,
 				help: false,
 				csrfToken: req.csrfToken(),
 				shortData: shortData,
@@ -179,6 +189,7 @@ async function postAddHelpDesk(req, res) {
 			errorMessage: false,
 			successMessage: false,
 			helps: helps,
+			admin: admin,
 			help: false,
 			csrfToken: req.csrfToken(),
 			shortData: shortData,
@@ -195,6 +206,7 @@ async function postAddHelpDesk(req, res) {
 			successMessage: false,
 			helps: helps,
 			help: false,
+			admin: admin,
 			csrfToken: req.csrfToken(),
 			shortData: shortData,
 			cuteDate: cuteDate,
@@ -205,6 +217,7 @@ async function postAddHelpDesk(req, res) {
 
 async function getEditHelpDesk(req, res) {
 	const _id = req.params._id;
+	const admin = req.session.admin;
 	try {
 		const help = await Help.findOne({ _id: _id });
 		const helps = await Help.find({}).sort({ _id: -1 });
@@ -217,6 +230,7 @@ async function getEditHelpDesk(req, res) {
 				userInput: false,
 				help: help,
 				helps: helps,
+				admin: admin,
 				errorMessage: false,
 				successMessage: false,
 				csrfToken: req.csrfToken(),
@@ -233,6 +247,7 @@ async function getEditHelpDesk(req, res) {
 				successMessage: true,
 				help: help,
 				helps: helps,
+				admin: admin,
 				csrfToken: req.csrfToken(),
 				shortData: shortData,
 				cuteDate: cuteDate,
@@ -246,6 +261,7 @@ async function getEditHelpDesk(req, res) {
 			errorMessage: error,
 			help: false,
 			helps: false,
+			admin: admin,
 			successMessage: false,
 			csrfToken: req.csrfToken(),
 			shortData: shortData,
@@ -260,6 +276,7 @@ async function putEditHelpDesk(req, res) {
 	const helps = await Help.find({}).sort({ _id: -1 });
 	const help = await Help.findOne({ _id: req.params._id });
 	const errors = validationResult(req);
+	const admin = req.session.admin;
 
 	if (!errors.isEmpty()) {
 		return res.status(200).render("admin/help-desk/edit", {
@@ -271,6 +288,7 @@ async function putEditHelpDesk(req, res) {
 			helps: helps,
 			errorMessage: false,
 			successMessage: false,
+			admin: admin,
 			csrfToken: req.csrfToken(),
 			shortData: shortData,
 			cuteDate: cuteDate,
@@ -315,6 +333,7 @@ async function putEditHelpDesk(req, res) {
 					help: help,
 					helps: helps,
 					errorMessage: error,
+					admin: admin,
 					successMessage: false,
 					csrfToken: req.csrfToken(),
 					shortData: shortData,
@@ -330,6 +349,7 @@ async function putEditHelpDesk(req, res) {
 			help: help,
 			helps: helps,
 			errorMessage: error,
+			admin: admin,
 			successMessage: false,
 			csrfToken: req.csrfToken(),
 			shortData: shortData,
@@ -341,6 +361,7 @@ async function putEditHelpDesk(req, res) {
 async function getDeleteHelpDesk(req, res) {
 	try {
 		const _id = req.params._id;
+		const admin = req.session.admin;
 		const expense = await Help.findOneAndDelete({ _id: _id });
 		if (expense) {
 			return res.redirect(
@@ -360,6 +381,7 @@ async function getDeleteHelpDesk(req, res) {
 			userInput: false,
 			expense: false,
 			expenses: expenses,
+			admin: admin,
 			errorMessage: error,
 			successMessage: false,
 			csrfToken: req.csrfToken(),

@@ -165,15 +165,37 @@
 																data-choices-search-false
 																name="role" required>
 																<option value="">Select Role</option>
-																<option value="Sale" <%= (userInput.role === 'Sale' || (!userInput.role && user && user.role === 'Sale')) ? 'selected' : '' %>>Sale</option>
+																<option value="Marketing" <%= (userInput.role === 'Marketing' || (!userInput.role && user && user.role === 'Marketing')) ? 'selected' : '' %>>Marketing</option>
 																<option value="HR" <%= (userInput.role === 'HR' || (!userInput.role && user && user.role === 'HR')) ? 'selected' : '' %>>HR</option>
 																<option value="Operations" <%= (userInput.role === 'Operations' || (!userInput.role && user && user.role === 'Operations')) ? 'selected' : '' %>>Operations</option>
 																<option value="Customer Service" <%= (userInput.role === 'Customer Service' || (!userInput.role && user && user.role === 'Customer Service')) ? 'selected' : '' %>>Customer Service</option>
 																<option value="Admin" <%= (userInput.role === 'Admin' || (!userInput.role && user && user.role === 'Admin')) ? 'selected' : '' %>>Admin</option>
-																<option value="Super Admin" <%= (userInput.role === 'Super Admin' || (!userInput.role && user && user.role === 'Super Admin')) ? 'selected' : '' %>>Super Admin</option>
+																<option value="Super-Admin" <%= (userInput.role === 'Super-Admin' || (!userInput.role && user && user.role === 'Super-Admin')) ? 'selected' : '' %>>Super-Admin</option>
 
 															</select>
 														</div>
+														<div class="mb-3">
+															<label for="permissions" class="inline-block mb-2 text-base font-medium">Permissions</label>
+															<select
+															  class="form-input border-slate-300 focus:outline-none focus:border-custom-500"
+															  data-choices
+															  data-choices-search-false
+															  name="permissions" 
+															  required
+															  multiple
+															>
+															  <option value="Dashboard" <%= (userInput.permissions && userInput.permissions.includes('Dashboard')) ? 'selected' : '' %>>Dashboard</option>
+															  <option value="Transactions" <%= (userInput.permissions && userInput.permissions.includes('Transactions')) ? 'selected' : '' %>>Transactions</option>
+															  <option value="Users" <%= (userInput.permissions && userInput.permissions.includes('Users')) ? 'selected' : '' %>>Users</option>
+															  <option value="Downloads" <%= (userInput.permissions && userInput.permissions.includes('Downloads')) ? 'selected' : '' %>>Downloads</option>
+															  <option value="News Room" <%= (userInput.permissions && userInput.permissions.includes('News Room')) ? 'selected' : '' %>>News Room</option>
+															  <option value="Notifications" <%= (userInput.permissions && userInput.permissions.includes('Notifications')) ? 'selected' : '' %>>Notifications</option>
+															  <option value="Expenses" <%= (userInput.permissions && userInput.permissions.includes('Expenses')) ? 'selected' : '' %>>Expenses</option>
+															  <option value="Devices" <%= (userInput.permissions && userInput.permissions.includes('Devices')) ? 'selected' : '' %>>Devices</option>
+															  <option value="Help Desk" <%= (userInput.permissions && userInput.permissions.includes('Help Desk')) ? 'selected' : '' %>>Help Desk</option>
+															</select>
+														</div>
+														  
 														<div class="mb-3">
 															<label
 																for="status"

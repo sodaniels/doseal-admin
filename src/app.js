@@ -6,8 +6,10 @@ require("dotenv").config();
 const passport = require("passport");
 const cors = require("cors");
 const helmet = require("helmet");
-const rateLimit = require('express-rate-limit');
-const { globalRateLimiter } = require('./Middleware/globalRateLimiterMiddleware');
+const rateLimit = require("express-rate-limit");
+const {
+	globalRateLimiter,
+} = require("./Middleware/globalRateLimiterMiddleware");
 
 const session = require("express-session");
 const flash = require("express-flash");
@@ -32,13 +34,14 @@ const deskDeskRoutes = require("./routes/dashboard/help-desk.route");
 const newsRoomRoutes = require("./routes/dashboard/news-room.route");
 const notificationRoutes = require("./routes/dashboard/notification.route");
 const deviceRoutes = require("./routes/dashboard/device.route");
+const transactionRoutes = require("./routes/dashboard/transaction.route");
 
 const authGeneralRoutes = require("./routes/auth-general/auth.route");
 
 const subscriberRoutes = require("./routes/whatsapp/subscriber");
 
 const oauthSetting = require("./helpers/security/oauth");
-const oauth2Whatsapp = require('./helpers/security/oauth2-whatsapp');
+const oauth2Whatsapp = require("./helpers/security/oauth2-whatsapp");
 
 const { connectAndStartCron } = require("./CRONS/cronJobs.crons");
 connectAndStartCron();
@@ -50,13 +53,10 @@ const callbackRoutes = require("./routes/mp/callback.route");
 
 const passportJwt = require("./helpers/passport-jwt");
 
-
 const isAuth = require("./Middleware/is-auth");
 const errorHandler = require("./Middleware/errorMiddleware");
 const { Log } = require("./helpers/Log");
 const ensureAuthenticated = require("./Middleware/ensureAuthenticated");
-
-
 
 const router = express.Router();
 const app = express();
@@ -64,7 +64,7 @@ const app = express();
 app.use(bodyParser.json());
 app.use(cookieParser());
 // Tell Express to trust the reverse proxy
-app.set('trust proxy', 1);
+app.set("trust proxy", 1);
 
 /**helmet configuration */
 app.use(cors());
@@ -88,9 +88,8 @@ app.use((req, res, next) => {
 	next();
 });
 app.use(helmet.xssFilter());
-app.use(cors({ origin: 'https://unity.doseal.org' })); // Replace with your app's URL
+app.use(cors({ origin: "https://unity.doseal.org" })); // Replace with your app's URL
 /**helmet configuration */
-
 
 app.use(express.static(path.join(__dirname, "public")));
 
@@ -98,8 +97,6 @@ const sessionStore = new MongoDBStore({
 	uri: `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@${process.env.DB_CLUSTER}.mongodb.net/${process.env.DB_NAME}?retryWrites=true&w=majority`,
 	collection: "sessions",
 });
-
-
 
 app.use(express.urlencoded({ extended: true }));
 
@@ -140,12 +137,9 @@ app.use((req, res, next) => {
 	}
 });
 
-
 app.use("/api/v1/", callbackRoutes);
 
 app.use("/auth/", authApiRoutes);
-
-
 
 app.use(oauthSetting);
 
@@ -166,16 +160,16 @@ app.use(
 	externalApiRoutes
 );
 
-
-
-
-
 app.use("/", newsRoomRoutes);
 app.use("/", expensesRoutes);
 
 app.use(oauth2Whatsapp);
 /** Whatsapp routes */
-app.use("/api/v1", passport.authenticate('jwt', { session: false }), subscriberRoutes);
+app.use(
+	"/api/v1",
+	passport.authenticate("jwt", { session: false }),
+	subscriberRoutes
+);
 
 app.use((req, res, next) => {
 	res.setHeader("Access-Control-Allow-Origin", "*");
@@ -186,7 +180,6 @@ app.use((req, res, next) => {
 	res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
 	next();
 });
-
 
 const csrfProtection = csrf();
 app.use(csrfProtection);
@@ -222,9 +215,8 @@ app.use("/", deskDeskRoutes);
 app.use("/", notificationRoutes);
 // device routes
 app.use("/", deviceRoutes);
-
-
-
+//transactions routes
+app.use("/", transactionRoutes);
 
 // error handling middleware
 app.use(errorHandler);
@@ -249,3 +241,5 @@ mongoose
 	.catch((err) => {
 		console.log(err);
 	});
+
+
