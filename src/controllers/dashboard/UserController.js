@@ -68,6 +68,7 @@ async function listUsers(req, res) {
 
 async function getAddUser(req, res) {
 	const permissions = await Permission.find({});
+	const admin = req.session.admin;
 
 	res.render("backend/users/add", {
 		pageTitle: "Add User",
@@ -77,7 +78,7 @@ async function getAddUser(req, res) {
 		user: false,
 		userInput: false,
 		permissions: permissions,
-		admin: req.session.user,
+		admin: admin,
 		errorMessage: false,
 		successMessage: false,
 		transformWord: customData.transformWord,
@@ -91,6 +92,7 @@ async function postAddUser(req, res) {
 	const errors = validationResult(req);
 	let selectRole = req.body.role;
     const requestBody = req.body;
+	const admin = req.session.admin;
 
 	if (!errors.isEmpty()) {
         return res.status(400).render("backend/users/manage", {
@@ -99,7 +101,7 @@ async function postAddUser(req, res) {
 			role: selectRole,
 			users: users,
 			user: false,
-			admin: false,
+			admin: admin,
 			permissions: permissions,
             userInput: requestBody,
 			errors: errors.array(),
@@ -142,7 +144,7 @@ async function postAddUser(req, res) {
 				user: false,
 				permissions: permissions,
 				role: selectRole,
-				admin: req.session.user,
+				admin: admin,
                 userInput: requestBody,
 				customer: false,
 				errorMessage: false,
@@ -161,6 +163,7 @@ async function postAddUser(req, res) {
 			role: selectRole,
             users: users,
 			user: false,
+			admin: admin,
 			permissions: permissions,
             userInput: requestBody,
 			admin: req.session.user,
@@ -180,6 +183,7 @@ async function postAddUser(req, res) {
 			role: selectRole,
             users: users,
 			user: false,
+			admin: admin,
 			permissions: permissions,
             userInput: requestBody,
 			admin: req.session.user,
@@ -198,6 +202,7 @@ async function getEditUser(req, res) {
     const users = await Admin.find({ role: { $ne: "Subscriber" } });
 	const user = await Admin.findOne({ _id: req.params.userId });
 	const permissions = await Permission.find({});
+	const admin = req.session.admin;
 
 
 	
@@ -210,7 +215,7 @@ async function getEditUser(req, res) {
 			user: user,
             userInput: false,
 			role: userRole ? userRole : false,
-			admin: req.session.user,
+			admin: admin,
 			errors: false,
 			errorMessage: false,
 			permissions: permissions,
@@ -228,7 +233,7 @@ async function getEditUser(req, res) {
 			user: false,
             userInput: false,
 			role: false,
-			admin: req.session.user,
+			admin: admin,
 			errors: false,
 			errorMessage: false,
 			permissions: permissions,
@@ -246,6 +251,8 @@ async function putEditUser(req, res) {
 	const permissions = await Permission.find({});
 	const user = await Admin.findOne({ userId: req.params.userId });
 	const errors = validationResult(req);
+	const admin = req.session.admin;
+
 	console.log(errors.array());
 	if (!errors.isEmpty()) {
 		return res.status(422).render("admin/users/add", {
@@ -253,7 +260,7 @@ async function putEditUser(req, res) {
 			path: `/users/edit/${req.query.userId}`,
 			user: user,
 			role: false,
-			admin: req.session.user,
+			admin: admin,
 			errors: false,
 			errorMessage: false,
 			permissions: permissions,
@@ -291,6 +298,7 @@ async function putEditUser(req, res) {
 						permissions: permissions,
 						transformWord: customData.transformWord,
 						user: user,
+						admin: admin,
 						errorMessage: "User not found",
 						successMessage: false,
 						csrfToken: req.csrfToken(),
@@ -305,7 +313,7 @@ async function putEditUser(req, res) {
 					path: `/user/edit/${req.query.userId}`,
 					errors: false,
 					role: updatedUser.role,
-					admin: req.session.user,
+					admin: admin,
 					permissions: permissions,
 					transformWord: customData.transformWord,
 					user: updatedUser,
@@ -322,7 +330,7 @@ async function putEditUser(req, res) {
 					path: `/users/edit/${req.query.userId}`,
 					errors: false,
 					role: false,
-					admin: req.session.user,
+					admin: admin,
 					permissions: permissions,
 					transformWord: customData.transformWord,
 					user: user,
@@ -337,7 +345,7 @@ async function putEditUser(req, res) {
 			path: `/users/edit/${req.query.userId}`,
 			errors: false,
 			role: false,
-			admin: req.session.user,
+			admin: admin,
 			permissions: permissions,
 			transformWord: customData.transformWord,
 			user: user,
@@ -352,6 +360,8 @@ async function putEditUser(req, res) {
 
 async function listUsers1(req, res) {
 	const users = await User.find({ role: { $ne: "superuser" } });
+	const admin = req.session.admin;
+
 	try {
 		if (users) {
 			return res.status(200).render("dashboard/users/list-users", {
@@ -361,6 +371,7 @@ async function listUsers1(req, res) {
 				errorMessage: false,
 				successMessage: false,
 				users: users,
+				admin: admin,
 				csrfToken: req.csrfToken(),
 				shortData: customData.shortData,
 			});
@@ -370,6 +381,7 @@ async function listUsers1(req, res) {
 			pageTitle: "List Users",
 			path: "/users",
 			errors: false,
+			admin: admin,
 			errorMessage: false,
 			successMessage: true,
 			users: users,
@@ -381,6 +393,7 @@ async function listUsers1(req, res) {
 			pageTitle: "List Users",
 			path: "/users",
 			errors: false,
+			admin: admin,
 			errorMessage: error,
 			users: false,
 			successMessage: false,
