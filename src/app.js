@@ -6,10 +6,6 @@ require("dotenv").config();
 const passport = require("passport");
 const cors = require("cors");
 const helmet = require("helmet");
-const rateLimit = require("express-rate-limit");
-const {
-	globalRateLimiter,
-} = require("./Middleware/globalRateLimiterMiddleware");
 
 const session = require("express-session");
 const flash = require("express-flash");

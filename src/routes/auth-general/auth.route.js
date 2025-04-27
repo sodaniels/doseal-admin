@@ -5,20 +5,19 @@ const express = require("express");
 const router = express.Router();
 
 const authGeneralController = require("../../controllers/auth/AuthGeneralController");
-const { loginRateLimiterMiddleware } = require('../../Middleware/loginRateLimiterMiddleware');
+// const { loginRateLimiterMiddleware } = require('../../Middleware/loginRateLimiterMiddleware');
 
 
 const validator = require("../../helpers/validator-auth");
 
 // get login gen4 login
-router.get("/auth/login",loginRateLimiterMiddleware,  authGeneralController.getLogin);
+router.get("/auth/login",  authGeneralController.getLogin);
 // get mobile login redirect page
-router.get("/auth/mobile/redirect", loginRateLimiterMiddleware, authGeneralController.getMobileRedirect);
+router.get("/auth/mobile/redirect", authGeneralController.getMobileRedirect);
 // post gen4 login
 router.post(
 	"/authentate/login",
 	validator.validateGen4Login,
-	loginRateLimiterMiddleware,
 	authGeneralController.postLogin
 );
 // confirm gen4 code
